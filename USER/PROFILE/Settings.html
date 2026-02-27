@@ -1,0 +1,1007 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ALAAP - Settings</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --primary-blue: #2563EB;
+            --secondary-blue: #1D4ED8;
+            --light-blue: #EFF6FF;
+            --text-dark: #1F2937;
+            --text-muted: #6B7280;
+            --bg-gray: #F3F4F6;
+            --white: #FFFFFF;
+            --border-color: #E5E7EB;
+            --success: #10B981;
+            --danger: #EF4444;
+            --warning: #F59E0B;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html, body {
+            height: 100%;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        body {
+            background-color: var(--bg-gray);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .app-container {
+            width: 100%;
+            height: 100%;
+            max-width: 100%;
+            max-height: 100%;
+            background-color: var(--bg-gray);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        @media (min-width: 415px) {
+            body {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                padding: 20px;
+            }
+            
+            .app-container {
+                width: 375px;
+                height: 812px;
+                max-width: 375px;
+                max-height: 812px;
+                border-radius: 40px;
+                box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            }
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, var(--secondary-blue), var(--primary-blue));
+            padding: 50px 24px 30px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .header-content {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .back-btn {
+            width: 40px;
+            height: 40px;
+            background: rgba(255,255,255,0.2);
+            border: none;
+            border-radius: 12px;
+            color: var(--white);
+            font-size: 18px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .back-btn:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateX(-3px);
+        }
+
+        .header-title {
+            color: var(--white);
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        /* Main Content */
+        .content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            padding-bottom: 100px;
+        }
+
+        .content::-webkit-scrollbar {
+            width: 0;
+        }
+
+        /* Settings Sections */
+        .settings-section {
+            background: var(--white);
+            border-radius: 20px;
+            padding: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            animation: slideUp 0.5s ease both;
+        }
+
+        .settings-section:nth-child(1) { animation-delay: 0.1s; }
+        .settings-section:nth-child(2) { animation-delay: 0.2s; }
+        .settings-section:nth-child(3) { animation-delay: 0.3s; }
+
+        .section-header {
+            padding: 16px 16px 8px;
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Settings Items */
+        .settings-item {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 16px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .settings-item:hover {
+            background: var(--light-blue);
+        }
+
+        .settings-item:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 56px;
+            right: 16px;
+            height: 1px;
+            background: var(--border-color);
+        }
+
+        .item-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--bg-gray);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            color: var(--primary-blue);
+            transition: all 0.3s ease;
+        }
+
+        .settings-item:hover .item-icon {
+            background: var(--primary-blue);
+            color: var(--white);
+            transform: scale(1.1);
+        }
+
+        .item-content {
+            flex: 1;
+        }
+
+        .item-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 2px;
+        }
+
+        .item-subtitle {
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .item-value {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .item-arrow {
+            font-size: 14px;
+            color: var(--text-muted);
+            transition: transform 0.3s ease;
+        }
+
+        .settings-item:hover .item-arrow {
+            transform: translateX(4px);
+            color: var(--primary-blue);
+        }
+
+        /* Language Selector */
+        .language-options {
+            display: none;
+            padding: 0 16px 16px;
+        }
+
+        .language-options.active {
+            display: block;
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .language-option {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 16px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 8px;
+        }
+
+        .language-option:hover {
+            background: var(--light-blue);
+        }
+
+        .language-option.active {
+            background: var(--light-blue);
+            border: 2px solid var(--primary-blue);
+        }
+
+        .language-flag {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            background: var(--bg-gray);
+        }
+
+        .language-info {
+            flex: 1;
+        }
+
+        .language-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        .language-native {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .check-icon {
+            width: 24px;
+            height: 24px;
+            background: var(--primary-blue);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            color: var(--white);
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+
+        .language-option.active .check-icon {
+            opacity: 1;
+        }
+
+        /* Toggle Switch */
+        .toggle-switch {
+            position: relative;
+            width: 50px;
+            height: 28px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: var(--border-color);
+            transition: .4s;
+            border-radius: 28px;
+        }
+
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 20px;
+            width: 20px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        input:checked + .toggle-slider {
+            background-color: var(--primary-blue);
+        }
+
+        input:checked + .toggle-slider:before {
+            transform: translateX(22px);
+        }
+
+        /* Danger Zone */
+        .danger-section {
+            background: var(--white);
+            border-radius: 20px;
+            padding: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            animation: slideUp 0.5s ease 0.4s both;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .danger-section:hover {
+            border-color: var(--danger);
+        }
+
+        .danger-item {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 16px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .danger-item:hover {
+            background: #FEE2E2;
+        }
+
+        .danger-icon {
+            width: 40px;
+            height: 40px;
+            background: #FEE2E2;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            color: var(--danger);
+            transition: all 0.3s ease;
+        }
+
+        .danger-item:hover .danger-icon {
+            background: var(--danger);
+            color: var(--white);
+            transform: scale(1.1);
+        }
+
+        .danger-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--danger);
+        }
+
+        .danger-subtitle {
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        /* App Info */
+        .app-info {
+            text-align: center;
+            padding: 20px;
+            animation: slideUp 0.5s ease 0.5s both;
+        }
+
+        .app-logo {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--primary-blue), var(--secondary-blue));
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 12px;
+            font-size: 28px;
+            color: var(--white);
+            box-shadow: 0 8px 20px rgba(37, 99, 235, 0.3);
+        }
+
+        .app-name {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 4px;
+        }
+
+        .app-version {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+        }
+
+        .app-copyright {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        /* Bottom Navigation */
+        .bottom-nav {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--white);
+            padding: 15px 30px 30px;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            border-radius: 30px 30px 0 0;
+            box-shadow: 0 -5px 30px rgba(0,0,0,0.1);
+            z-index: 100;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            padding: 5px 15px;
+            border-radius: 15px;
+        }
+
+        .nav-item:hover {
+            background: var(--light-blue);
+        }
+
+        .nav-item.active {
+            color: var(--primary-blue);
+        }
+
+        .nav-item.active i {
+            background: linear-gradient(135deg, var(--primary-blue), var(--secondary-blue));
+            color: var(--white);
+            padding: 10px;
+            border-radius: 12px;
+            margin-top: -20px;
+            box-shadow: 0 5px 15px rgba(37, 99, 235, 0.3);
+        }
+
+        .nav-item i {
+            font-size: 20px;
+            color: var(--text-muted);
+            transition: all 0.3s ease;
+        }
+
+        .nav-item span {
+            font-size: 11px;
+            font-weight: 500;
+            color: var(--text-muted);
+        }
+
+        .nav-item.active span {
+            color: var(--primary-blue);
+            font-weight: 600;
+        }
+
+        /* Logout Modal */
+        .logout-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .logout-modal.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .logout-content {
+            background: var(--white);
+            border-radius: 24px;
+            padding: 32px;
+            max-width: 320px;
+            width: 90%;
+            text-align: center;
+            transform: scale(0.8);
+            transition: transform 0.3s ease;
+        }
+
+        .logout-modal.active .logout-content {
+            transform: scale(1);
+        }
+
+        .logout-icon {
+            width: 80px;
+            height: 80px;
+            background: #FEE2E2;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 36px;
+            color: var(--danger);
+            animation: shake 0.5s ease;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: rotate(0deg); }
+            25% { transform: rotate(-10deg); }
+            75% { transform: rotate(10deg); }
+        }
+
+        .logout-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 8px;
+        }
+
+        .logout-text {
+            font-size: 14px;
+            color: var(--text-muted);
+            margin-bottom: 24px;
+            line-height: 1.5;
+        }
+
+        .logout-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn-cancel {
+            flex: 1;
+            padding: 14px;
+            background: var(--bg-gray);
+            border: none;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-dark);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-cancel:hover {
+            background: var(--border-color);
+        }
+
+        .btn-logout-confirm {
+            flex: 1;
+            padding: 14px;
+            background: var(--danger);
+            border: none;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--white);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-logout-confirm:hover {
+            background: #DC2626;
+            transform: scale(1.02);
+        }
+
+        /* Toast Notification */
+        .toast {
+            position: fixed;
+            bottom: 100px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: var(--text-dark);
+            color: var(--white);
+            padding: 12px 24px;
+            border-radius: 25px;
+            font-size: 14px;
+            font-weight: 500;
+            opacity: 0;
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+<base target="_blank">
+</head>
+<body>
+
+    <div class="app-container">
+        
+        <!-- Header -->
+        <div class="header">
+            <div class="header-content">
+                <button class="back-btn" onclick="goBack()">
+                    <i class="fa-solid fa-arrow-left"></i>
+                </button>
+                <h1 class="header-title">Settings</h1>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="content">
+            
+            <!-- Account Settings -->
+            <div class="settings-section">
+                <div class="section-header">Account</div>
+                
+                <div class="settings-item" onclick="goToProfile()">
+                    <div class="item-icon">
+                        <i class="fa-solid fa-user"></i>
+                    </div>
+                    <div class="item-content">
+                        <div class="item-title">Profile Information</div>
+                        <div class="item-subtitle">Edit your personal details</div>
+                    </div>
+                    <i class="fa-solid fa-chevron-right item-arrow"></i>
+                </div>
+
+                <div class="settings-item" onclick="goToSecurity()">
+                    <div class="item-icon">
+                        <i class="fa-solid fa-shield-halved"></i>
+                    </div>
+                    <div class="item-content">
+                        <div class="item-title">Security</div>
+                        <div class="item-subtitle">Password, 2FA, biometrics</div>
+                    </div>
+                    <i class="fa-solid fa-chevron-right item-arrow"></i>
+                </div>
+
+                <div class="settings-item">
+                    <div class="item-icon">
+                        <i class="fa-solid fa-bell"></i>
+                    </div>
+                    <div class="item-content">
+                        <div class="item-title">Notifications</div>
+                        <div class="item-subtitle">Push, email, SMS alerts</div>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" checked onchange="toggleNotifications(this)">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Preferences -->
+            <div class="settings-section">
+                <div class="section-header">Preferences</div>
+                
+                <!-- Language Selector -->
+                <div class="settings-item" onclick="toggleLanguage()">
+                    <div class="item-icon">
+                        <i class="fa-solid fa-globe"></i>
+                    </div>
+                    <div class="item-content">
+                        <div class="item-title">Language</div>
+                        <div class="item-subtitle">Select your preferred language</div>
+                    </div>
+                    <div class="item-value" id="currentLanguage">
+                        English <i class="fa-solid fa-chevron-down"></i>
+                    </div>
+                </div>
+
+                <!-- Language Options (Expandable) -->
+                <div class="language-options" id="languageOptions">
+                    <div class="language-option active" onclick="selectLanguage('en', 'English')" id="lang-en">
+                        <div class="language-flag">🇺🇸</div>
+                        <div class="language-info">
+                            <div class="language-name">English</div>
+                            <div class="language-native">English</div>
+                        </div>
+                        <div class="check-icon">
+                            <i class="fa-solid fa-check"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="language-option" onclick="selectLanguage('tl', 'Tagalog')" id="lang-tl">
+                        <div class="language-flag">🇵🇭</div>
+                        <div class="language-info">
+                            <div class="language-name">Tagalog</div>
+                            <div class="language-native">Filipino</div>
+                        </div>
+                        <div class="check-icon">
+                            <i class="fa-solid fa-check"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="settings-item">
+                    <div class="item-icon">
+                        <i class="fa-solid fa-moon"></i>
+                    </div>
+                    <div class="item-content">
+                        <div class="item-title">Dark Mode</div>
+                        <div class="item-subtitle">Toggle dark theme</div>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" onchange="toggleDarkMode(this)">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+
+                <div class="settings-item" onclick="goToPaymentMethods()">
+                    <div class="item-icon">
+                        <i class="fa-solid fa-credit-card"></i>
+                    </div>
+                    <div class="item-content">
+                        <div class="item-title">Payment Methods</div>
+                        <div class="item-subtitle">GCash, cards, cash</div>
+                    </div>
+                    <i class="fa-solid fa-chevron-right item-arrow"></i>
+                </div>
+            </div>
+
+            <!-- Support -->
+            <div class="settings-section">
+                <div class="section-header">Support</div>
+                
+                <div class="settings-item" onclick="contactSupport()">
+                    <div class="item-icon">
+                        <i class="fa-solid fa-headset"></i>
+                    </div>
+                    <div class="item-content">
+                        <div class="item-title">Help Center</div>
+                        <div class="item-subtitle">FAQs, chat support</div>
+                    </div>
+                    <i class="fa-solid fa-chevron-right item-arrow"></i>
+                </div>
+
+                <div class="settings-item" onclick="goToAbout()">
+                    <div class="item-icon">
+                        <i class="fa-solid fa-circle-info"></i>
+                    </div>
+                    <div class="item-content">
+                        <div class="item-title">About ALAAP</div>
+                        <div class="item-subtitle">Version, terms, privacy</div>
+                    </div>
+                    <i class="fa-solid fa-chevron-right item-arrow"></i>
+                </div>
+            </div>
+
+            <!-- Danger Zone - Logout -->
+            <div class="danger-section">
+                <div class="danger-item" onclick="showLogoutModal()">
+                    <div class="danger-icon">
+                        <i class="fa-solid fa-right-from-bracket"></i>
+                    </div>
+                    <div class="item-content">
+                        <div class="danger-title">Log Out</div>
+                        <div class="danger-subtitle">Sign out of your account</div>
+                    </div>
+                    <i class="fa-solid fa-chevron-right item-arrow" style="color: var(--danger);"></i>
+                </div>
+            </div>
+
+            <!-- App Info -->
+            <div class="app-info">
+                <div class="app-logo">
+                    <i class="fa-solid fa-motorcycle"></i>
+                </div>
+                <div class="app-name">ALAAP</div>
+                <div class="app-version">Version 2.1.0</div>
+                <div class="app-copyright">© 2026 ALAAP Inc. All rights reserved.</div>
+            </div>
+
+        </div>
+
+        <!-- Bottom Navigation -->
+        <div class="bottom-nav">
+            <div class="nav-item" onclick="goToHome()">
+                <i class="fa-solid fa-house"></i>
+                <span>Home</span>
+            </div>
+            <div class="nav-item" onclick="goToBookings()">
+                <i class="fa-solid fa-clipboard-list"></i>
+                <span>Bookings</span>
+            </div>
+            <div class="nav-item" onclick="goToWallet()">
+                <i class="fa-solid fa-wallet"></i>
+                <span>Wallet</span>
+            </div>
+            <div class="nav-item active" onclick="goToProfile()">
+                <i class="fa-solid fa-user"></i>
+                <span>Profile</span>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Logout Confirmation Modal -->
+    <div class="logout-modal" id="logoutModal">
+        <div class="logout-content">
+            <div class="logout-icon">
+                <i class="fa-solid fa-right-from-bracket"></i>
+            </div>
+            <div class="logout-title">Log Out?</div>
+            <div class="logout-text">Are you sure you want to log out? You'll need to sign in again to access your account.</div>
+            <div class="logout-actions">
+                <button class="btn-cancel" onclick="hideLogoutModal()">Cancel</button>
+                <button class="btn-logout-confirm" onclick="confirmLogout()">
+                    <i class="fa-solid fa-check"></i> Yes, Log Out
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Language selection
+        let currentLang = 'en';
+
+        function toggleLanguage() {
+            const options = document.getElementById('languageOptions');
+            options.classList.toggle('active');
+        }
+
+        function selectLanguage(code, name) {
+            currentLang = code;
+            
+            // Update UI
+            document.querySelectorAll('.language-option').forEach(opt => opt.classList.remove('active'));
+            document.getElementById('lang-' + code).classList.add('active');
+            
+            // Update display
+            document.getElementById('currentLanguage').innerHTML = name + ' <i class="fa-solid fa-chevron-down"></i>';
+            
+            // Close options after selection
+            setTimeout(() => {
+                document.getElementById('languageOptions').classList.remove('active');
+            }, 300);
+            
+            showToast('Language changed to ' + name);
+            
+            // Store preference
+            localStorage.setItem('appLanguage', code);
+        }
+
+        // Load saved language
+        window.onload = function() {
+            const savedLang = localStorage.getItem('appLanguage');
+            if (savedLang && savedLang !== 'en') {
+                selectLanguage(savedLang, savedLang === 'tl' ? 'Tagalog' : 'English');
+            }
+        };
+
+        // Toggle switches
+        function toggleNotifications(checkbox) {
+            const status = checkbox.checked ? 'enabled' : 'disabled';
+            showToast('Notifications ' + status);
+        }
+
+        function toggleDarkMode(checkbox) {
+            const status = checkbox.checked ? 'enabled' : 'disabled';
+            showToast('Dark mode ' + status + ' (coming soon)');
+        }
+
+        // Logout modal
+        function showLogoutModal() {
+            document.getElementById('logoutModal').classList.add('active');
+        }
+
+        function hideLogoutModal() {
+            document.getElementById('logoutModal').classList.remove('active');
+        }
+
+        function confirmLogout() {
+            // Clear user data
+            localStorage.clear();
+            sessionStorage.clear();
+            
+            showToast('Logging out...');
+            
+            setTimeout(() => {
+                window.location.href = 'Login.html';
+            }, 1500);
+        }
+
+        // Navigation
+        function goToHome() {
+            window.location.href = 'Dashboard.html';
+        }
+
+        function goToBookings() {
+            window.location.href = 'Bookings.html';
+        }
+
+        function goToWallet() {
+            window.location.href = 'Wallet.html';
+        }
+
+        function goToProfile() {
+            window.location.href = 'Profile.html';
+        }
+
+        function goToSecurity() {
+            window.location.href = 'Security.html';
+        }
+
+        function goToPaymentMethods() {
+            window.location.href = 'PaymentMethods.html';
+        }
+
+        function contactSupport() {
+            window.location.href = 'Support.html';
+        }
+
+        function goToAbout() {
+            window.location.href = 'About.html';
+        }
+
+        function goBack() {
+            window.history.back();
+        }
+
+        // Toast notification
+        function showToast(message) {
+            const existing = document.querySelector('.toast');
+            if (existing) existing.remove();
+            
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => toast.classList.add('show'), 10);
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        // Close modal on outside click
+        document.getElementById('logoutModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                hideLogoutModal();
+            }
+        });
+    </script>
+</body>
+</html>

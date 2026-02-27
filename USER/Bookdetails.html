@@ -1,0 +1,1194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ALAPP - Booking Details</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+   
+    <style>
+        :root {
+            --primary-blue: #2563EB;
+            --secondary-blue: #1D4ED8;
+            --light-blue: #EFF6FF;
+            --text-dark: #1F2937;
+            --text-muted: #6B7280;
+            --bg-gray: #F3F4F6;
+            --white: #FFFFFF;
+            --border-color: #E5E7EB;
+            --success: #10B981;
+            --error: #EF4444;
+            --warning: #F59E0B;
+            --accent-orange: #F97316;
+            --shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            --radius: 16px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html, body {
+            height: 100%;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        body {
+            background-color: var(--bg-gray);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        @media (min-width: 415px) {
+            body {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                padding: 20px;
+            }
+        }
+
+        .app-container {
+            width: 100%;
+            height: 100%;
+            max-width: 100%;
+            max-height: 100%;
+            background-color: var(--bg-gray);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        @media (min-width: 415px) {
+            .app-container {
+                width: 375px;
+                height: 812px;
+                max-width: 375px;
+                max-height: 812px;
+                border-radius: 40px;
+                box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            }
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, var(--secondary-blue), var(--primary-blue));
+            padding: 50px 24px 24px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .header-content {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .back-btn {
+            width: 40px;
+            height: 40px;
+            background: rgba(255,255,255,0.2);
+            border: none;
+            border-radius: 12px;
+            color: var(--white);
+            font-size: 18px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .back-btn:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateX(-3px);
+        }
+
+        .header-title {
+            color: var(--white);
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        /* Scrollable Content */
+        .content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            padding-bottom: 100px;
+        }
+
+        .content::-webkit-scrollbar {
+            width: 0;
+        }
+
+        /* Route Summary Card */
+        .route-card {
+            background: var(--white);
+            border-radius: var(--radius);
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .route-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: linear-gradient(to bottom, var(--primary-blue), var(--accent-orange));
+        }
+
+        .route-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .service-type {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: var(--light-blue);
+            color: var(--primary-blue);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .service-type i {
+            font-size: 14px;
+        }
+
+        .price-tag {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text-dark);
+        }
+
+        .locations {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            position: relative;
+        }
+
+        .location-row {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .location-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .pickup .location-icon {
+            background: var(--light-blue);
+            color: var(--primary-blue);
+        }
+
+        .dropoff .location-icon {
+            background: #FEF3C7;
+            color: var(--accent-orange);
+        }
+
+        .location-info h4 {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 2px;
+        }
+
+        .location-info p {
+            font-size: 12px;
+            color: var(--text-muted);
+            line-height: 1.4;
+        }
+
+        .connector {
+            position: absolute;
+            left: 15px;
+            top: 40px;
+            width: 2px;
+            height: 20px;
+            border-left: 2px dashed var(--border-color);
+        }
+
+        .route-stats {
+            display: flex;
+            gap: 20px;
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .stat {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .stat i {
+            color: var(--primary-blue);
+        }
+
+        /* Section Cards */
+        .section-card {
+            background: var(--white);
+            border-radius: var(--radius);
+            padding: 20px;
+            margin-bottom: 16px;
+            box-shadow: var(--shadow);
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .section-title i {
+            color: var(--primary-blue);
+            font-size: 18px;
+        }
+
+        /* Item List */
+        .item-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .item-row {
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+            padding: 12px;
+            background: var(--bg-gray);
+            border-radius: 12px;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .item-row:focus-within {
+            border-color: var(--primary-blue);
+            background: var(--white);
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+        }
+
+        .item-number {
+            width: 28px;
+            height: 28px;
+            background: var(--primary-blue);
+            color: var(--white);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        .item-inputs {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .item-input {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 14px;
+            outline: none;
+            transition: all 0.3s;
+            background: var(--white);
+        }
+
+        .item-input:focus {
+            border-color: var(--primary-blue);
+        }
+
+        .item-input::placeholder {
+            color: var(--text-muted);
+        }
+
+        .item-quantity {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .qty-btn {
+            width: 32px;
+            height: 32px;
+            border: 1px solid var(--border-color);
+            background: var(--white);
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-dark);
+            transition: all 0.2s;
+        }
+
+        .qty-btn:hover {
+            background: var(--primary-blue);
+            color: var(--white);
+            border-color: var(--primary-blue);
+        }
+
+        .qty-input {
+            width: 50px;
+            text-align: center;
+            padding: 6px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .remove-item {
+            color: var(--error);
+            font-size: 16px;
+            cursor: pointer;
+            padding: 4px;
+            opacity: 0.6;
+            transition: opacity 0.2s;
+        }
+
+        .remove-item:hover {
+            opacity: 1;
+        }
+
+        .add-item-btn {
+            width: 100%;
+            padding: 12px;
+            border: 2px dashed var(--border-color);
+            background: transparent;
+            border-radius: 12px;
+            color: var(--primary-blue);
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.3s;
+            margin-top: 8px;
+        }
+
+        .add-item-btn:hover {
+            border-color: var(--primary-blue);
+            background: var(--light-blue);
+        }
+
+        /* Photo Upload */
+        .photo-section {
+            margin-top: 16px;
+        }
+
+        .photo-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+
+        .photo-upload {
+            aspect-ratio: 1;
+            border: 2px dashed var(--border-color);
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: var(--bg-gray);
+        }
+
+        .photo-upload:hover {
+            border-color: var(--primary-blue);
+            background: var(--light-blue);
+        }
+
+        .photo-upload i {
+            font-size: 20px;
+            color: var(--text-muted);
+            margin-bottom: 4px;
+        }
+
+        .photo-upload span {
+            font-size: 10px;
+            color: var(--text-muted);
+        }
+
+        .photo-item {
+            aspect-ratio: 1;
+            border-radius: 12px;
+            overflow: hidden;
+            position: relative;
+            background: var(--bg-gray);
+        }
+
+        .photo-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .remove-photo {
+            position: absolute;
+            top: 4px;
+            right: 4px;
+            width: 20px;
+            height: 20px;
+            background: rgba(0,0,0,0.5);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            font-size: 10px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Instructions */
+        .instruction-tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+        }
+
+        .instruction-chip {
+            padding: 8px 14px;
+            background: var(--bg-gray);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            font-size: 12px;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .instruction-chip:hover {
+            background: var(--light-blue);
+            color: var(--primary-blue);
+            border-color: var(--primary-blue);
+        }
+
+        .instruction-chip.active {
+            background: var(--primary-blue);
+            color: var(--white);
+            border-color: var(--primary-blue);
+        }
+
+        .textarea-wrapper {
+            position: relative;
+        }
+
+        .instruction-textarea {
+            width: 100%;
+            min-height: 120px;
+            padding: 16px;
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            font-size: 14px;
+            resize: vertical;
+            outline: none;
+            transition: all 0.3s;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .instruction-textarea:focus {
+            border-color: var(--primary-blue);
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+        }
+
+        .char-count {
+            position: absolute;
+            bottom: 12px;
+            right: 12px;
+            font-size: 11px;
+            color: var(--text-muted);
+            background: var(--white);
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+
+        /* Priority Selection */
+        .priority-options {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+
+        .priority-card {
+            padding: 16px 10px;
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: var(--white);
+        }
+
+        .priority-card:hover {
+            border-color: var(--primary-blue);
+            transform: translateY(-2px);
+        }
+
+        .priority-card.active {
+            border-color: var(--primary-blue);
+            background: var(--light-blue);
+        }
+
+        .priority-card i {
+            font-size: 24px;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .priority-card.standard i { color: var(--success); }
+        .priority-card.express i { color: var(--warning); }
+        .priority-card.urgent i { color: var(--error); }
+
+        .priority-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-dark);
+            display: block;
+            margin-bottom: 2px;
+        }
+
+        .priority-price {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        /* Payment Summary */
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 14px;
+        }
+
+        .summary-row:last-child {
+            border-bottom: none;
+            padding-top: 16px;
+            margin-top: 4px;
+        }
+
+        .summary-label {
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .summary-value {
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        .total-row {
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .total-row .summary-value {
+            color: var(--primary-blue);
+            font-size: 20px;
+        }
+
+        /* Bottom Action */
+        .bottom-action {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--white);
+            padding: 16px 24px 30px;
+            border-top: 1px solid var(--border-color);
+            box-shadow: 0 -4px 20px rgba(0,0,0,0.05);
+            z-index: 100;
+        }
+
+        .btn-confirm {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, var(--primary-blue), var(--secondary-blue));
+            color: var(--white);
+            border: none;
+            border-radius: 16px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 8px 20px rgba(37, 99, 235, 0.3);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-confirm:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 24px rgba(37, 99, 235, 0.4);
+        }
+
+        .btn-confirm:disabled {
+            background: var(--text-muted);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        /* Toggle Switch */
+        .toggle-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+        }
+
+        .toggle-label {
+            font-size: 14px;
+            color: var(--text-dark);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .toggle-label i {
+            color: var(--primary-blue);
+            font-size: 18px;
+        }
+
+        .switch {
+            position: relative;
+            width: 50px;
+            height: 28px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: var(--border-color);
+            transition: .4s;
+            border-radius: 28px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 20px;
+            width: 20px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        input:checked + .slider {
+            background-color: var(--primary-blue);
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(22px);
+        }
+
+        /* Animations */
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .section-card {
+            animation: slideUp 0.5s ease forwards;
+        }
+
+        .section-card:nth-child(2) { animation-delay: 0.1s; }
+        .section-card:nth-child(3) { animation-delay: 0.2s; }
+        .section-card:nth-child(4) { animation-delay: 0.3s; }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-content">
+                <button class="back-btn" onclick="goBack()">
+                    <i class="fa-solid fa-arrow-left"></i>
+                </button>
+                <h1 class="header-title">Booking Details</h1>
+            </div>
+        </div>
+
+        <!-- Scrollable Content -->
+        <div class="content">
+            <!-- Route Summary -->
+            <div class="route-card">
+                <div class="route-header">
+                    <span class="service-type">
+                        <i class="fa-solid fa-box"></i>
+                        Padala
+                    </span>
+                    <span class="price-tag">₱128</span>
+                </div>
+                
+                <div class="locations">
+                    <div class="connector"></div>
+                    <div class="location-row pickup">
+                        <div class="location-icon">
+                            <i class="fa-solid fa-location-dot"></i>
+                        </div>
+                        <div class="location-info">
+                            <h4>Pickup Location</h4>
+                            <p>Alaminos City Hall, Alaminos, Pangasinan</p>
+                        </div>
+                    </div>
+                    <div class="location-row dropoff">
+                        <div class="location-icon">
+                            <i class="fa-solid fa-flag-checkered"></i>
+                        </div>
+                        <div class="location-info">
+                            <h4>Drop-off Location</h4>
+                            <p>SM City Urdaneta, Urdaneta City, Pangasinan</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="route-stats">
+                    <div class="stat">
+                        <i class="fa-solid fa-road"></i>
+                        <span>12.5 km</span>
+                    </div>
+                    <div class="stat">
+                        <i class="fa-regular fa-clock"></i>
+                        <span>25 mins</span>
+                    </div>
+                    <div class="stat">
+                        <i class="fa-solid fa-motorcycle"></i>
+                        <span>Motorcycle</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Item Description -->
+            <div class="section-card">
+                <h3 class="section-title">
+                    <i class="fa-solid fa-box-open"></i>
+                    Item Details
+                </h3>
+                
+                <div class="item-list" id="itemList">
+                    <div class="item-row">
+                        <div class="item-number">1</div>
+                        <div class="item-inputs">
+                            <input type="text" class="item-input" placeholder="Item name (e.g., Documents, Food, Package)" id="itemName1">
+                            <div style="display: flex; gap: 8px;">
+                                <input type="text" class="item-input" placeholder="Description (optional)" style="flex: 1;">
+                                <div class="item-quantity">
+                                    <button class="qty-btn" onclick="updateQty(1, -1)">-</button>
+                                    <input type="number" class="qty-input" value="1" min="1" id="qty1" readonly>
+                                    <button class="qty-btn" onclick="updateQty(1, 1)">+</button>
+                                </div>
+                            </div>
+                        </div>
+                        <i class="fa-solid fa-trash remove-item" onclick="removeItem(this)" style="opacity: 0.3; pointer-events: none;"></i>
+                    </div>
+                </div>
+
+                <button class="add-item-btn" onclick="addItem()">
+                    <i class="fa-solid fa-plus"></i>
+                    Add Another Item
+                </button>
+
+                <!-- Photo Upload -->
+                <div class="photo-section">
+                    <h4 style="font-size: 13px; color: var(--text-muted); margin-bottom: 10px; font-weight: 500;">
+                        <i class="fa-solid fa-camera" style="margin-right: 6px;"></i>
+                        Attach Photos (Optional)
+                    </h4>
+                    <div class="photo-grid" id="photoGrid">
+                        <div class="photo-upload" onclick="document.getElementById('photoInput').click()">
+                            <i class="fa-solid fa-camera"></i>
+                            <span>Add</span>
+                        </div>
+                    </div>
+                    <input type="file" id="photoInput" accept="image/*" multiple style="display: none;" onchange="handlePhotoUpload(event)">
+                </div>
+            </div>
+
+            <!-- Delivery Instructions -->
+            <div class="section-card">
+                <h3 class="section-title">
+                    <i class="fa-solid fa-clipboard-list"></i>
+                    Delivery Instructions
+                </h3>
+
+                <div class="instruction-tabs">
+                    <div class="instruction-chip" onclick="toggleChip(this)">
+                        <i class="fa-solid fa-hand-holding-hand"></i>
+                        Handle with care
+                    </div>
+                    <div class="instruction-chip" onclick="toggleChip(this)">
+                        <i class="fa-solid fa-temperature-low"></i>
+                        Keep cool
+                    </div>
+                    <div class="instruction-chip" onclick="toggleChip(this)">
+                        <i class="fa-solid fa-clock"></i>
+                        Urgent delivery
+                    </div>
+                    <div class="instruction-chip" onclick="toggleChip(this)">
+                        <i class="fa-solid fa-money-bill"></i>
+                        Cash on pickup
+                    </div>
+                    <div class="instruction-chip" onclick="toggleChip(this)">
+                        <i class="fa-solid fa-door-open"></i>
+                        Leave at door
+                    </div>
+                </div>
+
+                <div class="textarea-wrapper">
+                    <textarea 
+                        class="instruction-textarea" 
+                        id="instructions"
+                        placeholder="Add specific instructions for the rider (e.g., gate code, landmark, fragile items, etc.)"
+                        maxlength="200"
+                        oninput="updateCharCount(this)"
+                    ></textarea>
+                    <span class="char-count" id="charCount">0/200</span>
+                </div>
+
+                <div class="toggle-row" style="margin-top: 16px; padding-bottom: 0;">
+                    <div class="toggle-label">
+                        <i class="fa-solid fa-phone"></i>
+                        <span>Allow rider to call recipient</span>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" checked>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Delivery Priority -->
+            <div class="section-card">
+                <h3 class="section-title">
+                    <i class="fa-solid fa-bolt"></i>
+                    Delivery Priority
+                </h3>
+                
+                <div class="priority-options">
+                    <div class="priority-card standard active" onclick="selectPriority(this, 'standard')">
+                        <i class="fa-solid fa-truck"></i>
+                        <span class="priority-label">Standard</span>
+                        <span class="priority-price">+₱0</span>
+                    </div>
+                    <div class="priority-card express" onclick="selectPriority(this, 'express')">
+                        <i class="fa-solid fa-bolt"></i>
+                        <span class="priority-label">Express</span>
+                        <span class="priority-price">+₱50</span>
+                    </div>
+                    <div class="priority-card urgent" onclick="selectPriority(this, 'urgent')">
+                        <i class="fa-solid fa-fire"></i>
+                        <span class="priority-label">Urgent</span>
+                        <span class="priority-price">+₱100</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Payment Summary -->
+            <div class="section-card">
+                <h3 class="section-title">
+                    <i class="fa-solid fa-receipt"></i>
+                    Payment Summary
+                </h3>
+                
+                <div class="summary-row">
+                    <span class="summary-label">
+                        <i class="fa-solid fa-motorcycle" style="color: var(--text-muted);"></i>
+                        Delivery Fee
+                    </span>
+                    <span class="summary-value">₱128</span>
+                </div>
+                <div class="summary-row">
+                    <span class="summary-label">
+                        <i class="fa-solid fa-box" style="color: var(--text-muted);"></i>
+                        Item Insurance
+                    </span>
+                    <span class="summary-value">₱20</span>
+                </div>
+                <div class="summary-row">
+                    <span class="summary-label">
+                        <i class="fa-solid fa-bolt" style="color: var(--text-muted);"></i>
+                        Priority Fee
+                    </span>
+                    <span class="summary-value" id="priorityFee">₱0</span>
+                </div>
+                <div class="summary-row total-row">
+                    <span class="summary-label" style="color: var(--text-dark); font-weight: 700;">Total</span>
+                    <span class="summary-value" id="totalAmount">₱148</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bottom Action -->
+        <div class="bottom-action">
+            <button class="btn-confirm" onclick="confirmBooking()">
+                <span>Confirm Details</span>
+                <i class="fa-solid fa-arrow-right"></i>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        let itemCount = 1;
+        let photoCount = 0;
+        let currentPriority = 'standard';
+        const basePrice = 128;
+        const insurance = 20;
+
+        // Add new item row
+        function addItem() {
+            itemCount++;
+            const itemList = document.getElementById('itemList');
+            const newItem = document.createElement('div');
+            newItem.className = 'item-row';
+            newItem.innerHTML = `
+                <div class="item-number">${itemCount}</div>
+                <div class="item-inputs">
+                    <input type="text" class="item-input" placeholder="Item name (e.g., Documents, Food, Package)">
+                    <div style="display: flex; gap: 8px;">
+                        <input type="text" class="item-input" placeholder="Description (optional)" style="flex: 1;">
+                        <div class="item-quantity">
+                            <button class="qty-btn" onclick="updateQty(${itemCount}, -1)">-</button>
+                            <input type="number" class="qty-input" value="1" min="1" id="qty${itemCount}" readonly>
+                            <button class="qty-btn" onclick="updateQty(${itemCount}, 1)">+</button>
+                        </div>
+                    </div>
+                </div>
+                <i class="fa-solid fa-trash remove-item" onclick="removeItem(this)"></i>
+            `;
+            itemList.appendChild(newItem);
+            
+            // Animate in
+            newItem.style.opacity = '0';
+            newItem.style.transform = 'translateY(-10px)';
+            setTimeout(() => {
+                newItem.style.transition = 'all 0.3s ease';
+                newItem.style.opacity = '1';
+                newItem.style.transform = 'translateY(0)';
+            }, 10);
+            
+            updateRemoveButtons();
+        }
+
+        // Remove item row
+        function removeItem(btn) {
+            if (document.querySelectorAll('.item-row').length > 1) {
+                btn.closest('.item-row').remove();
+                renumberItems();
+                updateRemoveButtons();
+            }
+        }
+
+        // Renumber items after removal
+        function renumberItems() {
+            const items = document.querySelectorAll('.item-row');
+            items.forEach((item, index) => {
+                item.querySelector('.item-number').textContent = index + 1;
+            });
+            itemCount = items.length;
+        }
+
+        // Update remove button states
+        function updateRemoveButtons() {
+            const items = document.querySelectorAll('.item-row');
+            const removeBtns = document.querySelectorAll('.remove-item');
+            removeBtns.forEach(btn => {
+                if (items.length === 1) {
+                    btn.style.opacity = '0.3';
+                    btn.style.pointerEvents = 'none';
+                } else {
+                    btn.style.opacity = '0.6';
+                    btn.style.pointerEvents = 'auto';
+                }
+            });
+        }
+
+        // Update quantity
+        function updateQty(id, change) {
+            const input = document.getElementById(`qty${id}`);
+            let val = parseInt(input.value) + change;
+            if (val < 1) val = 1;
+            input.value = val;
+        }
+
+        // Handle photo upload
+        function handlePhotoUpload(event) {
+            const files = event.target.files;
+            const grid = document.getElementById('photoGrid');
+            
+            Array.from(files).forEach(file => {
+                if (photoCount >= 3) return;
+                
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const div = document.createElement('div');
+                    div.className = 'photo-item';
+                    div.innerHTML = `
+                        <img src="${e.target.result}" alt="Item photo">
+                        <button class="remove-photo" onclick="removePhoto(this)">×</button>
+                    `;
+                    grid.insertBefore(div, grid.lastElementChild);
+                    photoCount++;
+                    
+                    if (photoCount >= 3) {
+                        grid.lastElementChild.style.display = 'none';
+                    }
+                };
+                reader.readAsDataURL(file);
+            });
+            
+            event.target.value = '';
+        }
+
+        // Remove photo
+        function removePhoto(btn) {
+            btn.parentElement.remove();
+            photoCount--;
+            document.getElementById('photoGrid').lastElementChild.style.display = 'flex';
+        }
+
+        // Toggle instruction chips
+        function toggleChip(chip) {
+            chip.classList.toggle('active');
+            
+            // Add to textarea if selected
+            if (chip.classList.contains('active')) {
+                const textarea = document.getElementById('instructions');
+                const text = chip.textContent.trim();
+                if (!textarea.value.includes(text)) {
+                    textarea.value += (textarea.value ? ', ' : '') + text;
+                    updateCharCount(textarea);
+                }
+            }
+        }
+
+        // Update character count
+        function updateCharCount(textarea) {
+            const count = textarea.value.length;
+            document.getElementById('charCount').textContent = `${count}/200`;
+        }
+
+        // Select priority
+        function selectPriority(card, type) {
+            document.querySelectorAll('.priority-card').forEach(c => c.classList.remove('active'));
+            card.classList.add('active');
+            currentPriority = type;
+            
+            const fees = { standard: 0, express: 50, urgent: 100 };
+            document.getElementById('priorityFee').textContent = `₱${fees[type]}`;
+            updateTotal();
+        }
+
+        // Update total price
+        function updateTotal() {
+            const fees = { standard: 0, express: 50, urgent: 100 };
+            const total = basePrice + insurance + fees[currentPriority];
+            document.getElementById('totalAmount').textContent = `₱${total}`;
+        }
+
+        // Confirm booking
+        function confirmBooking() {
+            const btn = document.querySelector('.btn-confirm');
+            const originalContent = btn.innerHTML;
+            
+            // Validate at least one item has name
+            const firstItem = document.getElementById('itemName1');
+            if (!firstItem.value.trim()) {
+                firstItem.focus();
+                firstItem.style.borderColor = 'var(--error)';
+                setTimeout(() => firstItem.style.borderColor = '', 2000);
+                return;
+            }
+            
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Processing...';
+            
+            setTimeout(() => {
+                btn.innerHTML = '<i class="fa-solid fa-check"></i> Details Confirmed!';
+                btn.style.background = 'var(--success)';
+                
+                setTimeout(() => {
+                    window.location.href = 'Fare.html'; // ✅
+                }, 800);
+            }, 1500);
+        }
+
+        // Go back
+        function goBack() {
+            window.history.back();
+        }
+
+        // Initialize
+        updateRemoveButtons();
+    </script>
+</body>
+</html>

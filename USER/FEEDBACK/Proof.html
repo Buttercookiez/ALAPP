@@ -1,0 +1,1133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ALAAP - Proof of Delivery</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --primary-blue: #2563EB;
+            --secondary-blue: #1D4ED8;
+            --light-blue: #EFF6FF;
+            --text-dark: #1F2937;
+            --text-muted: #6B7280;
+            --bg-gray: #F3F4F6;
+            --white: #FFFFFF;
+            --border-color: #E5E7EB;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --danger: #EF4444;
+            --accent-orange: #F97316;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html, body {
+            height: 100%;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        body {
+            background-color: var(--bg-gray);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .app-container {
+            width: 100%;
+            height: 100%;
+            max-width: 100%;
+            max-height: 100%;
+            background-color: var(--bg-gray);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        @media (min-width: 415px) {
+            body {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                padding: 20px;
+            }
+            
+            .app-container {
+                width: 375px;
+                height: 812px;
+                max-width: 375px;
+                max-height: 812px;
+                border-radius: 40px;
+                box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            }
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, var(--secondary-blue), var(--primary-blue));
+            padding: 50px 24px 24px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .header-content {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .back-btn {
+            width: 40px;
+            height: 40px;
+            background: rgba(255,255,255,0.2);
+            border: none;
+            border-radius: 12px;
+            color: var(--white);
+            font-size: 18px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .back-btn:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateX(-3px);
+        }
+
+        .header-title {
+            color: var(--white);
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        /* Scrollable Content */
+        .content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            padding-bottom: 140px;
+        }
+
+        .content::-webkit-scrollbar {
+            width: 0;
+        }
+
+        /* Delivery Info Card */
+        .delivery-card {
+            background: var(--white);
+            border-radius: 24px;
+            padding: 20px;
+            margin-bottom: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            animation: slideUp 0.5s ease both;
+        }
+
+        .delivery-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .delivery-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, var(--light-blue), #DBEAFE);
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: var(--primary-blue);
+        }
+
+        .delivery-info h3 {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 2px;
+        }
+
+        .delivery-info p {
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .booking-id {
+            display: inline-block;
+            background: var(--bg-gray);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-top: 4px;
+        }
+
+        /* Photo Capture Section */
+        .photo-section {
+            background: var(--white);
+            border-radius: 24px;
+            padding: 24px;
+            margin-bottom: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            animation: slideUp 0.5s ease 0.1s both;
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .section-title i {
+            color: var(--primary-blue);
+        }
+
+        .photo-requirement {
+            background: linear-gradient(135deg, #FEF3C7, #FDE68A);
+            border-radius: 12px;
+            padding: 12px 16px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .photo-requirement i {
+            font-size: 20px;
+            color: var(--warning);
+        }
+
+        .photo-requirement p {
+            font-size: 13px;
+            color: var(--text-dark);
+            line-height: 1.4;
+        }
+
+        .photo-upload-area {
+            border: 3px dashed var(--border-color);
+            border-radius: 20px;
+            padding: 40px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: var(--bg-gray);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .photo-upload-area:hover {
+            border-color: var(--primary-blue);
+            background: var(--light-blue);
+        }
+
+        .photo-upload-area.has-photo {
+            border-style: solid;
+            border-color: var(--success);
+            background: var(--white);
+            padding: 0;
+        }
+
+        .upload-icon {
+            width: 80px;
+            height: 80px;
+            background: var(--white);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 16px;
+            font-size: 32px;
+            color: var(--primary-blue);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+
+        .photo-upload-area:hover .upload-icon {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(37, 99, 235, 0.2);
+        }
+
+        .upload-text {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 8px;
+        }
+
+        .upload-subtext {
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .photo-preview {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+            border-radius: 16px;
+            display: none;
+        }
+
+        .photo-upload-area.has-photo .photo-preview {
+            display: block;
+        }
+
+        .photo-upload-area.has-photo .upload-content {
+            display: none;
+        }
+
+        .photo-actions {
+            display: none;
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            gap: 8px;
+        }
+
+        .photo-upload-area.has-photo .photo-actions {
+            display: flex;
+        }
+
+        .photo-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+
+        .photo-btn.retake {
+            background: var(--white);
+            color: var(--text-dark);
+        }
+
+        .photo-btn.retake:hover {
+            background: var(--bg-gray);
+            transform: scale(1.1);
+        }
+
+        .photo-btn.delete {
+            background: var(--danger);
+            color: var(--white);
+        }
+
+        .photo-btn.delete:hover {
+            background: #DC2626;
+            transform: scale(1.1);
+        }
+
+        /* Confirmation Section */
+        .confirmation-section {
+            background: var(--white);
+            border-radius: 24px;
+            padding: 24px;
+            margin-bottom: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            animation: slideUp 0.5s ease 0.2s both;
+        }
+
+        .recipient-info {
+            background: var(--bg-gray);
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 20px;
+        }
+
+        .recipient-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .recipient-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .recipient-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--white);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            color: var(--primary-blue);
+        }
+
+        .recipient-details h4 {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 2px;
+        }
+
+        .recipient-details p {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        /* Signature Pad */
+        .signature-section {
+            margin-bottom: 20px;
+        }
+
+        .signature-label {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .signature-pad {
+            width: 100%;
+            height: 150px;
+            background: var(--bg-gray);
+            border: 2px solid var(--border-color);
+            border-radius: 16px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .signature-pad canvas {
+            width: 100%;
+            height: 100%;
+            cursor: crosshair;
+        }
+
+        .signature-placeholder {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            color: var(--text-muted);
+            pointer-events: none;
+        }
+
+        .signature-placeholder i {
+            font-size: 32px;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .signature-placeholder span {
+            font-size: 13px;
+        }
+
+        .signature-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 12px;
+        }
+
+        .btn-signature {
+            flex: 1;
+            padding: 10px;
+            border: 1.5px solid var(--border-color);
+            background: var(--white);
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .btn-signature:hover {
+            border-color: var(--primary-blue);
+            color: var(--primary-blue);
+            background: var(--light-blue);
+        }
+
+        /* Checklist */
+        .checklist {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .check-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 16px;
+            background: var(--bg-gray);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .check-item:hover {
+            background: var(--light-blue);
+            border-color: var(--primary-blue);
+        }
+
+        .check-item.active {
+            background: #D1FAE5;
+            border-color: var(--success);
+        }
+
+        .check-box {
+            width: 24px;
+            height: 24px;
+            border: 2px solid var(--text-muted);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            color: var(--white);
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+        }
+
+        .check-item.active .check-box {
+            background: var(--success);
+            border-color: var(--success);
+        }
+
+        .check-text {
+            font-size: 14px;
+            color: var(--text-dark);
+            font-weight: 500;
+        }
+
+        .check-item.active .check-text {
+            color: var(--success);
+        }
+
+        /* Bottom Action */
+        .bottom-action {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--white);
+            padding: 16px 24px 30px;
+            border-top: 1px solid var(--border-color);
+            box-shadow: 0 -4px 20px rgba(0,0,0,0.08);
+            z-index: 100;
+        }
+
+        .btn-complete {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, var(--success), #059669);
+            color: var(--white);
+            border: none;
+            border-radius: 16px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 8px 20px rgba(16, 185, 129, 0.3);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-complete:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 24px rgba(16, 185, 129, 0.4);
+        }
+
+        .btn-complete:disabled {
+            background: var(--text-muted);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+            opacity: 0.6;
+        }
+
+        /* Success Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .success-modal {
+            background: var(--white);
+            border-radius: 24px;
+            padding: 40px 32px;
+            text-align: center;
+            max-width: 320px;
+            width: 90%;
+            transform: scale(0.8);
+            transition: transform 0.3s ease;
+        }
+
+        .modal-overlay.active .success-modal {
+            transform: scale(1);
+        }
+
+        .success-icon-large {
+            width: 100px;
+            height: 100px;
+            background: var(--success);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 48px;
+            color: white;
+            animation: scaleIn 0.5s ease 0.1s both;
+            box-shadow: 0 10px 30px rgba(16, 185, 129, 0.3);
+        }
+
+        .modal-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 8px;
+        }
+
+        .modal-text {
+            font-size: 14px;
+            color: var(--text-muted);
+            margin-bottom: 24px;
+            line-height: 1.6;
+        }
+
+        .delivery-summary {
+            background: var(--bg-gray);
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 24px;
+            text-align: left;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+            margin-bottom: 8px;
+        }
+
+        .summary-row:last-child {
+            margin-bottom: 0;
+            padding-top: 8px;
+            border-top: 1px solid var(--border-color);
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        .btn-done {
+            width: 100%;
+            padding: 16px;
+            background: var(--success);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-done:hover {
+            background: #059669;
+        }
+
+        /* Hidden file input */
+        #cameraInput {
+            display: none;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes scaleIn {
+            from { transform: scale(0); }
+            to { transform: scale(1); }
+        }
+
+        /* Photo timestamp */
+        .photo-timestamp {
+            position: absolute;
+            bottom: 12px;
+            left: 12px;
+            background: rgba(0,0,0,0.6);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 500;
+            display: none;
+        }
+
+        .photo-upload-area.has-photo .photo-timestamp {
+            display: block;
+        }
+    </style>
+<base target="_blank">
+</head>
+<body>
+
+    <div class="app-container">
+        
+        <!-- Header -->
+        <div class="header">
+            <div class="header-content">
+                <button class="back-btn" onclick="goBack()">
+                    <i class="fa-solid fa-arrow-left"></i>
+                </button>
+                <h1 class="header-title">Proof of Delivery</h1>
+            </div>
+        </div>
+
+        <!-- Scrollable Content -->
+        <div class="content">
+            
+            <!-- Delivery Info -->
+            <div class="delivery-card">
+                <div class="delivery-header">
+                    <div class="delivery-icon">
+                        <i class="fa-solid fa-box"></i>
+                    </div>
+                    <div class="delivery-info">
+                        <h3>Package Delivery</h3>
+                        <p>2 items • Express</p>
+                        <span class="booking-id">#ALA-2024-0892</span>
+                    </div>
+                </div>
+                
+                <div class="recipient-row">
+                    <div class="recipient-icon">
+                        <i class="fa-solid fa-user"></i>
+                    </div>
+                    <div class="recipient-details">
+                        <h4>Recipient: Maria Santos</h4>
+                        <p>SM City Urdaneta, Urdaneta City</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Photo Capture Section -->
+            <div class="photo-section">
+                <div class="section-title">
+                    <i class="fa-solid fa-camera"></i>
+                    Delivery Photo
+                </div>
+                
+                <div class="photo-requirement">
+                    <i class="fa-solid fa-circle-info"></i>
+                    <p>Please take a clear photo of the delivered package at the drop-off location</p>
+                </div>
+
+                <div class="photo-upload-area" id="photoUploadArea" onclick="triggerCamera()">
+                    <div class="upload-content">
+                        <div class="upload-icon">
+                            <i class="fa-solid fa-camera"></i>
+                        </div>
+                        <div class="upload-text">Take Photo</div>
+                        <div class="upload-subtext">Tap to open camera</div>
+                    </div>
+                    
+                    <img class="photo-preview" id="photoPreview" alt="Delivery photo">
+                    
+                    <div class="photo-actions">
+                        <button class="photo-btn retake" onclick="event.stopPropagation(); triggerCamera()" title="Retake">
+                            <i class="fa-solid fa-camera"></i>
+                        </button>
+                        <button class="photo-btn delete" onclick="event.stopPropagation(); deletePhoto()" title="Delete">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="photo-timestamp" id="photoTimestamp"></div>
+                </div>
+
+                <input type="file" id="cameraInput" accept="image/*" capture="environment" onchange="handlePhotoCapture(event)">
+            </div>
+
+            <!-- Confirmation Section -->
+            <div class="confirmation-section">
+                <div class="section-title">
+                    <i class="fa-solid fa-clipboard-check"></i>
+                    Completion Confirmation
+                </div>
+
+                <!-- Recipient Verification -->
+                <div class="recipient-info">
+                    <div class="recipient-row">
+                        <div class="recipient-icon">
+                            <i class="fa-solid fa-signature"></i>
+                        </div>
+                        <div class="recipient-details">
+                            <h4>Recipient Signature</h4>
+                            <p>Required for verification</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Signature Pad -->
+                <div class="signature-section">
+                    <div class="signature-pad" id="signaturePad">
+                        <canvas id="signatureCanvas"></canvas>
+                        <div class="signature-placeholder" id="signaturePlaceholder">
+                            <i class="fa-solid fa-signature"></i>
+                            <span>Sign here</span>
+                        </div>
+                    </div>
+                    <div class="signature-actions">
+                        <button class="btn-signature" onclick="clearSignature()">
+                            <i class="fa-solid fa-eraser"></i> Clear
+                        </button>
+                        <button class="btn-signature" onclick="confirmSignature()" id="confirmSignBtn">
+                            <i class="fa-solid fa-check"></i> Confirm
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Delivery Checklist -->
+                <div class="section-title" style="margin-top: 24px;">
+                    <i class="fa-solid fa-list-check"></i>
+                    Delivery Checklist
+                </div>
+                
+                <div class="checklist">
+                    <div class="check-item" onclick="toggleCheck(this, 'item1')">
+                        <div class="check-box">
+                            <i class="fa-solid fa-check"></i>
+                        </div>
+                        <span class="check-text">Package delivered to correct recipient</span>
+                    </div>
+                    
+                    <div class="check-item" onclick="toggleCheck(this, 'item2')">
+                        <div class="check-box">
+                            <i class="fa-solid fa-check"></i>
+                        </div>
+                        <span class="check-text">Package condition verified (no damage)</span>
+                    </div>
+                    
+                    <div class="check-item" onclick="toggleCheck(this, 'item3')">
+                        <div class="check-box">
+                            <i class="fa-solid fa-check"></i>
+                        </div>
+                        <span class="check-text">Recipient confirmed item quantity</span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Bottom Action -->
+        <div class="bottom-action">
+            <button class="btn-complete" id="completeBtn" onclick="completeDelivery()" disabled>
+                <i class="fa-solid fa-check-circle"></i>
+                <span>Complete Delivery</span>
+            </button>
+        </div>
+
+    </div>
+
+    <!-- Success Modal -->
+    <div class="modal-overlay" id="successModal">
+        <div class="success-modal">
+            <div class="success-icon-large">
+                <i class="fa-solid fa-check"></i>
+            </div>
+            <div class="modal-title">Delivery Complete!</div>
+            <div class="modal-text">The package has been successfully delivered and verified.</div>
+            
+            <div class="delivery-summary">
+                <div class="summary-row">
+                    <span>Delivery ID</span>
+                    <span>#ALA-2024-0892</span>
+                </div>
+                <div class="summary-row">
+                    <span>Delivered at</span>
+                    <span id="deliveryTime">--</span>
+                </div>
+                <div class="summary-row">
+                    <span>Recipient</span>
+                    <span>Maria Santos</span>
+                </div>
+                <div class="summary-row">
+                    <span>Status</span>
+                    <span style="color: var(--success);">Completed ✓</span>
+                </div>
+            </div>
+            
+            <button class="btn-done" onclick="goToReceipt()">View Receipt</button>
+        </div>
+    </div>
+
+    <script>
+        // Photo handling
+        let hasPhoto = false;
+        let hasSignature = false;
+        let checkedItems = new Set();
+
+        function triggerCamera() {
+            document.getElementById('cameraInput').click();
+        }
+
+        function handlePhotoCapture(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const preview = document.getElementById('photoPreview');
+                    const uploadArea = document.getElementById('photoUploadArea');
+                    const timestamp = document.getElementById('photoTimestamp');
+                    
+                    preview.src = e.target.result;
+                    uploadArea.classList.add('has-photo');
+                    
+                    // Add timestamp
+                    const now = new Date();
+                    timestamp.textContent = now.toLocaleString('en-US', {
+                        month: 'short',
+                        day: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                    });
+                    
+                    hasPhoto = true;
+                    checkCompleteButton();
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function deletePhoto() {
+            const preview = document.getElementById('photoPreview');
+            const uploadArea = document.getElementById('photoUploadArea');
+            const cameraInput = document.getElementById('cameraInput');
+            
+            preview.src = '';
+            uploadArea.classList.remove('has-photo');
+            cameraInput.value = '';
+            
+            hasPhoto = false;
+            checkCompleteButton();
+        }
+
+        // Signature pad
+        const canvas = document.getElementById('signatureCanvas');
+        const ctx = canvas.getContext('2d');
+        let isDrawing = false;
+        let hasDrawn = false;
+
+        // Set canvas size
+        function resizeCanvas() {
+            const rect = canvas.parentElement.getBoundingClientRect();
+            canvas.width = rect.width;
+            canvas.height = rect.height;
+            ctx.strokeStyle = '#2563EB';
+            ctx.lineWidth = 2;
+            ctx.lineCap = 'round';
+        }
+
+        window.addEventListener('load', resizeCanvas);
+        window.addEventListener('resize', resizeCanvas);
+
+        // Drawing functions
+        function startDrawing(e) {
+            isDrawing = true;
+            const pos = getPos(e);
+            ctx.beginPath();
+            ctx.moveTo(pos.x, pos.y);
+            document.getElementById('signaturePlaceholder').style.display = 'none';
+        }
+
+        function draw(e) {
+            if (!isDrawing) return;
+            const pos = getPos(e);
+            ctx.lineTo(pos.x, pos.y);
+            ctx.stroke();
+            hasDrawn = true;
+        }
+
+        function stopDrawing() {
+            isDrawing = false;
+            ctx.beginPath();
+        }
+
+        function getPos(e) {
+            const rect = canvas.getBoundingClientRect();
+            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+            return {
+                x: clientX - rect.left,
+                y: clientY - rect.top
+            };
+        }
+
+        // Event listeners
+        canvas.addEventListener('mousedown', startDrawing);
+        canvas.addEventListener('mousemove', draw);
+        canvas.addEventListener('mouseup', stopDrawing);
+        canvas.addEventListener('mouseout', stopDrawing);
+
+        canvas.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            startDrawing(e);
+        });
+        canvas.addEventListener('touchmove', (e) => {
+            e.preventDefault();
+            draw(e);
+        });
+        canvas.addEventListener('touchend', stopDrawing);
+
+        function clearSignature() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            document.getElementById('signaturePlaceholder').style.display = 'block';
+            hasDrawn = false;
+            hasSignature = false;
+            checkCompleteButton();
+        }
+
+        function confirmSignature() {
+            if (!hasDrawn) {
+                alert('Please provide a signature first');
+                return;
+            }
+            hasSignature = true;
+            checkCompleteButton();
+            
+            // Visual feedback
+            const btn = document.getElementById('confirmSignBtn');
+            btn.innerHTML = '<i class="fa-solid fa-check"></i> Saved';
+            btn.style.background = '#D1FAE5';
+            btn.style.color = 'var(--success)';
+            btn.style.borderColor = 'var(--success)';
+            
+            setTimeout(() => {
+                btn.innerHTML = '<i class="fa-solid fa-check"></i> Confirm';
+                btn.style.background = '';
+                btn.style.color = '';
+                btn.style.borderColor = '';
+            }, 2000);
+        }
+
+        // Checklist
+        function toggleCheck(element, itemId) {
+            element.classList.toggle('active');
+            if (element.classList.contains('active')) {
+                checkedItems.add(itemId);
+            } else {
+                checkedItems.delete(itemId);
+            }
+            checkCompleteButton();
+        }
+
+        // Enable/disable complete button
+        function checkCompleteButton() {
+            const btn = document.getElementById('completeBtn');
+            // Require: photo + signature + all 3 checklist items
+            const allChecked = checkedItems.size === 3;
+            const canComplete = hasPhoto && hasSignature && allChecked;
+            
+            btn.disabled = !canComplete;
+        }
+
+        // Complete delivery - NOW REDIRECTS TO Feedreceipt.html
+        function completeDelivery() {
+            if (!hasPhoto || !hasSignature || checkedItems.size !== 3) {
+                return;
+            }
+            
+            const btn = document.getElementById('completeBtn');
+            btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Processing...';
+            btn.disabled = true;
+            
+            // Set delivery time
+            const now = new Date();
+            document.getElementById('deliveryTime').textContent = now.toLocaleString('en-US', {
+                month: 'short',
+                day: 'numeric',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+            
+            // Show success modal
+            setTimeout(() => {
+                document.getElementById('successModal').classList.add('active');
+                btn.innerHTML = '<i class="fa-solid fa-check-circle"></i> Complete Delivery';
+                btn.disabled = false;
+            }, 1500);
+        }
+
+        // Go to Feedreceipt.html from modal
+        function goToReceipt() {
+            window.location.href = 'Feedreceipt.html';
+        }
+
+        function goBack() {
+            if (hasPhoto || hasSignature || checkedItems.size > 0) {
+                if (confirm('Are you sure? Delivery progress will be lost.')) {
+                    window.history.back();
+                }
+            } else {
+                window.history.back();
+            }
+        }
+
+        // Prevent accidental back
+        window.addEventListener('beforeunload', (e) => {
+            if (hasPhoto || hasSignature || checkedItems.size > 0) {
+                e.preventDefault();
+                e.returnValue = '';
+            }
+        });
+    </script>
+</body>
+</html>

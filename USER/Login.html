@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ALAPP - Food Delivery Alaminos</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+   
+    <style>
+        :root {
+            --primary-blue: #2563EB;
+            --secondary-blue: #4F46E5;
+            --accent-purple: #7C3AED;
+            --text-dark: #111827;
+            --text-muted: #6B7280;
+            --bg-gray: #F3F4F6;
+            --white: #FFFFFF;
+            --border-color: #E5E7EB;
+            --success: #10B981;
+            --error: #EF4444;
+            --input-bg: #F9FAFB;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html, body {
+            height: 100%;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        body {
+            background-color: var(--bg-gray);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Animated Gradient Background for Desktop */
+        @media (min-width: 415px) {
+            body {
+                background: linear-gradient(-45deg, #667eea, #764ba2, #f093fb, #f5576c);
+                background-size: 400% 400%;
+                animation: gradientBG 15s ease infinite;
+                padding: 20px;
+            }
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Phone-like Container */
+        .app-container {
+            width: 100%;
+            height: 100%;
+            max-width: 100%;
+            max-height: 100%;
+            background-color: var(--white);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        @media (min-width: 415px) {
+            .app-container {
+                width: 375px;
+                height: 812px;
+                max-width: 375px;
+                max-height: 812px;
+                border-radius: 40px;
+                box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+                /* Intro Animation */
+                opacity: 0;
+                animation: appIntro 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+                transform: translateY(30px) scale(0.98);
+            }
+        }
+
+        @keyframes appIntro {
+            to { 
+                opacity: 1; 
+                transform: translateY(0) scale(1); 
+            }
+        }
+
+        /* Header Section */
+        .header-section {
+            background: linear-gradient(135deg, var(--secondary-blue), var(--primary-blue));
+            height: 32%;
+            min-height: 240px;
+            padding-top: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            color: var(--white);
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Improved Deep Curve */
+        .header-section::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            width: 100%;
+            height: 50px;
+            background-color: var(--white);
+            border-radius: 50% 50% 0 0 / 100% 100% 0 0;
+            transform: scaleX(1.1);
+        }
+
+        /* Subtle Noise Texture for Premium Feel */
+        .header-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
+            opacity: 0.4;
+            pointer-events: none;
+        }
+
+        .logo-container {
+            font-size: 42px;
+            font-weight: 700;
+            letter-spacing: -1px;
+            margin-bottom: 5px;
+            text-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            animation: fadeInDown 0.8s ease forwards;
+        }
+
+        .tagline {
+            font-size: 13px;
+            opacity: 0.9;
+            font-weight: 300;
+            letter-spacing: 0.5px;
+            animation: fadeIn 1s ease 0.3s forwards;
+            opacity: 0;
+        }
+
+        /* Content Area */
+        .content-section {
+            flex: 1;
+            padding: 10px 24px 20px;
+            display: flex;
+            flex-direction: column;
+            background: var(--white);
+            position: relative;
+            z-index: 10;
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            background-color: var(--bg-gray);
+            border-radius: 16px;
+            padding: 5px;
+            margin-bottom: 25px;
+            position: relative;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 12px 0;
+            text-align: center;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-muted);
+            background: transparent;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            z-index: 2;
+            transition: color 0.3s ease;
+        }
+
+        .tab-btn.active {
+            color: var(--primary-blue);
+        }
+
+        /* Sliding Tab Background */
+        .tab-indicator {
+            position: absolute;
+            top: 5px;
+            left: 5px;
+            width: calc(50% - 5px);
+            height: calc(100% - 10px);
+            background: var(--white);
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            transition: transform 0.4s cubic-bezier(0.4, 0.0, 0.2, 1);
+            z-index: 1;
+        }
+
+        /* Forms Slider Container */
+        .forms-wrapper {
+            overflow: hidden;
+            width: 100%;
+            margin-bottom: 10px;
+        }
+
+        .forms-slider {
+            display: flex;
+            width: 200%;
+            transition: transform 0.5s cubic-bezier(0.4, 0.0, 0.2, 1);
+        }
+
+        .form-area {
+            width: 50%;
+            padding: 5px;
+            opacity: 0.2;
+            transform: scale(0.92);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+
+        .form-area.active {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        /* Modern Input Group with Floating Label */
+        .input-group {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 18px 45px 18px 18px;
+            background-color: var(--input-bg);
+            border: 1px solid transparent;
+            border-radius: 16px;
+            font-size: 15px;
+            color: var(--text-dark);
+            outline: none;
+            transition: all 0.2s ease;
+        }
+
+        /* Floating Label Logic */
+        .input-group label {
+            position: absolute;
+            left: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            font-size: 14px;
+            pointer-events: none;
+            transition: all 0.2s ease;
+            background-color: transparent;
+            padding: 0 4px;
+        }
+
+        .input-group input:focus,
+        .input-group input:not(:placeholder-shown) {
+            background-color: var(--white);
+            border-color: var(--primary-blue);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.08);
+        }
+
+        /* Move label up when focused or has text */
+        .input-group input:focus ~ label,
+        .input-group input:not(:placeholder-shown) ~ label {
+            top: 0;
+            font-size: 12px;
+            color: var(--primary-blue);
+            background-color: var(--white);
+            transform: translateY(-50%);
+            border-radius: 4px;
+        }
+
+        .input-icon {
+            position: absolute;
+            right: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 18px;
+            transition: color 0.3s;
+        }
+
+        .input-icon:hover {
+            color: var(--text-dark);
+        }
+
+        .forgot-password {
+            text-align: right;
+            margin-top: -10px;
+            margin-bottom: 24px;
+        }
+
+        .forgot-password a {
+            color: var(--primary-blue);
+            font-size: 13px;
+            font-weight: 500;
+            text-decoration: none;
+        }
+
+        /* Button Styling & Ripple */
+        .btn-primary {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, var(--primary-blue), var(--secondary-blue));
+            color: var(--white);
+            border: none;
+            border-radius: 16px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 8px 20px rgba(37, 99, 235, 0.25);
+            transition: transform 0.2s;
+            position: relative;
+            overflow: hidden;
+            letter-spacing: 0.5px;
+            -webkit-mask-image: -webkit-radial-gradient(white, black);
+            isolation: isolate;
+        }
+
+        .btn-primary:active {
+            transform: scale(0.98);
+        }
+
+        /* Perfected Ripple Animation */
+        .ripple {
+            position: absolute;
+            background-color: rgba(255, 255, 255, 0.35);
+            border-radius: 50%;
+            transform: scale(0);
+            animation: rippleAnim 0.6s linear forwards;
+            pointer-events: none;
+        }
+
+        @keyframes rippleAnim {
+            to { transform: scale(2.5); opacity: 0; }
+        }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            margin: 25px 0;
+            color: var(--text-muted);
+            font-size: 13px;
+        }
+
+        .divider::before, .divider::after {
+            content: '';
+            flex: 1;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .divider span {
+            padding: 0 15px;
+            background: var(--white);
+        }
+
+        /* Social Buttons */
+        .social-login {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+        }
+
+        .btn-social {
+            flex: 1;
+            height: 52px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: var(--white);
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-social:hover {
+            background-color: #F9FAFB;
+            transform: translateY(-2px);
+            border-color: #D1D5DB;
+        }
+
+        .btn-social i {
+            font-size: 22px;
+        }
+
+        /* Animations */
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* Utility for loading state */
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-top: 2px solid #fff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+            vertical-align: middle;
+        }
+
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+
+    </style>
+
+</head>
+<body>
+
+    <div class="app-container">
+        <div class="header-section">
+            <div class="logo-container">
+                <i class="fa-solid fa-motorcycle" style="margin-right: 10px;"></i>ALAPP
+            </div>
+            <p class="tagline">Delivering Happiness to Alaminos</p>
+        </div>
+
+        <div class="content-section">
+           
+            <div class="tabs">
+                <div class="tab-indicator" id="tab-indicator"></div>
+                <button class="tab-btn active" onclick="switchTab(0)">Sign In</button>
+                <button class="tab-btn" onclick="switchTab(1)">Sign Up</button>
+            </div>
+
+            <div class="forms-wrapper">
+                <div class="forms-slider" id="forms-slider">
+                    
+                    <!-- Sign In Form -->
+                    <div class="form-area active">
+                        <div class="input-group">
+                            <input type="email" id="login-email" placeholder=" " required>
+                            <label for="login-email">Email or Phone</label>
+                            <i class="fa-regular fa-envelope input-icon"></i>
+                        </div>
+                        <div class="input-group">
+                            <input type="password" id="login-pass" placeholder=" " required>
+                            <label for="login-pass">Password</label>
+                            <i class="fa-regular fa-eye-slash input-icon toggle-password"></i>
+                        </div>
+                        <div class="forgot-password">
+                            <a href="#">Forgot Password?</a>
+                        </div>
+                        <button class="btn-primary ripple-btn" onclick="handleAuth(this)">Login</button>
+                    </div>
+
+                    <!-- Sign Up Form -->
+                    <div class="form-area">
+                        <div class="input-group">
+                            <input type="text" id="reg-name" placeholder=" " required>
+                            <label for="reg-name">Full Name</label>
+                            <i class="fa-regular fa-user input-icon"></i>
+                        </div>
+                        <div class="input-group">
+                            <input type="email" id="reg-email" placeholder=" " required>
+                            <label for="reg-email">Email Address</label>
+                            <i class="fa-regular fa-envelope input-icon"></i>
+                        </div>
+                        <div class="input-group">
+                            <input type="password" id="reg-pass" placeholder=" " required>
+                            <label for="reg-pass">Create Password</label>
+                            <i class="fa-regular fa-eye-slash input-icon toggle-password"></i>
+                        </div>
+                        <button class="btn-primary ripple-btn" onclick="handleAuth(this)">Create Account</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="divider">
+                <span>Or continue with</span>
+            </div>
+           
+            <div class="social-login">
+                <button class="btn-social">
+                    <i class="fa-brands fa-google" style="color: #DB4437;"></i>
+                </button>
+                <button class="btn-social">
+                    <i class="fa-brands fa-apple" style="color: #000;"></i>
+                </button>
+                <button class="btn-social">
+                    <i class="fa-brands fa-facebook" style="color: #4267B2;"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Tab Switching Animation with Fade
+        function switchTab(index) {
+            const slider = document.getElementById('forms-slider');
+            const indicator = document.getElementById('tab-indicator');
+            const btns = document.querySelectorAll('.tab-btn');
+            const forms = document.querySelectorAll('.form-area');
+
+            // Slide the Forms wrapper
+            slider.style.transform = index === 0 ? 'translateX(0)' : 'translateX(-50%)';
+            
+            // Slide the Tab Indicator
+            indicator.style.transform = index === 0 ? 'translateX(0)' : 'translateX(100%)'; 
+
+            // Update tab text colors
+            btns.forEach((btn, i) => {
+                if(i === index) btn.classList.add('active');
+                else btn.classList.remove('active');
+            });
+
+            // Trigger Fade + Scale on individual forms
+            forms.forEach((form, i) => {
+                if(i === index) {
+                    form.classList.add('active');
+                } else {
+                    form.classList.remove('active');
+                }
+            });
+        }
+
+        // Password Visibility Toggle
+        document.querySelectorAll('.toggle-password').forEach(icon => {
+            icon.addEventListener('click', function() {
+                const input = this.previousElementSibling.previousElementSibling;
+                if (input.type === "password") {
+                    input.type = "text";
+                    this.classList.remove('fa-eye-slash');
+                    this.classList.add('fa-eye');
+                    this.style.color = 'var(--primary-blue)';
+                } else {
+                    input.type = "password";
+                    this.classList.remove('fa-eye');
+                    this.classList.add('fa-eye-slash');
+                    this.style.color = 'var(--text-muted)';
+                }
+            });
+        });
+
+        // Perfected Ripple Effect Setup
+        document.querySelectorAll('.ripple-btn').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                const existingRipples = this.querySelectorAll('.ripple');
+                existingRipples.forEach(r => r.remove());
+
+                const rect = this.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+
+                const ripple = document.createElement('span');
+                ripple.classList.add('ripple');
+                
+                const diameter = Math.max(rect.width, rect.height);
+                const radius = diameter / 2;
+                
+                ripple.style.width = ripple.style.height = `${diameter}px`;
+                ripple.style.left = `${x - radius}px`;
+                ripple.style.top = `${y - radius}px`;
+
+                this.appendChild(ripple);
+                setTimeout(() => ripple.remove(), 600);
+            });
+        });
+
+        // Login Simulation
+        function handleAuth(btn) {
+    const originalText = btn.innerText;
+    
+    const inputs = btn.parentElement.querySelectorAll('input');
+    let isValid = true;
+    inputs.forEach(input => {
+        if(!input.value) {
+            isValid = false;
+            input.style.borderColor = 'var(--error)';
+            setTimeout(() => input.style.borderColor = 'transparent', 2000);
+        }
+    });
+
+    if(!isValid) return;
+
+    btn.innerHTML = '<span class="spinner"></span>';
+    btn.style.pointerEvents = 'none';
+    
+    setTimeout(() => {
+        btn.innerHTML = 'Success!';
+        btn.style.background = 'var(--success)';
+        
+        setTimeout(() => {
+            window.location.href = 'Dashboard.html'; // ✅ Redirect after success
+        }, 2000);
+    }, 1500);
+}
+    </script>
+</body>
+</html>

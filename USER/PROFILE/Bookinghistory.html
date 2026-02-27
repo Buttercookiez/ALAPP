@@ -1,0 +1,1066 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ALAAP - Booking History</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --primary-blue: #2563EB;
+            --secondary-blue: #1D4ED8;
+            --light-blue: #EFF6FF;
+            --text-dark: #1F2937;
+            --text-muted: #6B7280;
+            --bg-gray: #F3F4F6;
+            --white: #FFFFFF;
+            --border-color: #E5E7EB;
+            --success: #10B981;
+            --danger: #EF4444;
+            --warning: #F59E0B;
+            --accent-orange: #F97316;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html, body {
+            height: 100%;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        body {
+            background-color: var(--bg-gray);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .app-container {
+            width: 100%;
+            height: 100%;
+            max-width: 100%;
+            max-height: 100%;
+            background-color: var(--bg-gray);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        @media (min-width: 415px) {
+            body {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                padding: 20px;
+            }
+            
+            .app-container {
+                width: 375px;
+                height: 812px;
+                max-width: 375px;
+                max-height: 812px;
+                border-radius: 40px;
+                box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            }
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, var(--secondary-blue), var(--primary-blue));
+            padding: 50px 24px 30px;
+            border-radius: 0 0 30px 30px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .back-btn {
+            width: 40px;
+            height: 40px;
+            background: rgba(255,255,255,0.2);
+            border: none;
+            border-radius: 12px;
+            color: var(--white);
+            font-size: 18px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .back-btn:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateX(-3px);
+        }
+
+        .header-title {
+            color: var(--white);
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .filter-btn {
+            width: 40px;
+            height: 40px;
+            background: rgba(255,255,255,0.2);
+            border: none;
+            border-radius: 12px;
+            color: var(--white);
+            font-size: 18px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .filter-btn:hover {
+            background: rgba(255,255,255,0.3);
+        }
+
+        /* Stats Summary */
+        .stats-summary {
+            display: flex;
+            gap: 12px;
+            margin-top: 10px;
+        }
+
+        .stat-box {
+            flex: 1;
+            background: rgba(255,255,255,0.15);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 15px;
+            text-align: center;
+        }
+
+        .stat-box h4 {
+            color: var(--white);
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .stat-box p {
+            color: rgba(255,255,255,0.8);
+            font-size: 11px;
+        }
+
+        /* Tab Navigation */
+        .tab-nav {
+            display: flex;
+            background: var(--white);
+            margin: 20px;
+            border-radius: 16px;
+            padding: 6px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            background: transparent;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .tab-btn.active {
+            background: var(--primary-blue);
+            color: var(--white);
+            box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 0 20px 100px;
+        }
+
+        .main-content::-webkit-scrollbar {
+            display: none;
+        }
+
+        /* Booking List */
+        .booking-list {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .booking-card {
+            background: var(--white);
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            animation: slideUp 0.5s ease both;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .booking-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+            border-color: var(--primary-blue);
+        }
+
+        .booking-card:nth-child(1) { animation-delay: 0.1s; }
+        .booking-card:nth-child(2) { animation-delay: 0.15s; }
+        .booking-card:nth-child(3) { animation-delay: 0.2s; }
+        .booking-card:nth-child(4) { animation-delay: 0.25s; }
+
+        /* Card Header */
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 16px;
+        }
+
+        .service-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .service-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        .service-icon.angkas {
+            background: linear-gradient(135deg, #DBEAFE, #BFDBFE);
+            color: var(--primary-blue);
+        }
+
+        .service-icon.padala {
+            background: linear-gradient(135deg, #FED7AA, #FDBA74);
+            color: var(--accent-orange);
+        }
+
+        .service-icon.pabili {
+            background: linear-gradient(135deg, #D1FAE5, #A7F3D0);
+            color: var(--success);
+        }
+
+        .service-details h4 {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 2px;
+        }
+
+        .service-details p {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .status-badge {
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .status-badge.completed {
+            background: #D1FAE5;
+            color: var(--success);
+        }
+
+        .status-badge.cancelled {
+            background: #FEE2E2;
+            color: var(--danger);
+        }
+
+        /* Route Info */
+        .route-info {
+            background: var(--bg-gray);
+            border-radius: 12px;
+            padding: 14px;
+            margin-bottom: 16px;
+        }
+
+        .route-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 8px;
+        }
+
+        .route-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .route-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .route-dot.pickup {
+            background: var(--success);
+        }
+
+        .route-dot.dropoff {
+            background: var(--danger);
+        }
+
+        .route-text {
+            font-size: 13px;
+            color: var(--text-dark);
+            font-weight: 500;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* Card Footer */
+        .card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 16px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .booking-meta {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .booking-date {
+            font-size: 12px;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .booking-price {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--primary-blue);
+        }
+
+        .booking-price.cancelled {
+            color: var(--text-muted);
+            text-decoration: line-through;
+        }
+
+        /* Action Buttons */
+        .card-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-receipt {
+            padding: 10px 16px;
+            background: var(--light-blue);
+            border: none;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--primary-blue);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-receipt:hover {
+            background: var(--primary-blue);
+            color: var(--white);
+            transform: scale(1.05);
+        }
+
+        .btn-rebook {
+            padding: 10px 16px;
+            background: var(--bg-gray);
+            border: none;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-dark);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-rebook:hover {
+            background: var(--primary-blue);
+            color: var(--white);
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            display: none;
+        }
+
+        .empty-state.active {
+            display: block;
+        }
+
+        .empty-icon {
+            width: 100px;
+            height: 100px;
+            background: var(--bg-gray);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 48px;
+            color: var(--text-muted);
+        }
+
+        .empty-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 8px;
+        }
+
+        .empty-text {
+            font-size: 14px;
+            color: var(--text-muted);
+            margin-bottom: 24px;
+        }
+
+        .btn-browse {
+            padding: 14px 28px;
+            background: var(--primary-blue);
+            color: var(--white);
+            border: none;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-browse:hover {
+            background: var(--secondary-blue);
+            transform: translateY(-2px);
+        }
+
+        /* Bottom Navigation */
+        .bottom-nav {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--white);
+            padding: 15px 30px 30px;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            border-radius: 30px 30px 0 0;
+            box-shadow: 0 -5px 30px rgba(0,0,0,0.1);
+            z-index: 100;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            padding: 5px 15px;
+            border-radius: 15px;
+        }
+
+        .nav-item:hover {
+            background: var(--light-blue);
+        }
+
+        .nav-item.active {
+            color: var(--primary-blue);
+        }
+
+        .nav-item.active i {
+            background: linear-gradient(135deg, var(--primary-blue), var(--secondary-blue));
+            color: var(--white);
+            padding: 10px;
+            border-radius: 12px;
+            margin-top: -20px;
+            box-shadow: 0 5px 15px rgba(37, 99, 235, 0.3);
+        }
+
+        .nav-item i {
+            font-size: 20px;
+            color: var(--text-muted);
+            transition: all 0.3s ease;
+        }
+
+        .nav-item span {
+            font-size: 11px;
+            font-weight: 500;
+            color: var(--text-muted);
+        }
+
+        .nav-item.active span {
+            color: var(--primary-blue);
+            font-weight: 600;
+        }
+
+        /* Filter Modal */
+        .filter-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .filter-modal.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .filter-content {
+            background: var(--white);
+            border-radius: 24px 24px 0 0;
+            padding: 24px;
+            width: 100%;
+            max-width: 375px;
+            transform: translateY(100%);
+            transition: transform 0.3s ease;
+        }
+
+        .filter-modal.active .filter-content {
+            transform: translateY(0);
+        }
+
+        .filter-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .filter-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-dark);
+        }
+
+        .close-filter {
+            width: 36px;
+            height: 36px;
+            border: none;
+            background: var(--bg-gray);
+            border-radius: 10px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .filter-options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .filter-option {
+            padding: 16px;
+            background: var(--bg-gray);
+            border: 2px solid transparent;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .filter-option:hover, .filter-option.active {
+            border-color: var(--primary-blue);
+            background: var(--light-blue);
+        }
+
+        .filter-option i {
+            font-size: 20px;
+            color: var(--primary-blue);
+        }
+
+        .filter-option span {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        .btn-apply-filter {
+            width: 100%;
+            padding: 16px;
+            background: var(--primary-blue);
+            color: var(--white);
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+<base target="_blank">
+</head>
+<body>
+
+    <div class="app-container">
+        
+        <!-- Header -->
+        <div class="header">
+            <div class="header-top">
+                <button class="back-btn" onclick="goBack()">
+                    <i class="fa-solid fa-arrow-left"></i>
+                </button>
+                <h1 class="header-title">Booking History</h1>
+                <button class="filter-btn" onclick="openFilter()">
+                    <i class="fa-solid fa-filter"></i>
+                </button>
+            </div>
+            
+            <div class="stats-summary">
+                <div class="stat-box">
+                    <h4 id="completedCount">12</h4>
+                    <p>Completed</p>
+                </div>
+                <div class="stat-box">
+                    <h4 id="cancelledCount">3</h4>
+                    <p>Cancelled</p>
+                </div>
+                <div class="stat-box">
+                    <h4 id="totalSpent">₱1.2k</h4>
+                    <p>Total Spent</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab Navigation -->
+        <div class="tab-nav">
+            <button class="tab-btn active" onclick="switchTab('all', this)">All</button>
+            <button class="tab-btn" onclick="switchTab('completed', this)">Completed</button>
+            <button class="tab-btn" onclick="switchTab('cancelled', this)">Cancelled</button>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            
+            <!-- Booking List -->
+            <div class="booking-list" id="bookingList">
+                
+                <!-- Completed Booking 1 -->
+                <div class="booking-card" data-status="completed">
+                    <div class="card-header">
+                        <div class="service-info">
+                            <div class="service-icon angkas">
+                                <i class="fa-solid fa-motorcycle"></i>
+                            </div>
+                            <div class="service-details">
+                                <h4>Angkas Ride</h4>
+                                <p>#ALA-2024-0156</p>
+                            </div>
+                        </div>
+                        <span class="status-badge completed">Completed</span>
+                    </div>
+                    
+                    <div class="route-info">
+                        <div class="route-row">
+                            <div class="route-dot pickup"></div>
+                            <span class="route-text">Alaminos City Hall</span>
+                        </div>
+                        <div class="route-row">
+                            <div class="route-dot dropoff"></div>
+                            <span class="route-text">SM City Urdaneta</span>
+                        </div>
+                    </div>
+                    
+                    <div class="card-footer">
+                        <div class="booking-meta">
+                            <span class="booking-date">
+                                <i class="fa-regular fa-calendar"></i>
+                                Feb 27, 2026 • 02:30 PM
+                            </span>
+                            <span class="booking-price">₱149.00</span>
+                        </div>
+                        <div class="card-actions">
+                            <button class="btn-receipt" onclick="viewReceipt('ALA-2024-0156')">
+                                <i class="fa-solid fa-receipt"></i> Receipt
+                            </button>
+                            <button class="btn-rebook" onclick="rebook('angkas')">Rebook</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Completed Booking 2 -->
+                <div class="booking-card" data-status="completed">
+                    <div class="card-header">
+                        <div class="service-info">
+                            <div class="service-icon padala">
+                                <i class="fa-solid fa-box"></i>
+                            </div>
+                            <div class="service-details">
+                                <h4>Padala Delivery</h4>
+                                <p>#ALA-2024-0142</p>
+                            </div>
+                        </div>
+                        <span class="status-badge completed">Completed</span>
+                    </div>
+                    
+                    <div class="route-info">
+                        <div class="route-row">
+                            <div class="route-dot pickup"></div>
+                            <span class="route-text">Hundred Islands</span>
+                        </div>
+                        <div class="route-row">
+                            <div class="route-dot dropoff"></div>
+                            <span class="route-text">Alaminos Doctors Hospital</span>
+                        </div>
+                    </div>
+                    
+                    <div class="card-footer">
+                        <div class="booking-meta">
+                            <span class="booking-date">
+                                <i class="fa-regular fa-calendar"></i>
+                                Feb 25, 2026 • 10:15 AM
+                            </span>
+                            <span class="booking-price">₱198.00</span>
+                        </div>
+                        <div class="card-actions">
+                            <button class="btn-receipt" onclick="viewReceipt('ALA-2024-0142')">
+                                <i class="fa-solid fa-receipt"></i> Receipt
+                            </button>
+                            <button class="btn-rebook" onclick="rebook('padala')">Rebook</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Cancelled Booking -->
+                <div class="booking-card" data-status="cancelled">
+                    <div class="card-header">
+                        <div class="service-info">
+                            <div class="service-icon pabili">
+                                <i class="fa-solid fa-basket-shopping"></i>
+                            </div>
+                            <div class="service-details">
+                                <h4>Pabili Service</h4>
+                                <p>#ALA-2024-0138</p>
+                            </div>
+                        </div>
+                        <span class="status-badge cancelled">Cancelled</span>
+                    </div>
+                    
+                    <div class="route-info">
+                        <div class="route-row">
+                            <div class="route-dot pickup"></div>
+                            <span class="route-text">7-Eleven Alaminos</span>
+                        </div>
+                        <div class="route-row">
+                            <div class="route-dot dropoff"></div>
+                            <span class="route-text">Brgy. Poblacion</span>
+                        </div>
+                    </div>
+                    
+                    <div class="card-footer">
+                        <div class="booking-meta">
+                            <span class="booking-date">
+                                <i class="fa-regular fa-calendar"></i>
+                                Feb 24, 2026 • 04:45 PM
+                            </span>
+                            <span class="booking-price cancelled">₱85.00</span>
+                        </div>
+                        <div class="card-actions">
+                            <button class="btn-rebook" onclick="rebook('pabili')">Rebook</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Completed Booking 3 -->
+                <div class="booking-card" data-status="completed">
+                    <div class="card-header">
+                        <div class="service-info">
+                            <div class="service-icon angkas">
+                                <i class="fa-solid fa-motorcycle"></i>
+                            </div>
+                            <div class="service-details">
+                                <h4>Angkas Ride</h4>
+                                <p>#ALA-2024-0125</p>
+                            </div>
+                        </div>
+                        <span class="status-badge completed">Completed</span>
+                    </div>
+                    
+                    <div class="route-info">
+                        <div class="route-row">
+                            <div class="route-dot pickup"></div>
+                            <span class="route-text">University of Luzon</span>
+                        </div>
+                        <div class="route-row">
+                            <div class="route-dot dropoff"></div>
+                            <span class="route-text">City Plaza</span>
+                        </div>
+                    </div>
+                    
+                    <div class="card-footer">
+                        <div class="booking-meta">
+                            <span class="booking-date">
+                                <i class="fa-regular fa-calendar"></i>
+                                Feb 22, 2026 • 08:30 AM
+                            </span>
+                            <span class="booking-price">₱75.00</span>
+                        </div>
+                        <div class="card-actions">
+                            <button class="btn-receipt" onclick="viewReceipt('ALA-2024-0125')">
+                                <i class="fa-solid fa-receipt"></i> Receipt
+                            </button>
+                            <button class="btn-rebook" onclick="rebook('angkas')">Rebook</button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Empty State -->
+            <div class="empty-state" id="emptyState">
+                <div class="empty-icon">
+                    <i class="fa-solid fa-clipboard-list"></i>
+                </div>
+                <div class="empty-title">No bookings found</div>
+                <div class="empty-text">You don't have any bookings in this category yet.</div>
+                <button class="btn-browse" onclick="goToHome()">Book a Ride</button>
+            </div>
+
+        </div>
+
+        <!-- Bottom Navigation -->
+        <div class="bottom-nav">
+            <div class="nav-item" onclick="goToHome()">
+                <i class="fa-solid fa-house"></i>
+                <span>Home</span>
+            </div>
+            <div class="nav-item active" onclick="goToHistory()">
+                <i class="fa-solid fa-clipboard-list"></i>
+                <span>Bookings</span>
+            </div>
+            <div class="nav-item" onclick="goToWallet()">
+                <i class="fa-solid fa-wallet"></i>
+                <span>Wallet</span>
+            </div>
+            <div class="nav-item" onclick="goToProfile()">
+                <i class="fa-solid fa-user"></i>
+                <span>Profile</span>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Filter Modal -->
+    <div class="filter-modal" id="filterModal">
+        <div class="filter-content">
+            <div class="filter-header">
+                <h3 class="filter-title">Filter Bookings</h3>
+                <button class="close-filter" onclick="closeFilter()">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            
+            <div class="filter-options">
+                <div class="filter-option active" onclick="selectFilter(this, 'all')">
+                    <i class="fa-solid fa-layer-group"></i>
+                    <span>All Bookings</span>
+                </div>
+                <div class="filter-option" onclick="selectFilter(this, 'completed')">
+                    <i class="fa-solid fa-circle-check"></i>
+                    <span>Completed Only</span>
+                </div>
+                <div class="filter-option" onclick="selectFilter(this, 'cancelled')">
+                    <i class="fa-solid fa-circle-xmark"></i>
+                    <span>Cancelled Only</span>
+                </div>
+                <div class="filter-option" onclick="selectFilter(this, 'this-week')">
+                    <i class="fa-solid fa-calendar-week"></i>
+                    <span>This Week</span>
+                </div>
+                <div class="filter-option" onclick="selectFilter(this, 'this-month')">
+                    <i class="fa-solid fa-calendar-days"></i>
+                    <span>This Month</span>
+                </div>
+            </div>
+            
+            <button class="btn-apply-filter" onclick="applyFilter()">Apply Filter</button>
+        </div>
+    </div>
+
+    <script>
+        // Tab switching
+        function switchTab(filter, btn) {
+            // Update tab buttons
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            
+            // Filter bookings
+            const cards = document.querySelectorAll('.booking-card');
+            let visibleCount = 0;
+            
+            cards.forEach(card => {
+                const status = card.getAttribute('data-status');
+                if (filter === 'all' || status === filter) {
+                    card.style.display = 'block';
+                    visibleCount++;
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+            
+            // Show/hide empty state
+            const emptyState = document.getElementById('emptyState');
+            if (visibleCount === 0) {
+                emptyState.classList.add('active');
+            } else {
+                emptyState.classList.remove('active');
+            }
+        }
+
+        // View receipt
+        function viewReceipt(bookingId) {
+            // Store booking ID and redirect to receipt page
+            localStorage.setItem('receiptBookingId', bookingId);
+            window.location.href = 'Feedreceipt.html';
+        }
+
+        // Rebook service
+        function rebook(service) {
+            localStorage.setItem('rebookService', service);
+            window.location.href = 'Pickup.html';
+        }
+
+        // Filter modal
+        function openFilter() {
+            document.getElementById('filterModal').classList.add('active');
+        }
+
+        function closeFilter() {
+            document.getElementById('filterModal').classList.remove('active');
+        }
+
+        function selectFilter(element, filterType) {
+            document.querySelectorAll('.filter-option').forEach(o => o.classList.remove('active'));
+            element.classList.add('active');
+        }
+
+        function applyFilter() {
+            closeFilter();
+            // Apply selected filter logic here
+            showToast('Filter applied');
+        }
+
+        // Navigation
+        function goToHome() {
+            window.location.href = 'Dashboard.html';
+        }
+
+        function goToHistory() {
+            // Already on history page
+        }
+
+        function goToWallet() {
+            window.location.href = 'Wallet.html';
+        }
+
+        function goToProfile() {
+            window.location.href = 'Profile.html';
+        }
+
+        function goBack() {
+            window.history.back();
+        }
+
+        // Toast notification
+        function showToast(message) {
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.textContent = message;
+            toast.style.cssText = `
+                position: fixed;
+                bottom: 100px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: var(--primary-blue);
+                color: white;
+                padding: 12px 24px;
+                border-radius: 25px;
+                font-size: 14px;
+                font-weight: 500;
+                z-index: 1000;
+                animation: slideUp 0.3s ease;
+            `;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.remove();
+            }, 3000);
+        }
+
+        // Close modal on outside click
+        document.getElementById('filterModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeFilter();
+            }
+        });
+
+        // Initialize stats
+        function updateStats() {
+            const completed = document.querySelectorAll('.booking-card[data-status="completed"]').length;
+            const cancelled = document.querySelectorAll('.booking-card[data-status="cancelled"]').length;
+            
+            document.getElementById('completedCount').textContent = completed;
+            document.getElementById('cancelledCount').textContent = cancelled;
+        }
+
+        window.onload = updateStats;
+    </script>
+</body>
+</html>

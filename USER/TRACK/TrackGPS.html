@@ -1,0 +1,897 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ALAPP - Track Rider</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+   
+    <style>
+        :root {
+            --primary-blue: #2563EB;
+            --secondary-blue: #1D4ED8;
+            --light-blue: #EFF6FF;
+            --text-dark: #1F2937;
+            --text-muted: #6B7280;
+            --bg-gray: #F3F4F6;
+            --white: #FFFFFF;
+            --border-color: #E5E7EB;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --accent-orange: #F97316;
+            --shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html, body {
+            height: 100%;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        body {
+            background-color: var(--bg-gray);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        @media (min-width: 415px) {
+            body {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                padding: 20px;
+            }
+        }
+
+        .app-container {
+            width: 100%;
+            height: 100%;
+            max-width: 100%;
+            max-height: 100%;
+            background-color: var(--bg-gray);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        @media (min-width: 415px) {
+            .app-container {
+                width: 375px;
+                height: 812px;
+                max-width: 375px;
+                max-height: 812px;
+                border-radius: 40px;
+                box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            }
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, var(--secondary-blue), var(--primary-blue));
+            padding: 50px 20px 20px;
+            position: relative;
+            z-index: 100;
+        }
+
+        .header-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .back-btn {
+            width: 40px;
+            height: 40px;
+            background: rgba(255,255,255,0.2);
+            border: none;
+            border-radius: 12px;
+            color: var(--white);
+            font-size: 18px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .back-btn:hover {
+            background: rgba(255,255,255,0.3);
+        }
+
+        .header-title {
+            color: var(--white);
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .icon-btn {
+            width: 40px;
+            height: 40px;
+            background: rgba(255,255,255,0.2);
+            border: none;
+            border-radius: 12px;
+            color: var(--white);
+            font-size: 18px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .icon-btn:hover {
+            background: rgba(255,255,255,0.3);
+        }
+
+        /* ETA Card */
+        .eta-card {
+            background: var(--white);
+            margin: -30px 16px 16px;
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: var(--shadow);
+            position: relative;
+            z-index: 101;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            animation: slideUp 0.5s ease;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .eta-time {
+            text-align: center;
+            min-width: 80px;
+        }
+
+        .eta-minutes {
+            font-size: 36px;
+            font-weight: 800;
+            color: var(--primary-blue);
+            line-height: 1;
+        }
+
+        .eta-label {
+            font-size: 12px;
+            color: var(--text-muted);
+            font-weight: 500;
+            margin-top: 4px;
+        }
+
+        .eta-divider {
+            width: 1px;
+            height: 50px;
+            background: var(--border-color);
+        }
+
+        .eta-info {
+            flex: 1;
+        }
+
+        .eta-status {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .live-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success);
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .live-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--success);
+            border-radius: 50%;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.2); }
+        }
+
+        .eta-address {
+            font-size: 13px;
+            color: var(--text-muted);
+            line-height: 1.4;
+        }
+
+        /* Map Container */
+        .map-container {
+            flex: 1;
+            position: relative;
+            background: #e5e7eb;
+        }
+
+        #map {
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        /* Rider Card (Bottom Sheet) */
+        .rider-sheet {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--white);
+            border-radius: 24px 24px 0 0;
+            padding: 20px;
+            box-shadow: 0 -4px 20px rgba(0,0,0,0.1);
+            z-index: 102;
+            transform: translateY(0);
+            transition: transform 0.3s ease;
+        }
+
+        .rider-sheet.collapsed {
+            transform: translateY(calc(100% - 80px));
+        }
+
+        .drag-handle {
+            width: 40px;
+            height: 4px;
+            background: var(--border-color);
+            border-radius: 2px;
+            margin: 0 auto 16px;
+            cursor: pointer;
+        }
+
+        .rider-header {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 20px;
+        }
+
+        .rider-avatar {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-blue), var(--secondary-blue));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            position: relative;
+        }
+
+        .rider-avatar img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .rider-status {
+            position: absolute;
+            bottom: 2px;
+            right: 2px;
+            width: 14px;
+            height: 14px;
+            background: var(--success);
+            border: 2px solid white;
+            border-radius: 50%;
+        }
+
+        .rider-info {
+            flex: 1;
+        }
+
+        .rider-name {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 2px;
+        }
+
+        .rider-meta {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .rating {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            color: var(--warning);
+            font-weight: 600;
+        }
+
+        .rider-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .action-btn {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            background: var(--white);
+            color: var(--text-dark);
+            font-size: 18px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+
+        .action-btn:hover {
+            background: var(--light-blue);
+            border-color: var(--primary-blue);
+            color: var(--primary-blue);
+        }
+
+        .action-btn.call {
+            background: var(--primary-blue);
+            color: white;
+            border-color: var(--primary-blue);
+        }
+
+        .action-btn.call:hover {
+            background: var(--secondary-blue);
+        }
+
+        /* Trip Progress */
+        .trip-progress {
+            margin-bottom: 20px;
+        }
+
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .progress-bar {
+            height: 8px;
+            background: var(--bg-gray);
+            border-radius: 4px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary-blue), var(--success));
+            border-radius: 4px;
+            transition: width 0.5s ease;
+            position: relative;
+        }
+
+        .progress-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        /* Delivery Steps */
+        .delivery-steps {
+            display: flex;
+            justify-content: space-between;
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .delivery-steps::before {
+            content: '';
+            position: absolute;
+            top: 20px;
+            left: 15%;
+            right: 15%;
+            height: 2px;
+            background: var(--border-color);
+            z-index: 0;
+        }
+
+        .step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .step-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--bg-gray);
+            border: 2px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            color: var(--text-muted);
+            transition: all 0.3s;
+        }
+
+        .step.active .step-icon {
+            background: var(--primary-blue);
+            border-color: var(--primary-blue);
+            color: white;
+            animation: bounce 0.5s;
+        }
+
+        .step.completed .step-icon {
+            background: var(--success);
+            border-color: var(--success);
+            color: white;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .step-label {
+            font-size: 11px;
+            color: var(--text-muted);
+            font-weight: 500;
+            text-align: center;
+        }
+
+        .step.active .step-label {
+            color: var(--primary-blue);
+            font-weight: 600;
+        }
+
+        /* Cancel Button */
+        .cancel-btn {
+            width: 100%;
+            padding: 14px;
+            background: transparent;
+            border: 1.5px solid var(--border-color);
+            border-radius: 12px;
+            color: var(--text-muted);
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .cancel-btn:hover {
+            border-color: var(--error);
+            color: var(--error);
+            background: rgba(239, 68, 68, 0.05);
+        }
+
+        /* Map Controls */
+        .map-controls {
+            position: absolute;
+            right: 16px;
+            top: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 50;
+        }
+
+        .map-btn {
+            width: 44px;
+            height: 44px;
+            background: var(--white);
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            color: var(--text-dark);
+            font-size: 18px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+
+        .map-btn:hover {
+            transform: scale(1.1);
+            color: var(--primary-blue);
+        }
+
+        /* Custom Markers */
+        .rider-marker {
+            width: 50px;
+            height: 50px;
+            position: relative;
+        }
+
+        .rider-marker-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--primary-blue), var(--secondary-blue));
+            border-radius: 50% 50% 50% 0;
+            transform: rotate(-45deg);
+            border: 3px solid white;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%) rotate(-45deg);
+        }
+
+        .rider-marker-icon i {
+            transform: rotate(45deg);
+            color: white;
+            font-size: 18px;
+        }
+
+        .rider-pulse {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: var(--primary-blue);
+            opacity: 0.3;
+            animation: riderPulse 2s infinite;
+        }
+
+        @keyframes riderPulse {
+            0% { transform: scale(1); opacity: 0.3; }
+            100% { transform: scale(2); opacity: 0; }
+        }
+
+        /* Destination Marker */
+        .destination-marker {
+            width: 40px;
+            height: 40px;
+            background: var(--accent-orange);
+            border-radius: 50% 50% 50% 0;
+            transform: rotate(-45deg);
+            border: 3px solid white;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .destination-marker i {
+            transform: rotate(45deg);
+            color: white;
+            font-size: 16px;
+        }
+    </style>
+<base target="_blank">
+</head>
+<body>
+
+    <div class="app-container">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-content">
+                <button class="back-btn" onclick="goBack()">
+                    <i class="fa-solid fa-arrow-left"></i>
+                </button>
+                <h1 class="header-title">Track Your Rider</h1>
+                <div class="header-actions">
+                    <button class="icon-btn" onclick="shareLocation()">
+                        <i class="fa-solid fa-share-nodes"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ETA Card -->
+        <div class="eta-card">
+            <div class="eta-time">
+                <div class="eta-minutes" id="etaMinutes">12</div>
+                <div class="eta-label">mins</div>
+            </div>
+            <div class="eta-divider"></div>
+            <div class="eta-info">
+                <div class="eta-status">
+                    <span>On the way</span>
+                    <span class="live-indicator">
+                        <span class="live-dot"></span>
+                        LIVE
+                    </span>
+                </div>
+                <div class="eta-address" id="etaAddress">Rider is approaching your location</div>
+            </div>
+        </div>
+
+        <!-- Map Container -->
+        <div class="map-container">
+            <div id="map"></div>
+            
+            <!-- Map Controls -->
+            <div class="map-controls">
+                <button class="map-btn" onclick="recenterMap()" title="Recenter">
+                    <i class="fa-solid fa-crosshairs"></i>
+                </button>
+                <button class="map-btn" onclick="toggleTraffic()" title="Traffic">
+                    <i class="fa-solid fa-traffic-light"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Rider Sheet -->
+        <div class="rider-sheet" id="riderSheet">
+            <div class="drag-handle" onclick="toggleSheet()"></div>
+            
+            <div class="rider-header">
+                <div class="rider-avatar">
+                    <i class="fa-solid fa-user"></i>
+                    <span class="rider-status"></span>
+                </div>
+                <div class="rider-info">
+                    <div class="rider-name">Juan Dela Cruz</div>
+                    <div class="rider-meta">
+                        <span class="rating">
+                            <i class="fa-solid fa-star"></i>
+                            4.9
+                        </span>
+                        <span>•</span>
+                        <span>ABC 1234</span>
+                        <span>•</span>
+                        <span>Honda Beat</span>
+                    </div>
+                </div>
+                <div class="rider-actions">
+                    <button class="action-btn" onclick="messageRider()">
+                        <i class="fa-solid fa-message"></i>
+                    </button>
+                    <button class="action-btn call" onclick="callRider()">
+                        <i class="fa-solid fa-phone"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Trip Progress -->
+            <div class="trip-progress">
+                <div class="progress-label">
+                    <span>Trip Progress</span>
+                    <span id="progressPercent">65%</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill" style="width: 65%"></div>
+                </div>
+            </div>
+
+            <!-- Delivery Steps -->
+            <div class="delivery-steps">
+                <div class="step completed">
+                    <div class="step-icon">
+                        <i class="fa-solid fa-check"></i>
+                    </div>
+                    <span class="step-label">Picked Up</span>
+                </div>
+                <div class="step active">
+                    <div class="step-icon">
+                        <i class="fa-solid fa-motorcycle"></i>
+                    </div>
+                    <span class="step-label">On the Way</span>
+                </div>
+                <div class="step">
+                    <div class="step-icon">
+                        <i class="fa-solid fa-flag-checkered"></i>
+                    </div>
+                    <span class="step-label">Delivered</span>
+                </div>
+            </div>
+
+            <button class="cancel-btn" onclick="cancelTrip()">Cancel Trip</button>
+        </div>
+    </div>
+
+    <script>
+        // Initialize map
+        let map;
+        let riderMarker;
+        let destinationMarker;
+        let routeLine;
+        let riderPosition = [16.1554, 119.9806]; // Alaminos City
+        let destination = [16.1554 + 0.02, 119.9806 + 0.02];
+        
+        // Initialize map
+        function initMap() {
+            map = L.map('map', {
+                zoomControl: false,
+                attributionControl: false
+            }).setView(riderPosition, 15);
+
+            // Add OpenStreetMap tiles
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 19,
+            }).addTo(map);
+
+            // Add rider marker with custom icon
+            const riderIcon = L.divIcon({
+                className: 'custom-rider-icon',
+                html: `
+                    <div class="rider-marker">
+                        <div class="rider-pulse"></div>
+                        <div class="rider-marker-icon">
+                            <i class="fa-solid fa-motorcycle"></i>
+                        </div>
+                    </div>
+                `,
+                iconSize: [50, 50],
+                iconAnchor: [25, 50]
+            });
+
+            riderMarker = L.marker(riderPosition, {icon: riderIcon}).addTo(map);
+
+            // Add destination marker
+            const destIcon = L.divIcon({
+                className: 'custom-dest-icon',
+                html: `
+                    <div class="destination-marker">
+                        <i class="fa-solid fa-location-dot"></i>
+                    </div>
+                `,
+                iconSize: [40, 40],
+                iconAnchor: [20, 40]
+            });
+
+            destinationMarker = L.marker(destination, {icon: destIcon}).addTo(map);
+
+            // Draw route line
+            routeLine = L.polyline([riderPosition, destination], {
+                color: '#2563EB',
+                weight: 5,
+                opacity: 0.8,
+                dashArray: '10, 10',
+                lineCap: 'round'
+            }).addTo(map);
+
+            // Fit bounds to show both markers
+            map.fitBounds([riderPosition, destination], {padding: [50, 50]});
+        }
+
+        // Simulate rider movement
+        function simulateRiderMovement() {
+            const steps = 20;
+            let currentStep = 0;
+            
+            const interval = setInterval(() => {
+                currentStep++;
+                const progress = currentStep / steps;
+                
+                // Calculate new position
+                const newLat = riderPosition[0] + (destination[0] - riderPosition[0]) * progress;
+                const newLng = riderPosition[1] + (destination[1] - riderPosition[1]) * progress;
+                
+                // Update marker position
+                riderMarker.setLatLng([newLat, newLng]);
+                
+                // Update route line
+                routeLine.setLatLngs([[newLat, newLng], destination]);
+                
+                // Update progress
+                const percent = Math.round(progress * 100);
+                document.getElementById('progressFill').style.width = percent + '%';
+                document.getElementById('progressPercent').textContent = percent + '%';
+                
+                // Update ETA
+                const remainingMins = Math.max(1, Math.round(12 * (1 - progress)));
+                document.getElementById('etaMinutes').textContent = remainingMins;
+                
+                // Update status text
+                if (progress > 0.8) {
+                    document.getElementById('etaAddress').textContent = 'Rider is nearby';
+                }
+                
+                if (currentStep >= steps) {
+                    clearInterval(interval);
+                    document.querySelector('.step.active').classList.remove('active');
+                    document.querySelector('.step:last-child').classList.add('active');
+                    document.getElementById('etaAddress').textContent = 'Rider has arrived';
+                }
+            }, 2000);
+        }
+
+        // Toggle bottom sheet
+        function toggleSheet() {
+            document.getElementById('riderSheet').classList.toggle('collapsed');
+        }
+
+        // Recenter map
+        function recenterMap() {
+            map.flyTo(riderMarker.getLatLng(), 16);
+        }
+
+        // Toggle traffic (mock)
+        function toggleTraffic() {
+            alert('Traffic layer toggled');
+        }
+
+        // Share location
+        function shareLocation() {
+            if (navigator.share) {
+                navigator.share({
+                    title: 'ALAPP Tracking',
+                    text: 'Track my delivery: ALA-2024-08923',
+                    url: window.location.href
+                });
+            } else {
+                alert('Link copied to clipboard!');
+            }
+        }
+
+        // Message rider
+        function messageRider() {
+            window.location.href = 'Customerchat.html';
+        }
+
+        // Call rider
+        function callRider() {
+            window.location.href = 'tel:+639123456789';
+        }
+
+        // Cancel trip
+        function cancelTrip() {
+            if (confirm('Are you sure you want to cancel this trip?')) {
+                alert('Trip cancelled. Refund processed.');
+                window.location.href = 'Dashboard.html';
+            }
+        }
+
+        // Go back
+        function goBack() {
+            window.location.href = 'Bookstatus.html';
+        }
+
+        // Initialize
+        window.onload = function() {
+            initMap();
+            setTimeout(simulateRiderMovement, 2000);
+        };
+    </script>
+</body>
+</html>

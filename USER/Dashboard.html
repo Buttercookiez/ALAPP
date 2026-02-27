@@ -1,0 +1,2281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+   <meta charset="UTF-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+   <title>ALAAP - Customer Home</title>
+   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+   <style>
+       :root {
+           --primary-blue: #2563EB;
+           --secondary-blue: #1D4ED8;
+           --light-blue: #EFF6FF;
+           --text-dark: #1F2937;
+           --text-muted: #6B7280;
+           --bg-gray: #F3F4F6;
+           --white: #FFFFFF;
+           --border-color: #E5E7EB;
+           --success: #10B981;
+           --warning: #F59E0B;
+           --danger: #EF4444;
+           --error: #EF4444;
+           --accent-orange: #F97316;
+           --shadow: 0 4px 20px rgba(0,0,0,0.08);
+           --radius: 16px;
+       }
+
+       * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; -webkit-tap-highlight-color: transparent; }
+
+       html, body { height: 100%; width: 100%; overflow: hidden; }
+
+       body { 
+           background-color: var(--bg-gray); 
+           display: flex; 
+           justify-content: center; 
+           align-items: center; 
+       }
+
+       /* Mobile-first container - always full screen on mobile */
+       .app-container {
+           width: 100%; 
+           height: 100%; 
+           max-width: 100%; 
+           max-height: 100%;
+           background-color: var(--bg-gray);
+           position: relative; 
+           overflow: hidden;
+           display: flex; 
+           flex-direction: column;
+       }
+
+       /* Desktop view - centered phone mockup */
+       @media (min-width: 415px) {
+           body { 
+               background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+               padding: 20px; 
+           }
+           .app-container { 
+               width: 375px; 
+               height: 812px; 
+               max-width: 375px; 
+               max-height: 812px; 
+               border-radius: 40px; 
+               box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); 
+           }
+       }
+
+       /* ─── SLIDE SYSTEM ─── */
+       .screen {
+           position: absolute; 
+           top: 0; 
+           left: 0; 
+           right: 0; 
+           bottom: 0;
+           display: flex; 
+           flex-direction: column;
+           background: var(--bg-gray);
+           transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+           will-change: transform;
+       }
+       .screen.active { transform: translateX(0); }
+       .screen.left   { transform: translateX(-100%); }
+       .screen.right  { transform: translateX(100%); }
+
+       /* ─── HOME SCREEN HEADER (Original Dashboard.html Style) ─── */
+       .home-header {
+           background: linear-gradient(135deg, var(--secondary-blue), var(--primary-blue));
+           padding: 50px 20px 30px;
+           border-radius: 0 0 30px 30px;
+           position: relative;
+           z-index: 10;
+           flex-shrink: 0;
+       }
+       .header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+       .user-info  { display: flex; align-items: center; gap: 12px; }
+       .user-avatar { 
+           width: 50px; 
+           height: 50px; 
+           border-radius: 50%; 
+           background: var(--white); 
+           display: flex; 
+           align-items: center; 
+           justify-content: center; 
+           font-size: 24px; 
+           color: var(--primary-blue); 
+           border: 3px solid rgba(255,255,255,0.3); 
+       }
+       .user-details h3 { color: var(--white); font-size: 18px; font-weight: 600; margin-bottom: 2px; }
+       .user-details p  { color: rgba(255,255,255,0.8); font-size: 12px; }
+       .notification-btn { 
+           width: 45px; 
+           height: 45px; 
+           border-radius: 50%; 
+           background: rgba(255,255,255,0.2); 
+           border: none; 
+           color: var(--white); 
+           font-size: 18px; 
+           cursor: pointer; 
+           position: relative; 
+           transition: all 0.3s ease; 
+           display: flex;
+           align-items: center;
+           justify-content: center;
+       }
+       .notification-btn:hover { background: rgba(255,255,255,0.3); }
+       .notification-badge { 
+           position: absolute; 
+           top: -2px; 
+           right: -2px; 
+           width: 18px; 
+           height: 18px; 
+           background: var(--danger); 
+           border-radius: 50%; 
+           font-size: 10px; 
+           display: flex; 
+           align-items: center; 
+           justify-content: center; 
+           font-weight: 600; 
+           color: var(--white);
+       }
+       .quick-stats { display: flex; gap: 15px; margin-top: 10px; }
+       .stat-card { 
+           flex: 1; 
+           background: rgba(255,255,255,0.15); 
+           backdrop-filter: blur(10px); 
+           border-radius: 16px; 
+           padding: 15px; 
+           text-align: center; 
+       }
+       .stat-card h4 { color: var(--white); font-size: 20px; font-weight: 700; margin-bottom: 4px; }
+       .stat-card p  { color: rgba(255,255,255,0.8); font-size: 11px; }
+
+       .main-content { flex: 1; overflow-y: auto; padding: 20px; padding-bottom: 100px; }
+       .main-content::-webkit-scrollbar { display: none; }
+
+       .section-title { font-size: 18px; font-weight: 700; color: var(--text-dark); margin-bottom: 15px; display: flex; align-items: center; justify-content: space-between; }
+       .section-title a { font-size: 12px; color: var(--primary-blue); text-decoration: none; font-weight: 500; }
+
+       .services-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 25px; }
+
+       .service-btn {
+           background: var(--white); 
+           border: 2px solid var(--border-color); 
+           border-radius: 20px;
+           padding: 20px 10px; 
+           display: flex; 
+           flex-direction: column; 
+           align-items: center; 
+           gap: 10px;
+           cursor: pointer; 
+           transition: all 0.3s ease; 
+           position: relative; 
+           overflow: hidden;
+           animation: slideUp 0.5s ease forwards;
+           opacity: 0;
+       }
+       .service-btn::before { 
+           content: ''; 
+           position: absolute; 
+           top: 0; 
+           left: 0; 
+           width: 100%; 
+           height: 100%; 
+           background: linear-gradient(135deg, var(--light-blue), transparent); 
+           opacity: 0; 
+           transition: opacity 0.3s ease; 
+       }
+       .service-btn:hover { 
+           border-color: var(--primary-blue); 
+           transform: translateY(-5px); 
+           box-shadow: 0 10px 30px rgba(37, 99, 235, 0.15); 
+       }
+       .service-btn:hover::before { opacity: 1; }
+       .service-btn:nth-child(1) { animation-delay: 0.1s; }
+       .service-btn:nth-child(2) { animation-delay: 0.2s; }
+       .service-btn:nth-child(3) { animation-delay: 0.3s; }
+
+       .service-icon { 
+           width: 60px; 
+           height: 60px; 
+           border-radius: 18px; 
+           display: flex; 
+           align-items: center; 
+           justify-content: center; 
+           font-size: 28px; 
+           position: relative; 
+           z-index: 1; 
+       }
+       .service-icon.angkas { background: linear-gradient(135deg, #DBEAFE, #BFDBFE); color: var(--primary-blue); }
+       .service-icon.padala { background: linear-gradient(135deg, #FED7AA, #FDBA74); color: var(--accent-orange); }
+       .service-icon.pabili { background: linear-gradient(135deg, #D1FAE5, #A7F3D0); color: var(--success); }
+       .service-btn span { font-size: 14px; font-weight: 600; color: var(--text-dark); position: relative; z-index: 1; }
+
+       .active-booking { 
+           background: var(--white); 
+           border-radius: 24px; 
+           padding: 20px; 
+           margin-bottom: 25px; 
+           box-shadow: 0 4px 20px rgba(0,0,0,0.08); 
+           border: 1px solid var(--border-color);
+           animation: slideUp 0.6s ease 0.4s forwards;
+           opacity: 0;
+           cursor: pointer;
+       }
+       .booking-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+       .booking-type   { display: flex; align-items: center; gap: 12px; }
+       .booking-type-icon { 
+           width: 45px; 
+           height: 45px; 
+           border-radius: 12px; 
+           background: linear-gradient(135deg, var(--light-blue), #DBEAFE); 
+           display: flex; 
+           align-items: center; 
+           justify-content: center; 
+           font-size: 20px; 
+           color: var(--primary-blue); 
+       }
+       .booking-type h4 { font-size: 16px; font-weight: 600; color: var(--text-dark); }
+       .booking-type p  { font-size: 12px; color: var(--text-muted); }
+       .booking-status { 
+           padding: 6px 12px; 
+           border-radius: 20px; 
+           font-size: 11px; 
+           font-weight: 600; 
+           text-transform: uppercase; 
+       }
+       .booking-status.ongoing   { background: #FEF3C7; color: var(--warning); }
+       .booking-status.completed { background: #D1FAE5; color: var(--success); }
+       .booking-status.cancelled { background: #FEE2E2; color: var(--error); }
+       .booking-route { background: var(--bg-gray); border-radius: 16px; padding: 15px; margin-bottom: 15px; }
+       .route-point   { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 12px; }
+       .route-point:last-child { margin-bottom: 0; }
+       .route-dot        { width: 12px; height: 12px; border-radius: 50%; margin-top: 4px; flex-shrink: 0; }
+       .route-dot.pickup  { background: var(--success); }
+       .route-dot.dropoff { background: var(--danger); }
+       .route-info h5 { font-size: 13px; font-weight: 600; color: var(--text-dark); margin-bottom: 2px; }
+       .route-info p  { font-size: 12px; color: var(--text-muted); }
+       .booking-footer { display: flex; justify-content: space-between; align-items: center; padding-top: 16px; border-top: 1px solid var(--border-color); }
+       .rider-info    { display: flex; align-items: center; gap: 10px; }
+       .rider-avatar  { 
+           width: 40px; 
+           height: 40px; 
+           border-radius: 50%; 
+           background: var(--bg-gray); 
+           display: flex; 
+           align-items: center; 
+           justify-content: center; 
+           font-size: 18px; 
+           color: var(--text-muted); 
+       }
+       .rider-details h5 { font-size: 13px; font-weight: 600; color: var(--text-dark); }
+       .rider-details p  { 
+           font-size: 11px; 
+           color: var(--success); 
+           display: flex;
+           align-items: center;
+           gap: 4px;
+       }
+       .booking-price { text-align: right; }
+       .booking-price h4 { font-size: 18px; font-weight: 700; color: var(--primary-blue); }
+       .booking-price p  { font-size: 11px; color: var(--text-muted); }
+
+       .shortcut-section { 
+           background: linear-gradient(135deg, var(--primary-blue), var(--secondary-blue)); 
+           border-radius: 24px; 
+           padding: 20px; 
+           color: white; 
+           position: relative; 
+           overflow: hidden;
+           animation: slideUp 0.6s ease 0.5s forwards;
+           opacity: 0;
+       }
+       .shortcut-section::before {
+           content: '';
+           position: absolute;
+           top: -50%;
+           right: -20%;
+           width: 200px;
+           height: 200px;
+           background: rgba(255,255,255,0.1);
+           border-radius: 50%;
+       }
+       .shortcut-content { position: relative; z-index: 1; }
+       .shortcut-section h3 { font-size: 18px; font-weight: 700; margin-bottom: 8px; }
+       .shortcut-section p  { font-size: 13px; opacity: 0.9; margin-bottom: 15px; }
+       .shortcut-btn { 
+           background: var(--white); 
+           color: var(--primary-blue); 
+           border: none; 
+           padding: 12px 24px; 
+           border-radius: 25px; 
+           font-size: 14px; 
+           font-weight: 600; 
+           cursor: pointer; 
+           display: inline-flex; 
+           align-items: center; 
+           gap: 8px; 
+           transition: all 0.3s ease; 
+       }
+       .shortcut-btn:hover { 
+           transform: translateY(-2px); 
+           box-shadow: 0 10px 20px rgba(0,0,0,0.2); 
+       }
+
+       /* ─── BOOKINGS SCREEN ─── */
+       .bookings-header { 
+           background: linear-gradient(135deg, var(--secondary-blue), var(--primary-blue)); 
+           padding: 50px 20px 20px; 
+           flex-shrink: 0; 
+           position: relative;
+           z-index: 10;
+       }
+       .bookings-header-content {
+           display: flex;
+           align-items: center;
+           gap: 15px;
+           margin-bottom: 16px;
+       }
+       .bookings-header h1 { color: var(--white); font-size: 20px; font-weight: 600; }
+       
+       /* Fixed Tab Navigation with Swipe Support */
+       .tab-wrapper {
+           position: relative;
+           overflow: hidden;
+       }
+       .tab-nav { 
+           display: flex; 
+           gap: 8px; 
+           overflow-x: auto; 
+           padding-bottom: 4px; 
+           -webkit-overflow-scrolling: touch;
+           scrollbar-width: none;
+           -ms-overflow-style: none;
+           padding-right: 20px;
+       }
+       .tab-nav::-webkit-scrollbar { display: none; }
+       .tab-btn { 
+           padding: 10px 20px; 
+           background: rgba(255,255,255,0.15); 
+           border: none; 
+           border-radius: 25px; 
+           color: rgba(255,255,255,0.8); 
+           font-size: 14px; 
+           font-weight: 500; 
+           cursor: pointer; 
+           white-space: nowrap; 
+           transition: all 0.3s ease;
+           flex-shrink: 0;
+       }
+       .tab-btn.active { 
+           background: var(--white); 
+           color: var(--primary-blue); 
+       }
+       /* Gradient fade on right side to indicate scroll */
+       .tab-wrapper::after {
+           content: '';
+           position: absolute;
+           right: 0;
+           top: 0;
+           bottom: 4px;
+           width: 30px;
+           background: linear-gradient(to right, transparent, var(--secondary-blue));
+           pointer-events: none;
+           opacity: 0;
+           transition: opacity 0.3s;
+       }
+       .tab-wrapper.has-overflow::after {
+           opacity: 1;
+       }
+
+       .bookings-content { flex: 1; overflow-y: auto; padding: 20px; padding-bottom: 100px; }
+       .bookings-content::-webkit-scrollbar { display: none; }
+
+       .booking-card-item { 
+           background: var(--white); 
+           border-radius: 20px; 
+           padding: 20px; 
+           margin-bottom: 16px; 
+           box-shadow: var(--shadow); 
+           border: 1px solid var(--border-color); 
+           cursor: pointer; 
+           transition: all 0.3s ease; 
+           animation: slideUp 0.4s ease forwards;
+           opacity: 0;
+       }
+       .booking-card-item:hover { 
+           transform: translateY(-2px); 
+           box-shadow: 0 8px 25px rgba(0,0,0,0.12); 
+       }
+       .booking-card-item:nth-child(1) { animation-delay: 0.05s; }
+       .booking-card-item:nth-child(2) { animation-delay: 0.1s; }
+       .booking-card-item:nth-child(3) { animation-delay: 0.15s; }
+       .booking-card-item:nth-child(4) { animation-delay: 0.2s; }
+
+       .booking-card-item .booking-header { 
+           display: flex; 
+           justify-content: space-between; 
+           align-items: center; 
+           margin-bottom: 16px; 
+       }
+       .booking-card-item .booking-type   { 
+           display: flex; 
+           align-items: center; 
+           gap: 12px; 
+       }
+       .booking-icon { 
+           width: 48px; 
+           height: 48px; 
+           border-radius: 14px; 
+           display: flex; 
+           align-items: center; 
+           justify-content: center; 
+           font-size: 22px; 
+       }
+       .booking-icon.angkas { background: linear-gradient(135deg, #DBEAFE, #BFDBFE); color: var(--primary-blue); }
+       .booking-icon.padala { background: linear-gradient(135deg, #FED7AA, #FDBA74); color: var(--accent-orange); }
+       .booking-icon.pabili { background: linear-gradient(135deg, #D1FAE5, #A7F3D0); color: var(--success); }
+       .booking-info h4 { font-size: 15px; font-weight: 600; color: var(--text-dark); margin-bottom: 2px; }
+       .booking-info p  { font-size: 12px; color: var(--text-muted); }
+       .booking-card-item .booking-route  { 
+           background: var(--bg-gray); 
+           border-radius: 16px; 
+           padding: 16px; 
+           margin-bottom: 16px; 
+       }
+       .booking-card-item .route-point    { 
+           display: flex; 
+           align-items: flex-start; 
+           gap: 12px; 
+           margin-bottom: 12px; 
+       }
+       .booking-card-item .route-point:last-child { margin-bottom: 0; }
+       .route-details h5 { font-size: 13px; font-weight: 600; color: var(--text-dark); margin-bottom: 2px; }
+       .route-details p  { font-size: 12px; color: var(--text-muted); line-height: 1.3; }
+       .booking-card-item .booking-footer { 
+           display: flex; 
+           justify-content: space-between; 
+           align-items: center; 
+           padding-top: 16px; 
+           border-top: 1px solid var(--border-color); 
+       }
+       .booking-meta  { display: flex; gap: 16px; }
+       .meta-item     { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text-muted); }
+       .meta-item i   { color: var(--primary-blue); font-size: 14px; }
+       .booking-card-item .booking-price { 
+           font-size: 18px; 
+           font-weight: 700; 
+           color: var(--primary-blue); 
+       }
+
+       .empty-state    { text-align: center; padding: 60px 20px; }
+       .empty-icon     { 
+           width: 100px; 
+           height: 100px; 
+           background: var(--light-blue); 
+           border-radius: 50%; 
+           display: flex; 
+           align-items: center; 
+           justify-content: center; 
+           margin: 0 auto 20px; 
+           font-size: 48px; 
+           color: var(--primary-blue); 
+       }
+       .empty-title    { font-size: 18px; font-weight: 600; color: var(--text-dark); margin-bottom: 8px; }
+       .empty-subtitle { font-size: 14px; color: var(--text-muted); margin-bottom: 24px; }
+       .btn-book-now   { 
+           padding: 14px 32px; 
+           background: linear-gradient(135deg, var(--primary-blue), var(--secondary-blue)); 
+           color: var(--white); 
+           border: none; 
+           border-radius: 25px; 
+           font-size: 15px; 
+           font-weight: 600; 
+           cursor: pointer; 
+           box-shadow: 0 8px 20px rgba(37,99,235,0.3); 
+           transition: all 0.3s ease; 
+       }
+       .btn-book-now:hover { 
+           transform: translateY(-2px); 
+           box-shadow: 0 12px 24px rgba(37,99,235,0.4); 
+       }
+
+       /* ─── PROFILE SCREEN ─── */
+       .profile-header {
+           background: linear-gradient(135deg, var(--secondary-blue), var(--primary-blue));
+           padding: 50px 24px 40px;
+           border-radius: 0 0 30px 30px;
+           position: relative;
+           z-index: 10;
+           text-align: center;
+           flex-shrink: 0;
+       }
+       .profile-header-top {
+           display: flex;
+           justify-content: space-between;
+           align-items: center;
+           margin-bottom: 20px;
+       }
+       .settings-btn {
+           width: 40px;
+           height: 40px;
+           background: rgba(255,255,255,0.2);
+           border: none;
+           border-radius: 12px;
+           color: var(--white);
+           font-size: 18px;
+           cursor: pointer;
+           display: flex;
+           align-items: center;
+           justify-content: center;
+           transition: all 0.3s ease;
+       }
+       .settings-btn:hover {
+           background: rgba(255,255,255,0.3);
+           transform: rotate(30deg);
+       }
+          .profile-header-card {
+           background: var(--white);
+           border-radius: 24px;
+           padding: 30px 24px;
+           margin: -30px 20px 20px;
+           box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+           position: relative;
+           z-index: 20;
+           text-align: center;
+           animation: slideUp 0.6s ease both;
+       }
+       .avatar-container {
+           position: relative;
+           width: 100px;
+           height: 100px;
+           margin: 0 auto 16px;
+       }
+       .profile-avatar {
+           width: 100px;
+           height: 100px;
+           border-radius: 50%;
+           background: linear-gradient(135deg, var(--light-blue), #DBEAFE);
+           display: flex;
+           align-items: center;
+           justify-content: center;
+           font-size: 48px;
+           color: var(--primary-blue);
+           border: 4px solid var(--white);
+           box-shadow: 0 8px 25px rgba(37, 99, 235, 0.2);
+       }
+       .edit-avatar {
+           position: absolute;
+           bottom: 0;
+           right: 0;
+           width: 36px;
+           height: 36px;
+           background: var(--primary-blue);
+           border: 3px solid var(--white);
+           border-radius: 50%;
+           display: flex;
+           align-items: center;
+           justify-content: center;
+           color: var(--white);
+           font-size: 14px;
+           cursor: pointer;
+           transition: all 0.3s ease;
+       }
+       .edit-avatar:hover {
+           transform: scale(1.1);
+           background: var(--secondary-blue);
+       }
+       .profile-name {
+           font-size: 22px;
+           font-weight: 700;
+           color: var(--text-dark);
+           margin-bottom: 4px;
+       }
+       .profile-phone {
+           font-size: 14px;
+           color: var(--text-muted);
+           margin-bottom: 12px;
+       }
+       .verification-badge {
+           display: inline-flex;
+           align-items: center;
+           gap: 6px;
+           padding: 8px 16px;
+           border-radius: 20px;
+           font-size: 12px;
+           font-weight: 700;
+           text-transform: uppercase;
+           letter-spacing: 0.5px;
+           background: var(--light-blue);
+           color: var(--primary-blue);
+           border: 1px solid var(--primary-blue);
+       }
+       .verification-badge i {
+           font-size: 14px;
+       }
+       .profile-quick-stats {
+           display: flex;
+           gap: 12px;
+           margin: 0 0 20px;
+           padding: 20px;
+           background: var(--white);
+           border-radius: 20px;
+           box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+           animation: slideUp 0.5s ease 0.1s both;
+           order: 0;
+       }
+
+         .profile-quick-stats .profile-stat-item {
+           flex: 1;
+           text-align: center;
+       }
+
+       .profile-stat-item {
+           flex: 1;
+           text-align: center;
+       }
+       .profile-stat-value {
+           font-size: 20px;
+           font-weight: 700;
+           color: var(--primary-blue);
+           margin-bottom: 2px;
+       }
+       .profile-stat-label {
+           font-size: 11px;
+           color: var(--text-muted);
+           text-transform: uppercase;
+           letter-spacing: 0.5px;
+       }
+       .profile-content {
+           flex: 1;
+           overflow-y: auto;
+           padding: 0 20px 120px;
+           display: flex;
+           flex-direction: column;
+       }
+       .profile-content::-webkit-scrollbar {
+           display: none;
+       }
+       .section-card {
+           background: var(--white);
+           border-radius: 20px;
+           padding: 8px;
+           margin-bottom: 16px;
+           box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+           animation: slideUp 0.5s ease both;
+           order: 1;
+       }
+       .section-card:nth-child(1) { animation-delay: 0.1s; }
+       .section-card:nth-child(2) { animation-delay: 0.2s; }
+       .section-header {
+           padding: 16px 16px 8px;
+           font-size: 13px;
+           font-weight: 700;
+           color: var(--text-muted);
+           text-transform: uppercase;
+           letter-spacing: 0.5px;
+       }
+       .info-item {
+           display: flex;
+           align-items: center;
+           gap: 16px;
+           padding: 16px;
+           border-radius: 12px;
+           transition: all 0.3s ease;
+           position: relative;
+       }
+       .info-item:hover {
+           background: var(--light-blue);
+       }
+       .info-item:not(:last-child)::after {
+           content: '';
+           position: absolute;
+           bottom: 0;
+           left: 56px;
+           right: 16px;
+           height: 1px;
+           background: var(--border-color);
+       }
+       .info-icon {
+           width: 40px;
+           height: 40px;
+           background: var(--bg-gray);
+           border-radius: 12px;
+           display: flex;
+           align-items: center;
+           justify-content: center;
+           font-size: 18px;
+           color: var(--primary-blue);
+           transition: all 0.3s ease;
+       }
+       .info-item:hover .info-icon {
+           background: var(--primary-blue);
+           color: var(--white);
+           transform: scale(1.1);
+       }
+       .info-content {
+           flex: 1;
+       }
+       .info-label {
+           font-size: 12px;
+           color: var(--text-muted);
+           margin-bottom: 2px;
+       }
+       .info-value {
+           font-size: 15px;
+           font-weight: 600;
+           color: var(--text-dark);
+       }
+       .info-action {
+           display: flex;
+           align-items: center;
+           gap: 8px;
+       }
+       .edit-btn {
+           padding: 8px 14px;
+           background: var(--light-blue);
+           border: none;
+           border-radius: 8px;
+           font-size: 12px;
+           font-weight: 600;
+           color: var(--primary-blue);
+           cursor: pointer;
+           transition: all 0.3s ease;
+       }
+       .edit-btn:hover {
+           background: var(--primary-blue);
+           color: var(--white);
+       }
+       .verified-icon {
+           width: 24px;
+           height: 24px;
+           background: var(--primary-blue);
+           border-radius: 50%;
+           display: flex;
+           align-items: center;
+           justify-content: center;
+           font-size: 12px;
+           color: var(--white);
+       }
+      .verification-section {
+           background: var(--white);
+           border-radius: 20px;
+           padding: 20px;
+           margin-bottom: 16px;
+           box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+           animation: slideUp 0.5s ease 0.2s both;
+           order: 2;
+       }
+       .verification-header {
+           display: flex;
+           align-items: center;
+           gap: 12px;
+           margin-bottom: 20px;
+       }
+       .verification-icon {
+           width: 50px;
+           height: 50px;
+           background: var(--light-blue);
+           border-radius: 14px;
+           display: flex;
+           align-items: center;
+           justify-content: center;
+           font-size: 24px;
+           color: var(--primary-blue);
+       }
+       .verification-title {
+           flex: 1;
+       }
+       .verification-title h3 {
+           font-size: 16px;
+           font-weight: 700;
+           color: var(--text-dark);
+           margin-bottom: 2px;
+       }
+       .verification-title p {
+           font-size: 13px;
+           color: var(--text-muted);
+       }
+       .verification-progress {
+           margin-bottom: 20px;
+       }
+       .progress-header {
+           display: flex;
+           justify-content: space-between;
+           align-items: center;
+           margin-bottom: 8px;
+       }
+       .progress-text {
+           font-size: 13px;
+           font-weight: 600;
+           color: var(--text-dark);
+       }
+       .progress-percent {
+           font-size: 13px;
+           font-weight: 700;
+           color: var(--primary-blue);
+       }
+       .progress-bar {
+           height: 8px;
+           background: var(--bg-gray);
+           border-radius: 4px;
+           overflow: hidden;
+       }
+       .progress-fill {
+           height: 100%;
+           background: linear-gradient(90deg, var(--primary-blue), var(--secondary-blue));
+           border-radius: 4px;
+           transition: width 0.5s ease;
+       }
+       .verification-steps {
+           display: flex;
+           flex-direction: column;
+           gap: 12px;
+       }
+       .step-item {
+           display: flex;
+           align-items: center;
+           gap: 12px;
+           padding: 14px;
+           background: var(--bg-gray);
+           border-radius: 12px;
+           transition: all 0.3s ease;
+       }
+       .step-item.completed {
+           background: var(--light-blue);
+           border: 1px solid var(--primary-blue);
+       }
+       .step-number {
+           width: 32px;
+           height: 32px;
+           border-radius: 50%;
+           display: flex;
+           align-items: center;
+           justify-content: center;
+           font-size: 14px;
+           font-weight: 700;
+           flex-shrink: 0;
+           background: var(--primary-blue);
+           color: var(--white);
+       }
+       .step-content {
+           flex: 1;
+       }
+       .step-title {
+           font-size: 14px;
+           font-weight: 600;
+           color: var(--text-dark);
+           margin-bottom: 2px;
+       }
+       .step-item.completed .step-title {
+           color: var(--primary-blue);
+       }
+       .step-desc {
+           font-size: 12px;
+           color: var(--text-muted);
+       }
+       .step-status {
+           font-size: 11px;
+           font-weight: 700;
+           padding: 4px 10px;
+           border-radius: 20px;
+           text-transform: uppercase;
+           background: var(--primary-blue);
+           color: var(--white);
+       }
+      .action-card {
+           background: var(--white);
+           border-radius: 20px;
+           padding: 20px;
+           margin-bottom: 20px;
+           box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+           animation: slideUp 0.5s ease 0.3s both;
+           text-align: center;
+           order: 3;
+       }
+       .action-card h3 {
+           font-size: 16px;
+           font-weight: 700;
+           color: var(--text-dark);
+           margin-bottom: 8px;
+       }
+       .action-card p {
+           font-size: 13px;
+           color: var(--text-muted);
+           margin-bottom: 16px;
+       }
+       .btn-primary {
+           width: 100%;
+           padding: 14px;
+           background: var(--primary-blue);
+           color: var(--white);
+           border: none;
+           border-radius: 12px;
+           font-size: 14px;
+           font-weight: 600;
+           cursor: pointer;
+           transition: all 0.3s ease;
+       }
+       .btn-primary:hover {
+           background: var(--secondary-blue);
+           transform: translateY(-2px);
+       }
+
+       /* ─── WALLET SCREEN ─── */
+       .wallet-header {
+           background: linear-gradient(135deg, var(--secondary-blue), var(--primary-blue));
+           padding: 50px 24px 30px;
+           border-radius: 0 0 30px 30px;
+           position: relative;
+           z-index: 10;
+           flex-shrink: 0;
+       }
+       .wallet-header-top {
+           display: flex;
+           justify-content: space-between;
+           align-items: center;
+           margin-bottom: 20px;
+       }
+       .back-btn {
+           width: 40px;
+           height: 40px;
+           background: rgba(255,255,255,0.2);
+           border: none;
+           border-radius: 12px;
+           color: var(--white);
+           font-size: 18px;
+           cursor: pointer;
+           display: flex;
+           align-items: center;
+           justify-content: center;
+           transition: all 0.3s ease;
+       }
+       .back-btn:hover {
+           background: rgba(255,255,255,0.3);
+           transform: translateX(-3px);
+       }
+       .header-title {
+           color: var(--white);
+           font-size: 20px;
+           font-weight: 600;
+       }
+       .download-btn {
+           width: 40px;
+           height: 40px;
+           background: rgba(255,255,255,0.2);
+           border: none;
+           border-radius: 12px;
+           color: var(--white);
+           font-size: 18px;
+           cursor: pointer;
+           display: flex;
+           align-items: center;
+           justify-content: center;
+           transition: all 0.3s ease;
+       }
+       .download-btn:hover {
+           background: rgba(255,255,255,0.3);
+       }
+       .balance-summary {
+           display: flex;
+           gap: 12px;
+           margin-top: 10px;
+       }
+       .balance-card {
+           flex: 1;
+           background: rgba(255,255,255,0.15);
+           backdrop-filter: blur(10px);
+           border-radius: 16px;
+           padding: 16px;
+           text-align: center;
+       }
+       .balance-card.total {
+           background: rgba(255,255,255,0.25);
+       }
+       .balance-label {
+           font-size: 11px;
+           color: rgba(255,255,255,0.8);
+           margin-bottom: 6px;
+           text-transform: uppercase;
+           letter-spacing: 0.5px;
+       }
+       .balance-value {
+           font-size: 20px;
+           font-weight: 700;
+           color: var(--white);
+       }
+        .filter-tabs {
+           display: flex;
+           background: var(--white);
+           margin: 20px;
+           border-radius: 16px;
+           padding: 6px;
+           box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+           flex-shrink: 0;
+           position: relative;
+           z-index: 100;
+       }
+       .filter-tabs .tab-btn {
+           flex: 1;
+           padding: 12px;
+           border: none;
+           background: transparent;
+           border-radius: 12px;
+           font-size: 13px;
+           font-weight: 600;
+           color: var(--text-muted);
+           cursor: pointer;
+           transition: all 0.3s ease;
+           display: flex;
+           align-items: center;
+           justify-content: center;
+           gap: 6px;
+           white-space: nowrap;
+       }
+       .filter-tabs .tab-btn.active {
+           background: var(--primary-blue);
+           color: var(--white);
+           box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
+       }
+       .filter-tabs .tab-btn i {
+           font-size: 14px;
+       }
+       .wallet-content {
+           flex: 1;
+           overflow-y: auto;
+           padding: 0 20px 100px;
+       }
+       .wallet-content::-webkit-scrollbar {
+           display: none;
+       }
+       .date-group {
+           margin-bottom: 20px;
+       }
+       .date-header {
+           display: flex;
+           align-items: center;
+           gap: 8px;
+           margin-bottom: 12px;
+           padding: 0 4px;
+       }
+       .date-header i {
+           color: var(--text-muted);
+           font-size: 14px;
+       }
+       .date-text {
+           font-size: 13px;
+           font-weight: 600;
+           color: var(--text-muted);
+           text-transform: uppercase;
+           letter-spacing: 0.5px;
+       }
+       .transaction-list {
+           display: flex;
+           flex-direction: column;
+           gap: 12px;
+       }
+       .transaction-card {
+           background: var(--white);
+           border-radius: 20px;
+           padding: 20px;
+           box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+           animation: slideUp 0.5s ease both;
+           transition: all 0.3s ease;
+           border: 2px solid transparent;
+           cursor: pointer;
+       }
+       .transaction-card:hover {
+           transform: translateY(-3px);
+           box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+           border-color: var(--primary-blue);
+       }
+       .transaction-card:nth-child(1) { animation-delay: 0.1s; }
+       .transaction-card:nth-child(2) { animation-delay: 0.15s; }
+       .transaction-card:nth-child(3) { animation-delay: 0.2s; }
+       .card-header {
+           display: flex;
+           justify-content: space-between;
+           align-items: flex-start;
+           margin-bottom: 16px;
+       }
+       .payment-method {
+           display: flex;
+           align-items: center;
+           gap: 12px;
+       }
+       .method-icon {
+           width: 48px;
+           height: 48px;
+           border-radius: 14px;
+           display: flex;
+           align-items: center;
+           justify-content: center;
+           font-size: 24px;
+       }
+       .method-icon.cod {
+           background: linear-gradient(135deg, #FEF3C7, #FDE68A);
+           color: var(--accent-orange);
+       }
+       .method-icon.gcash {
+           background: linear-gradient(135deg, #E0F2FE, #BAE6FD);
+           color: #0077B6;
+       }
+       .method-details h4 {
+           font-size: 15px;
+           font-weight: 700;
+           color: var(--text-dark);
+           margin-bottom: 2px;
+       }
+       .method-details p {
+           font-size: 12px;
+           color: var(--text-muted);
+       }
+       .transaction-amount {
+           text-align: right;
+       }
+       .amount-value {
+           font-size: 20px;
+           font-weight: 700;
+           color: var(--text-dark);
+       }
+       .amount-value.paid {
+           color: var(--success);
+       }
+       .amount-value.refunded {
+           color: var(--danger);
+       }
+       .amount-status {
+           font-size: 11px;
+           font-weight: 600;
+           padding: 4px 10px;
+           border-radius: 20px;
+           margin-top: 4px;
+           display: inline-block;
+       }
+       .amount-status.success {
+           background: #D1FAE5;
+           color: var(--success);
+       }
+       .amount-status.pending {
+           background: #FEF3C7;
+           color: var(--warning);
+       }
+       .amount-status.failed {
+           background: #FEE2E2;
+           color: var(--danger);
+       }
+       .transaction-details {
+           background: var(--bg-gray);
+           border-radius: 14px;
+           padding: 16px;
+           margin-bottom: 16px;
+       }
+       .detail-row {
+           display: flex;
+           justify-content: space-between;
+           align-items: center;
+           padding: 8px 0;
+           font-size: 13px;
+       }
+       .detail-row:not(:last-child) {
+           border-bottom: 1px solid var(--border-color);
+       }
+       .detail-label {
+           color: var(--text-muted);
+           display: flex;
+           align-items: center;
+           gap: 6px;
+       }
+       .detail-label i {
+           font-size: 12px;
+           color: var(--primary-blue);
+       }
+       .detail-value {
+           font-weight: 600;
+           color: var(--text-dark);
+       }
+       .card-footer {
+           display: flex;
+           gap: 10px;
+       }
+       .btn-action {
+           flex: 1;
+           padding: 12px;
+           border: none;
+           border-radius: 12px;
+           font-size: 13px;
+           font-weight: 600;
+           cursor: pointer;
+           transition: all 0.3s ease;
+           display: flex;
+           align-items: center;
+           justify-content: center;
+           gap: 6px;
+       }
+       .btn-receipt {
+           background: var(--light-blue);
+           color: var(--primary-blue);
+       }
+       .btn-receipt:hover {
+           background: var(--primary-blue);
+           color: var(--white);
+       }
+       .btn-report {
+           background: var(--bg-gray);
+           color: var(--text-muted);
+       }
+       .btn-report:hover {
+           background: var(--danger);
+           color: var(--white);
+       }
+       .wallet-empty-state {
+           text-align: center;
+           padding: 60px 20px;
+           display: none;
+       }
+       .wallet-empty-state.active {
+           display: block;
+       }
+       .wallet-empty-icon {
+           width: 100px;
+           height: 100px;
+           background: var(--bg-gray);
+           border-radius: 50%;
+           display: flex;
+           align-items: center;
+           justify-content: center;
+           margin: 0 auto 20px;
+           font-size: 48px;
+           color: var(--text-muted);
+       }
+
+       /* ─── BOTTOM NAV ─── */
+       .bottom-nav { 
+           position: absolute; 
+           bottom: 0; 
+           left: 0; 
+           right: 0; 
+           background: var(--white); 
+           padding: 15px 30px 30px; 
+           display: flex; 
+           justify-content: space-around; 
+           align-items: center; 
+           border-radius: 30px 30px 0 0; 
+           box-shadow: 0 -5px 30px rgba(0,0,0,0.1); 
+           z-index: 999; 
+       }
+       .nav-item   { 
+           display: flex; 
+           flex-direction: column; 
+           align-items: center; 
+           gap: 5px; 
+           cursor: pointer; 
+           transition: all 0.3s ease; 
+           padding: 5px 15px; 
+           border-radius: 15px; 
+       }
+       .nav-item:hover { background: var(--light-blue); }
+       .nav-item i    { font-size: 20px; color: var(--text-muted); transition: all 0.3s ease; }
+       .nav-item span { font-size: 11px; font-weight: 500; color: var(--text-muted); }
+       .nav-item.active i    { 
+           background: linear-gradient(135deg, var(--primary-blue), var(--secondary-blue)); 
+           color: var(--white); 
+           padding: 10px; 
+           border-radius: 12px; 
+           margin-top: -20px; 
+           box-shadow: 0 5px 15px rgba(37,99,235,0.3); 
+       }
+       .nav-item.active span { 
+           color: var(--primary-blue); 
+           font-weight: 600; 
+       }
+
+       /* Toast Notification */
+       .toast {
+           position: fixed;
+           bottom: 100px;
+           left: 50%;
+           transform: translateX(-50%) translateY(100px);
+           background: var(--text-dark);
+           color: var(--white);
+           padding: 12px 24px;
+           border-radius: 25px;
+           font-size: 14px;
+           font-weight: 500;
+           opacity: 0;
+           transition: all 0.3s ease;
+           z-index: 1000;
+       }
+       .toast.show {
+           transform: translateX(-50%) translateY(0);
+           opacity: 1;
+       }
+
+       @keyframes slideUp { 
+           from { opacity: 0; transform: translateY(30px); } 
+           to { opacity: 1; transform: translateY(0); } 
+       }
+   </style>
+<base target="_blank">
+</head>
+<body>
+<div class="app-container">
+
+   <!-- ══ SCREEN: HOME ══ -->
+   <div class="screen active" id="screen-home">
+       <div class="home-header">
+           <div class="header-top">
+               <div class="user-info">
+                   <div class="user-avatar"><i class="fa-solid fa-user"></i></div>
+                   <div class="user-details">
+                       <h3>Hello, Juan!</h3>
+                       <p>Alaminos City, Pangasinan</p>
+                   </div>
+               </div>
+               <button class="notification-btn" onclick="showNotifications()">
+                   <i class="fa-solid fa-bell"></i>
+                   <span class="notification-badge">3</span>
+               </button>
+           </div>
+           <div class="quick-stats">
+               <div class="stat-card"><h4>12</h4><p>Total Rides</p></div>
+               <div class="stat-card"><h4>₱450</h4><p>Total Spent</p></div>
+               <div class="stat-card"><h4>4.8</h4><p>Rating</p></div>
+           </div>
+       </div>
+
+       <div class="main-content">
+           <h2 class="section-title">Our Services <a href="#">View All</a></h2>
+           <div class="services-grid">
+               <button class="service-btn" onclick="bookService('angkas')">
+                   <div class="service-icon angkas"><i class="fa-solid fa-motorcycle"></i></div>
+                   <span>Angkas</span>
+               </button>
+               <button class="service-btn" onclick="bookService('padala')">
+                   <div class="service-icon padala"><i class="fa-solid fa-box"></i></div>
+                   <span>Padala</span>
+               </button>
+               <button class="service-btn" onclick="bookService('pabili')">
+                   <div class="service-icon pabili"><i class="fa-solid fa-basket-shopping"></i></div>
+                   <span>Pabili</span>
+               </button>
+           </div>
+
+           <h2 class="section-title">Active Booking
+               <a href="#" onclick="switchScreen('bookings'); return false;">View History</a>
+           </h2>
+           <div class="active-booking" onclick="viewActiveBooking()">
+               <div class="booking-header">
+                   <div class="booking-type">
+                       <div class="booking-type-icon"><i class="fa-solid fa-motorcycle"></i></div>
+                       <div>
+                           <h4>Angkas Ride</h4>
+                           <p>Booking #ALA-2024-001</p>
+                       </div>
+                   </div>
+                   <span class="booking-status ongoing">Ongoing</span>
+               </div>
+               <div class="booking-route">
+                   <div class="route-point">
+                       <div class="route-dot pickup"></div>
+                       <div class="route-info"><h5>Pickup Location</h5><p>Brgy. Poblacion, Alaminos City</p></div>
+                   </div>
+                   <div class="route-point">
+                       <div class="route-dot dropoff"></div>
+                       <div class="route-info"><h5>Drop-off Location</h5><p>Hundred Islands National Park</p></div>
+                   </div>
+               </div>
+               <div class="booking-footer">
+                   <div class="rider-info">
+                       <div class="rider-avatar"><i class="fa-solid fa-user"></i></div>
+                       <div class="rider-details">
+                           <h5>Mang Juan</h5>
+                           <p><i class="fa-solid fa-circle" style="font-size:6px;"></i> On the way</p>
+                       </div>
+                   </div>
+                   <div class="booking-price"><h4>₱85.00</h4><p>Cash Payment</p></div>
+               </div>
+           </div>
+
+           <div class="shortcut-section">
+               <div class="shortcut-content">
+                   <h3>Quick Book</h3>
+                   <p>Book your last destination again with just one tap!</p>
+                   <button class="shortcut-btn" onclick="quickBook()">
+                       <i class="fa-solid fa-bolt"></i> Book Again
+                   </button>
+               </div>
+           </div>
+       </div>
+   </div>
+
+   <!-- ══ SCREEN: BOOKINGS (No back button) ══ -->
+   <div class="screen right" id="screen-bookings">
+       <div class="bookings-header">
+           <div class="bookings-header-content">
+               <!-- Back button removed as requested -->
+               <h1>My Bookings</h1>
+           </div>
+           <div class="tab-wrapper" id="tabWrapper">
+               <div class="tab-nav" id="tabNav">
+                   <button class="tab-btn active" onclick="switchTab('all', this)">All</button>
+                   <button class="tab-btn" onclick="switchTab('ongoing', this)">Ongoing</button>
+                   <button class="tab-btn" onclick="switchTab('completed', this)">Completed</button>
+                   <button class="tab-btn" onclick="switchTab('cancelled', this)">Cancelled</button>
+               </div>
+           </div>
+       </div>
+       <div class="bookings-content" id="bookingsList"></div>
+   </div>
+
+   <!-- ══ SCREEN: PROFILE ══ -->
+   <div class="screen right" id="screen-profile">
+       <div class="profile-header">
+           <div class="profile-header-top">
+               <div style="width: 40px;"></div> <!-- Spacer for alignment -->
+               <button class="settings-btn" onclick="showToast('Settings would open')">
+                   <i class="fa-solid fa-gear"></i>
+               </button>
+           </div>
+       </div>
+
+             <div class="profile-header-card">
+           <div class="avatar-container">
+               <div class="profile-avatar">
+                   <i class="fa-solid fa-user"></i>
+               </div>
+               <div class="edit-avatar" onclick="showToast('Camera/Upload option would open')">
+                   <i class="fa-solid fa-camera"></i>
+               </div>
+           </div>
+           
+           <div class="profile-name">Juan Dela Cruz</div>
+           <div class="profile-phone">+63 912 345 6789</div>
+           
+           <div class="verification-badge" id="verificationBadge">
+               <i class="fa-solid fa-shield-check"></i>
+               <span>Verified</span>
+           </div>
+       </div>
+
+       <div class="profile-content">
+         <div class="profile-quick-stats">
+           <div class="profile-stat-item">
+               <div class="profile-stat-value">24</div>
+               <div class="profile-stat-label">Rides</div>
+           </div>
+           <div class="profile-stat-item">
+               <div class="profile-stat-value">4.9</div>
+               <div class="profile-stat-label">Rating</div>
+           </div>
+           <div class="profile-stat-item">
+               <div class="profile-stat-value">2</div>
+               <div class="profile-stat-label">Years</div>
+           </div>
+       </div>
+           <div class="section-card">
+               <div class="section-header">Personal Information</div>
+               
+               <div class="info-item">
+                   <div class="info-icon">
+                       <i class="fa-solid fa-user"></i>
+                   </div>
+                   <div class="info-content">
+                       <div class="info-label">Full Name</div>
+                       <div class="info-value">Juan Dela Cruz</div>
+                   </div>
+                   <button class="edit-btn" onclick="showToast('Editing name...')">Edit</button>
+               </div>
+
+               <div class="info-item">
+                   <div class="info-icon">
+                       <i class="fa-solid fa-phone"></i>
+                   </div>
+                   <div class="info-content">
+                       <div class="info-label">Phone Number</div>
+                       <div class="info-value">+63 912 345 6789</div>
+                   </div>
+                   <div class="verified-icon">
+                       <i class="fa-solid fa-check"></i>
+                   </div>
+               </div>
+
+               <div class="info-item">
+                   <div class="info-icon">
+                       <i class="fa-solid fa-envelope"></i>
+                   </div>
+                   <div class="info-content">
+                       <div class="info-label">Email Address</div>
+                       <div class="info-value">juan.delacruz@email.com</div>
+                   </div>
+                   <div class="verified-icon">
+                       <i class="fa-solid fa-check"></i>
+                   </div>
+               </div>
+
+               <div class="info-item">
+                   <div class="info-icon">
+                       <i class="fa-solid fa-cake-candles"></i>
+                   </div>
+                   <div class="info-content">
+                       <div class="info-label">Date of Birth</div>
+                       <div class="info-value">January 15, 1995</div>
+                   </div>
+                   <button class="edit-btn" onclick="showToast('Editing birthdate...')">Edit</button>
+               </div>
+           </div>
+
+           <div class="section-card">
+               <div class="section-header">Address</div>
+               
+               <div class="info-item">
+                   <div class="info-icon">
+                       <i class="fa-solid fa-house"></i>
+                   </div>
+                   <div class="info-content">
+                       <div class="info-label">Home Address</div>
+                       <div class="info-value">123 Poblacion St, Alaminos City</div>
+                   </div>
+                   <button class="edit-btn" onclick="showToast('Editing address...')">Edit</button>
+               </div>
+
+               <div class="info-item">
+                   <div class="info-icon">
+                       <i class="fa-solid fa-location-dot"></i>
+                   </div>
+                   <div class="info-content">
+                       <div class="info-label">City/Province</div>
+                       <div class="info-value">Pangasinan, Philippines</div>
+                   </div>
+               </div>
+
+               <div class="info-item">
+                   <div class="info-icon">
+                       <i class="fa-solid fa-barcode"></i>
+                   </div>
+                   <div class="info-content">
+                       <div class="info-label">ZIP Code</div>
+                       <div class="info-value">2400</div>
+                   </div>
+               </div>
+           </div>
+
+           <div class="verification-section">
+               <div class="verification-header">
+                   <div class="verification-icon">
+                       <i class="fa-solid fa-shield-check"></i>
+                   </div>
+                   <div class="verification-title">
+                       <h3>Verification Status</h3>
+                       <p>4 of 4 steps completed</p>
+                   </div>
+               </div>
+
+               <div class="verification-progress">
+                   <div class="progress-header">
+                       <span class="progress-text">Profile Completion</span>
+                       <span class="progress-percent">100%</span>
+                   </div>
+                   <div class="progress-bar">
+                       <div class="progress-fill" style="width: 100%"></div>
+                   </div>
+               </div>
+
+               <div class="verification-steps">
+                   <div class="step-item completed">
+                       <div class="step-number">
+                           <i class="fa-solid fa-check"></i>
+                       </div>
+                       <div class="step-content">
+                           <div class="step-title">Phone Verification</div>
+                           <div class="step-desc">Verified via SMS</div>
+                       </div>
+                       <span class="step-status">Done</span>
+                   </div>
+
+                   <div class="step-item completed">
+                       <div class="step-number">
+                           <i class="fa-solid fa-check"></i>
+                       </div>
+                       <div class="step-content">
+                           <div class="step-title">Email Verification</div>
+                           <div class="step-desc">Verified via confirmation link</div>
+                       </div>
+                       <span class="step-status">Done</span>
+                   </div>
+
+                   <div class="step-item completed">
+                       <div class="step-number">
+                           <i class="fa-solid fa-check"></i>
+                       </div>
+                       <div class="step-content">
+                           <div class="step-title">ID Verification</div>
+                           <div class="step-desc">Driver's License verified</div>
+                       </div>
+                       <span class="step-status">Done</span>
+                   </div>
+
+                   <div class="step-item completed">
+                       <div class="step-number">
+                           <i class="fa-solid fa-check"></i>
+                       </div>
+                       <div class="step-content">
+                           <div class="step-title">Selfie Verification</div>
+                           <div class="step-desc">Liveness check completed</div>
+                       </div>
+                       <span class="step-status">Done</span>
+                   </div>
+               </div>
+           </div>
+
+           <div class="action-card">
+               <h3>Need Help?</h3>
+               <p>Contact our support team for assistance with your account.</p>
+               <button class="btn-primary" onclick="showToast('Support page would open')">
+                   <i class="fa-solid fa-headset"></i> Contact Support
+               </button>
+           </div>
+       </div>
+   </div>
+
+   <!-- ══ SCREEN: WALLET ══ -->
+   <div class="screen right" id="screen-wallet">
+       <div class="wallet-header">
+           <div class="wallet-header-top">
+               <button class="back-btn" onclick="switchScreen('home')">
+                   <i class="fa-solid fa-arrow-left"></i>
+               </button>
+               <h1 class="header-title">Payment History</h1>
+               <button class="download-btn" onclick="showToast('Downloading statement...')">
+                   <i class="fa-solid fa-download"></i>
+               </button>
+           </div>
+           
+           <div class="balance-summary">
+               <div class="balance-card">
+                   <div class="balance-label">COD Total</div>
+                   <div class="balance-value" id="codTotal">₱447</div>
+               </div>
+               <div class="balance-card">
+                   <div class="balance-label">GCash Total</div>
+                   <div class="balance-value" id="gcashTotal">₱298</div>
+               </div>
+               <div class="balance-card total">
+                   <div class="balance-label">Total Paid</div>
+                   <div class="balance-value" id="totalPaid">₱745</div>
+               </div>
+           </div>
+       </div>
+
+       <div class="filter-tabs">
+           <button class="tab-btn active" onclick="filterPayments('all', this)">
+               <i class="fa-solid fa-layer-group"></i> All
+           </button>
+           <button class="tab-btn" onclick="filterPayments('cod', this)">
+               <i class="fa-solid fa-money-bill-wave"></i> COD
+           </button>
+           <button class="tab-btn" onclick="filterPayments('gcash', this)">
+               <i class="fa-solid fa-wallet"></i> GCash
+           </button>
+       </div>
+
+       <div class="wallet-content">
+           
+           <div class="transaction-list" id="transactionList">
+               
+               <div class="date-group">
+                   <div class="date-header">
+                       <i class="fa-regular fa-calendar"></i>
+                       <span class="date-text">Today, February 27, 2026</span>
+                   </div>
+
+                   <div class="transaction-card" data-method="gcash">
+                       <div class="card-header">
+                           <div class="payment-method">
+                               <div class="method-icon gcash">
+                                   <i class="fa-solid fa-wallet"></i>
+                               </div>
+                               <div class="method-details">
+                                   <h4>GCash</h4>
+                                   <p>**** 1234</p>
+                               </div>
+                           </div>
+                           <div class="transaction-amount">
+                               <div class="amount-value paid">-₱149.00</div>
+                               <span class="amount-status success">PAID</span>
+                           </div>
+                       </div>
+                       
+                       <div class="transaction-details">
+                           <div class="detail-row">
+                               <span class="detail-label">
+                                   <i class="fa-solid fa-receipt"></i> Transaction ID
+                               </span>
+                               <span class="detail-value">TXN-2024-001847</span>
+                           </div>
+                           <div class="detail-row">
+                               <span class="detail-label">
+                                   <i class="fa-solid fa-box"></i> Service
+                               </span>
+                               <span class="detail-value">Angkas Ride</span>
+                           </div>
+                           <div class="detail-row">
+                               <span class="detail-label">
+                                   <i class="fa-regular fa-clock"></i> Time
+                               </span>
+                               <span class="detail-value">02:45 PM</span>
+                           </div>
+                       </div>
+                       
+                       <div class="card-footer">
+                           <button class="btn-action btn-receipt" onclick="showToast('Viewing receipt...')">
+                               <i class="fa-solid fa-file-invoice"></i> Receipt
+                           </button>
+                           <button class="btn-action btn-report" onclick="showToast('Reporting issue...')">
+                               <i class="fa-solid fa-flag"></i> Report
+                           </button>
+                       </div>
+                   </div>
+
+                   <div class="transaction-card" data-method="cod">
+                       <div class="card-header">
+                           <div class="payment-method">
+                               <div class="method-icon cod">
+                                   <i class="fa-solid fa-hand-holding-dollar"></i>
+                               </div>
+                               <div class="method-details">
+                                   <h4>Cash on Delivery</h4>
+                                   <p>Paid to driver</p>
+                               </div>
+                           </div>
+                           <div class="transaction-amount">
+                               <div class="amount-value paid">-₱198.00</div>
+                               <span class="amount-status success">PAID</span>
+                           </div>
+                       </div>
+                       
+                       <div class="transaction-details">
+                           <div class="detail-row">
+                               <span class="detail-label">
+                                   <i class="fa-solid fa-receipt"></i> Transaction ID
+                               </span>
+                               <span class="detail-value">TXN-2024-001846</span>
+                           </div>
+                           <div class="detail-row">
+                               <span class="detail-label">
+                                   <i class="fa-solid fa-box"></i> Service
+                               </span>
+                               <span class="detail-value">Padala Delivery</span>
+                           </div>
+                           <div class="detail-row">
+                               <span class="detail-label">
+                                   <i class="fa-regular fa-clock"></i> Time
+                               </span>
+                               <span class="detail-value">11:20 AM</span>
+                           </div>
+                       </div>
+                       
+                       <div class="card-footer">
+                           <button class="btn-action btn-receipt" onclick="showToast('Viewing receipt...')">
+                               <i class="fa-solid fa-file-invoice"></i> Receipt
+                           </button>
+                           <button class="btn-action btn-report" onclick="showToast('Reporting issue...')">
+                               <i class="fa-solid fa-flag"></i> Report
+                           </button>
+                       </div>
+                   </div>
+               </div>
+
+               <div class="date-group">
+                   <div class="date-header">
+                       <i class="fa-regular fa-calendar"></i>
+                       <span class="date-text">Yesterday, February 26, 2026</span>
+                   </div>
+
+                   <div class="transaction-card" data-method="gcash">
+                       <div class="card-header">
+                           <div class="payment-method">
+                               <div class="method-icon gcash">
+                                   <i class="fa-solid fa-wallet"></i>
+                               </div>
+                               <div class="method-details">
+                                   <h4>GCash</h4>
+                                   <p>**** 1234</p>
+                               </div>
+                           </div>
+                           <div class="transaction-amount">
+                               <div class="amount-value paid">-₱149.00</div>
+                               <span class="amount-status success">PAID</span>
+                           </div>
+                       </div>
+                       
+                       <div class="transaction-details">
+                           <div class="detail-row">
+                               <span class="detail-label">
+                                   <i class="fa-solid fa-receipt"></i> Transaction ID
+                               </span>
+                               <span class="detail-value">TXN-2024-001802</span>
+                           </div>
+                           <div class="detail-row">
+                               <span class="detail-label">
+                                   <i class="fa-solid fa-box"></i> Service
+                               </span>
+                               <span class="detail-value">Angkas Ride</span>
+                           </div>
+                           <div class="detail-row">
+                               <span class="detail-label">
+                                   <i class="fa-regular fa-clock"></i> Time
+                               </span>
+                               <span class="detail-value">05:30 PM</span>
+                           </div>
+                       </div>
+                       
+                       <div class="card-footer">
+                           <button class="btn-action btn-receipt" onclick="showToast('Viewing receipt...')">
+                               <i class="fa-solid fa-file-invoice"></i> Receipt
+                           </button>
+                           <button class="btn-action btn-report" onclick="showToast('Reporting issue...')">
+                               <i class="fa-solid fa-flag"></i> Report
+                           </button>
+                       </div>
+                   </div>
+
+                   <div class="transaction-card" data-method="cod">
+                       <div class="card-header">
+                           <div class="payment-method">
+                               <div class="method-icon cod">
+                                   <i class="fa-solid fa-hand-holding-dollar"></i>
+                               </div>
+                               <div class="method-details">
+                                   <h4>Cash on Delivery</h4>
+                                   <p>Paid to driver</p>
+                               </div>
+                           </div>
+                           <div class="transaction-amount">
+                               <div class="amount-value paid">-₱85.00</div>
+                               <span class="amount-status success">PAID</span>
+                           </div>
+                       </div>
+                       
+                       <div class="transaction-details">
+                           <div class="detail-row">
+                               <span class="detail-label">
+                                   <i class="fa-solid fa-receipt"></i> Transaction ID
+                               </span>
+                               <span class="detail-value">TXN-2024-001798</span>
+                           </div>
+                           <div class="detail-row">
+                               <span class="detail-label">
+                                   <i class="fa-solid fa-box"></i> Service
+                               </span>
+                               <span class="detail-value">Pabili Service</span>
+                           </div>
+                           <div class="detail-row">
+                               <span class="detail-label">
+                                   <i class="fa-regular fa-clock"></i> Time
+                               </span>
+                               <span class="detail-value">09:15 AM</span>
+                           </div>
+                       </div>
+                       
+                       <div class="card-footer">
+                           <button class="btn-action btn-receipt" onclick="showToast('Viewing receipt...')">
+                               <i class="fa-solid fa-file-invoice"></i> Receipt
+                           </button>
+                           <button class="btn-action btn-report" onclick="showToast('Reporting issue...')">
+                               <i class="fa-solid fa-flag"></i> Report
+                           </button>
+                       </div>
+                   </div>
+
+                   <div class="transaction-card" data-method="cod">
+                       <div class="card-header">
+                           <div class="payment-method">
+                               <div class="method-icon cod">
+                                   <i class="fa-solid fa-hand-holding-dollar"></i>
+                               </div>
+                               <div class="method-details">
+                                   <h4>Cash on Delivery</h4>
+                                   <p>Paid to driver</p>
+                               </div>
+                           </div>
+                           <div class="transaction-amount">
+                               <div class="amount-value paid">-₱164.00</div>
+                               <span class="amount-status success">PAID</span>
+                           </div>
+                       </div>
+                       
+                       <div class="transaction-details">
+                           <div class="detail-row">
+                               <span class="detail-label">
+                                   <i class="fa-solid fa-receipt"></i> Transaction ID
+                               </span>
+                               <span class="detail-value">TXN-2024-001795</span>
+                           </div>
+                                                     <div class="detail-row">
+                               <span class="detail-label">
+                                   <i class="fa-solid fa-box"></i> Service
+                               </span>
+                               <span class="detail-value">Angkas Ride</span>
+                           </div>
+                           <div class="detail-row">
+                               <span class="detail-label">
+                                   <i class="fa-regular fa-clock"></i> Time
+                               </span>
+                               <span class="detail-value">07:45 AM</span>
+                           </div>
+                       </div>
+                       
+                       <div class="card-footer">
+                           <button class="btn-action btn-receipt" onclick="showToast('Viewing receipt...')">
+                               <i class="fa-solid fa-file-invoice"></i> Receipt
+                           </button>
+                           <button class="btn-action btn-report" onclick="showToast('Reporting issue...')">
+                               <i class="fa-solid fa-flag"></i> Report
+                           </button>
+                       </div>
+                   </div>
+               </div>
+
+           </div>
+
+           <div class="wallet-empty-state" id="walletEmptyState">
+               <div class="wallet-empty-icon">
+                   <i class="fa-solid fa-receipt"></i>
+               </div>
+               <div class="empty-title">No transactions found</div>
+               <div class="empty-text">You don't have any payments in this category.</div>
+           </div>
+
+       </div>
+   </div>
+
+   <!-- ══ BOTTOM NAV (shared, always on top) ══ -->
+   <div class="bottom-nav">
+       <div class="nav-item active" id="nav-home" onclick="switchScreen('home')">
+           <i class="fa-solid fa-house"></i>
+           <span>Home</span>
+       </div>
+       <div class="nav-item" id="nav-bookings" onclick="switchScreen('bookings')">
+           <i class="fa-solid fa-clipboard-list"></i>
+           <span>Bookings</span>
+       </div>
+       <div class="nav-item" id="nav-wallet" onclick="switchScreen('wallet')">
+           <i class="fa-solid fa-wallet"></i>
+           <span>Wallet</span>
+       </div>
+       <div class="nav-item" id="nav-profile" onclick="switchScreen('profile')">
+           <i class="fa-solid fa-user"></i>
+           <span>Profile</span>
+       </div>
+   </div>
+
+   <!-- Toast Notification -->
+   <div class="toast" id="toast"></div>
+
+</div>
+
+<script>
+   let currentScreen = 'home';
+
+   function switchScreen(target) {
+       if (target === currentScreen) return;
+       
+       const screens = ['home', 'bookings', 'wallet', 'profile'];
+       const from  = document.getElementById('screen-' + currentScreen);
+       const to    = document.getElementById('screen-' + target);
+       
+       // Determine direction
+       const currentIndex = screens.indexOf(currentScreen);
+       const targetIndex = screens.indexOf(target);
+       const goRight = targetIndex > currentIndex;
+
+       // Snap incoming to starting position
+       to.className = 'screen ' + (goRight ? 'right' : 'left');
+       to.getBoundingClientRect(); // force reflow
+
+       // Animate
+       from.className = 'screen ' + (goRight ? 'left' : 'right');
+       to.className   = 'screen active';
+
+       // Update nav highlights
+       document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+       const navId = 'nav-' + target;
+       if (document.getElementById(navId)) {
+           document.getElementById(navId).classList.add('active');
+       }
+
+       currentScreen = target;
+
+       if (target === 'bookings') {
+           renderBookings('all');
+           setTimeout(checkTabOverflow, 100);
+       }
+   }
+
+   function bookService(service) {
+       showToast('Booking ' + service + ' service...');
+   }
+
+   function quickBook() {
+       showToast('Quick booking to Hundred Islands...');
+   }
+
+   function viewActiveBooking() {
+       showToast('Viewing active booking...');
+   }
+
+   function showNotifications() {
+       showToast('You have 3 new notifications');
+   }
+
+   // ── Bookings Data ──
+   const bookings = [
+       { id: 'ALA-2024-001', type: 'angkas', typeName: 'Angkas Ride',     status: 'ongoing',   statusLabel: 'Ongoing',   pickup: 'Alaminos City Hall, Alaminos, Pangasinan',   dropoff: 'Hundred Islands National Park, Lucap, Alaminos', date: 'Today, 10:30 AM',    distance: '8.5 km',  price: '₱85.00'  },
+       { id: 'ALA-2024-002', type: 'padala', typeName: 'Padala Delivery', status: 'completed', statusLabel: 'Completed', pickup: 'SM City Urdaneta, Urdaneta City, Pangasinan', dropoff: 'Alaminos Doctors Hospital, Alaminos, Pangasinan',  date: 'Yesterday, 2:15 PM', distance: '12.5 km', price: '₱148.00' },
+       { id: 'ALA-2024-003', type: 'pabili', typeName: 'Pabili Service',  status: 'completed', statusLabel: 'Completed', pickup: '7-Eleven Alaminos, Poblacion, Alaminos',       dropoff: 'Brgy. Poblacion, Alaminos City',                   date: 'Feb 25, 4:30 PM',    distance: '3.2 km',  price: '₱45.00'  },
+       { id: 'ALA-2024-004', type: 'angkas', typeName: 'Angkas Ride',     status: 'cancelled', statusLabel: 'Cancelled', pickup: 'University of Luzon, Alaminos, Pangasinan',   dropoff: 'City Plaza, Poblacion, Alaminos',                  date: 'Feb 24, 9:00 AM',    distance: '2.1 km',  price: '₱35.00',  cancelled: true }
+   ];
+
+   function switchTab(filter, btn) {
+       document.querySelectorAll('#screen-bookings .tab-btn').forEach(b => b.classList.remove('active'));
+       btn.classList.add('active');
+       renderBookings(filter);
+   }
+
+   function renderBookings(filter) {
+       const container = document.getElementById('bookingsList');
+       const filtered  = filter === 'all' ? bookings : bookings.filter(b => b.status === filter);
+
+       if (!filtered.length) {
+           container.innerHTML = `
+               <div class="empty-state">
+                   <div class="empty-icon"><i class="fa-solid fa-clipboard-list"></i></div>
+                   <h3 class="empty-title">No ${filter} bookings</h3>
+                   <p class="empty-subtitle">You don't have any ${filter} bookings yet.</p>
+                   <button class="btn-book-now" onclick="switchScreen('home')">
+                       <i class="fa-solid fa-plus"></i> Book Now
+                   </button>
+               </div>`;
+           return;
+       }
+
+       container.innerHTML = filtered.map(b => {
+           const icon = b.type === 'angkas' ? 'fa-motorcycle' : b.type === 'padala' ? 'fa-box' : 'fa-basket-shopping';
+           const pl   = b.type === 'pabili' ? 'Store Location'    : 'Pickup Location';
+           const dl   = b.type === 'pabili' ? 'Delivery Location' : 'Drop-off Location';
+           return `
+           <div class="booking-card-item" onclick="viewBooking('${b.id}')">
+               <div class="booking-header">
+                   <div class="booking-type">
+                       <div class="booking-icon ${b.type}"><i class="fa-solid ${icon}"></i></div>
+                       <div class="booking-info"><h4>${b.typeName}</h4><p>Booking #${b.id}</p></div>
+                   </div>
+                   <span class="booking-status ${b.status}">${b.statusLabel}</span>
+               </div>
+               <div class="booking-route">
+                   <div class="route-point">
+                       <div class="route-dot pickup"></div>
+                       <div class="route-details"><h5>${pl}</h5><p>${b.pickup}</p></div>
+                   </div>
+                   <div class="route-point">
+                       <div class="route-dot dropoff"></div>
+                       <div class="route-details"><h5>${dl}</h5><p>${b.dropoff}</p></div>
+                   </div>
+               </div>
+               <div class="booking-footer">
+                   <div class="booking-meta">
+                       <div class="meta-item"><i class="fa-regular fa-calendar"></i><span>${b.date}</span></div>
+                       <div class="meta-item"><i class="fa-solid fa-road"></i><span>${b.distance}</span></div>
+                   </div>
+                   <div class="booking-price" style="${b.cancelled ? 'text-decoration:line-through;color:var(--text-muted);' : ''}">${b.price}</div>
+               </div>
+           </div>`;
+       }).join('');
+   }
+
+   function viewBooking(bookingId) {
+       showToast('Viewing booking ' + bookingId);
+   }
+
+   // Check for overflow and show gradient indicator
+   function checkTabOverflow() {
+       const tabNav = document.getElementById('tabNav');
+       const tabWrapper = document.getElementById('tabWrapper');
+       
+       if (tabNav && tabWrapper) {
+           if (tabNav.scrollWidth > tabNav.clientWidth) {
+               tabWrapper.classList.add('has-overflow');
+           } else {
+               tabWrapper.classList.remove('has-overflow');
+           }
+       }
+   }
+
+   // Touch swipe support for tabs
+   let isDown = false;
+   let startX;
+   let scrollLeft;
+   const tabNav = document.getElementById('tabNav');
+
+   if (tabNav) {
+       tabNav.addEventListener('mousedown', (e) => {
+           isDown = true;
+           tabNav.style.cursor = 'grabbing';
+           startX = e.pageX - tabNav.offsetLeft;
+           scrollLeft = tabNav.scrollLeft;
+       });
+
+       tabNav.addEventListener('mouseleave', () => {
+           isDown = false;
+           tabNav.style.cursor = 'grab';
+       });
+
+       tabNav.addEventListener('mouseup', () => {
+           isDown = false;
+           tabNav.style.cursor = 'grab';
+       });
+
+       tabNav.addEventListener('mousemove', (e) => {
+           if (!isDown) return;
+           e.preventDefault();
+           const x = e.pageX - tabNav.offsetLeft;
+           const walk = (x - startX) * 2;
+           tabNav.scrollLeft = scrollLeft - walk;
+       });
+
+       // Touch events for mobile
+       tabNav.addEventListener('touchstart', (e) => {
+           startX = e.touches[0].pageX - tabNav.offsetLeft;
+           scrollLeft = tabNav.scrollLeft;
+       });
+
+       tabNav.addEventListener('touchmove', (e) => {
+           const x = e.touches[0].pageX - tabNav.offsetLeft;
+           const walk = (x - startX) * 2;
+           tabNav.scrollLeft = scrollLeft - walk;
+       });
+   }
+
+   // Wallet functions
+   function filterPayments(method, btn) {
+       // Update tab buttons
+       document.querySelectorAll('#screen-wallet .tab-btn').forEach(b => b.classList.remove('active'));
+       btn.classList.add('active');
+       
+       // Filter cards
+       const cards = document.querySelectorAll('.transaction-card');
+       const dateGroups = document.querySelectorAll('.date-group');
+       let visibleCount = 0;
+       
+       cards.forEach(card => {
+           const cardMethod = card.getAttribute('data-method');
+           if (method === 'all' || cardMethod === method) {
+               card.style.display = 'block';
+               visibleCount++;
+               
+               // Show parent date group
+               card.closest('.date-group').style.display = 'block';
+           } else {
+               card.style.display = 'none';
+           }
+       });
+       
+       // Hide empty date groups
+       dateGroups.forEach(group => {
+           const visibleCards = group.querySelectorAll('.transaction-card[style*="block"]').length;
+           if (visibleCards === 0 && method !== 'all') {
+               const hasVisible = Array.from(group.querySelectorAll('.transaction-card')).some(c => 
+                   c.style.display !== 'none'
+               );
+               if (!hasVisible) {
+                   group.style.display = 'none';
+               }
+           }
+       });
+       
+       // Show/hide empty state
+       const emptyState = document.getElementById('walletEmptyState');
+       const transactionList = document.getElementById('transactionList');
+       if (visibleCount === 0) {
+           emptyState.classList.add('active');
+           transactionList.style.display = 'none';
+       } else {
+           emptyState.classList.remove('active');
+           transactionList.style.display = 'block';
+       }
+       
+       // Update totals
+       updateTotals(method);
+   }
+
+   function updateTotals(filter) {
+       const codTotal = document.getElementById('codTotal');
+       const gcashTotal = document.getElementById('gcashTotal');
+       const totalPaid = document.getElementById('totalPaid');
+       
+       if (filter === 'cod') {
+           codTotal.textContent = '₱447';
+           gcashTotal.textContent = '₱0';
+           totalPaid.textContent = '₱447';
+       } else if (filter === 'gcash') {
+           codTotal.textContent = '₱0';
+           gcashTotal.textContent = '₱298';
+           totalPaid.textContent = '₱298';
+       } else {
+           codTotal.textContent = '₱447';
+           gcashTotal.textContent = '₱298';
+           totalPaid.textContent = '₱745';
+       }
+   }
+
+   // Toast notification
+   function showToast(message) {
+       const existing = document.querySelector('.toast');
+       if (existing) existing.remove();
+       
+       const toast = document.createElement('div');
+       toast.className = 'toast';
+       toast.id = 'toast';
+       toast.textContent = message;
+       document.body.appendChild(toast);
+       
+       setTimeout(() => toast.classList.add('show'), 10);
+       setTimeout(() => {
+           toast.classList.remove('show');
+           setTimeout(() => toast.remove(), 300);
+       }, 3000);
+   }
+
+   // Initialize
+   window.addEventListener('load', () => {
+       checkTabOverflow();
+       // Animate wallet numbers
+       animateValue('codTotal', 0, 447, 1000, '₱');
+       animateValue('gcashTotal', 0, 298, 1000, '₱');
+       animateValue('totalPaid', 0, 745, 1000, '₱');
+   });
+   
+   window.addEventListener('resize', checkTabOverflow);
+
+   function animateValue(id, start, end, duration, prefix) {
+       const obj = document.getElementById(id);
+       if (!obj) return;
+       const range = end - start;
+       const increment = end > start ? 1 : -1;
+       let current = start;
+       
+       const timer = setInterval(() => {
+           current += increment * Math.ceil(range / 20);
+           if ((increment > 0 && current >= end) || (increment < 0 && current <= end)) {
+               current = end;
+               clearInterval(timer);
+           }
+           obj.textContent = prefix + current;
+       }, 50);
+   }
+</script>
+
+</body>
+</html>

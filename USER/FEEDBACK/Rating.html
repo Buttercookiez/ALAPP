@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ALAAP - Rate Your Rider</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --primary-blue: #2563EB;
+            --secondary-blue: #1D4ED8;
+            --light-blue: #EFF6FF;
+            --text-dark: #1F2937;
+            --text-muted: #6B7280;
+            --bg-gray: #F3F4F6;
+            --white: #FFFFFF;
+            --border-color: #E5E7EB;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --danger: #EF4444;
+            --accent-orange: #F97316;
+            --star-empty: #D1D5DB;
+            --star-filled: #FBBF24;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html, body {
+            height: 100%;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        body {
+            background-color: var(--bg-gray);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .app-container {
+            width: 100%;
+            height: 100%;
+            max-width: 100%;
+            max-height: 100%;
+            background-color: var(--bg-gray);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        @media (min-width: 415px) {
+            body {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                padding: 20px;
+            }
+            
+            .app-container {
+                width: 375px;
+                height: 812px;
+                max-width: 375px;
+                max-height: 812px;
+                border-radius: 40px;
+                box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            }
+        }
+
+        /* Header Styles */
+        .header {
+            background: linear-gradient(135deg, var(--secondary-blue), var(--primary-blue));
+            padding: 50px 20px 30px;
+            border-radius: 0 0 30px 30px;
+            position: relative;
+            z-index: 10;
+            text-align: center;
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .back-btn {
+            width: 40px;
+            height: 40px;
+            background: rgba(255,255,255,0.2);
+            border: none;
+            border-radius: 12px;
+            color: var(--white);
+            font-size: 18px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .back-btn:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateX(-3px);
+        }
+
+        .header-title {
+            color: var(--white);
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .skip-btn {
+            background: none;
+            border: none;
+            color: rgba(255,255,255,0.8);
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .skip-btn:hover {
+            color: var(--white);
+        }
+
+        /* Rider Info Card */
+        .rider-card {
+            background: var(--white);
+            border-radius: 20px;
+            padding: 24px;
+            margin: -20px 20px 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            position: relative;
+            z-index: 20;
+            text-align: center;
+            animation: slideUp 0.6s ease 0.2s both;
+        }
+
+        .rider-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--light-blue), #DBEAFE);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            color: var(--primary-blue);
+            margin: 0 auto 16px;
+            border: 4px solid var(--white);
+            box-shadow: 0 4px 15px rgba(37, 99, 235, 0.2);
+        }
+
+        .rider-name {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 4px;
+        }
+
+        .rider-details {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+        }
+
+        .rider-plate {
+            display: inline-block;
+            background: var(--bg-gray);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-dark);
+            letter-spacing: 1px;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 0 20px 20px;
+        }
+
+        .main-content::-webkit-scrollbar {
+            display: none;
+        }
+
+        /* Rating Section */
+        .rating-section {
+            background: var(--white);
+            border-radius: 24px;
+            padding: 28px 24px;
+            margin-bottom: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            animation: slideUp 0.6s ease 0.3s both;
+        }
+
+        .rating-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-dark);
+            text-align: center;
+            margin-bottom: 8px;
+        }
+
+        .rating-subtitle {
+            font-size: 14px;
+            color: var(--text-muted);
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .stars-container {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .star-btn {
+            background: none;
+            border: none;
+            font-size: 40px;
+            color: var(--star-empty);
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            padding: 0;
+            line-height: 1;
+        }
+
+        .star-btn:hover {
+            transform: scale(1.2);
+        }
+
+        .star-btn.active {
+            color: var(--star-filled);
+            transform: scale(1.1);
+        }
+
+        .star-btn.active i {
+            animation: starPop 0.3s ease;
+        }
+
+        @keyframes starPop {
+            0% { transform: scale(0) rotate(0deg); }
+            50% { transform: scale(1.3) rotate(180deg); }
+            100% { transform: scale(1) rotate(360deg); }
+        }
+
+        .rating-text {
+            text-align: center;
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-muted);
+            min-height: 24px;
+            transition: all 0.3s;
+        }
+
+        .rating-text.active {
+            color: var(--star-filled);
+        }
+
+        /* Quick Tags */
+        .quick-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 20px;
+            opacity: 0;
+            max-height: 0;
+            overflow: hidden;
+            transition: all 0.4s ease;
+        }
+
+        .quick-tags.visible {
+            opacity: 1;
+            max-height: 200px;
+        }
+
+        .tag-btn {
+            padding: 10px 18px;
+            background: var(--bg-gray);
+            border: 2px solid transparent;
+            border-radius: 25px;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .tag-btn:hover {
+            background: var(--light-blue);
+            color: var(--primary-blue);
+            transform: translateY(-2px);
+        }
+
+        .tag-btn.active {
+            background: var(--primary-blue);
+            color: var(--white);
+            border-color: var(--primary-blue);
+        }
+
+        /* Comment Section */
+        .comment-section {
+            background: var(--white);
+            border-radius: 24px;
+            padding: 24px;
+            margin-bottom: 100px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            animation: slideUp 0.6s ease 0.4s both;
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .section-title i {
+            color: var(--primary-blue);
+        }
+
+        .comment-wrapper {
+            position: relative;
+        }
+
+        .comment-textarea {
+            width: 100%;
+            min-height: 120px;
+            padding: 16px;
+            background: var(--bg-gray);
+            border: 2px solid transparent;
+            border-radius: 16px;
+            font-size: 14px;
+            color: var(--text-dark);
+            resize: vertical;
+            outline: none;
+            transition: all 0.3s;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .comment-textarea:focus {
+            background: var(--white);
+            border-color: var(--primary-blue);
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+        }
+
+        .comment-textarea::placeholder {
+            color: var(--text-muted);
+        }
+
+        .char-count {
+            position: absolute;
+            bottom: 12px;
+            right: 12px;
+            font-size: 11px;
+            color: var(--text-muted);
+            background: rgba(255,255,255,0.9);
+            padding: 4px 8px;
+            border-radius: 8px;
+        }
+
+        /* Bottom Action */
+        .bottom-action {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--white);
+            padding: 16px 24px 30px;
+            border-top: 1px solid var(--border-color);
+            box-shadow: 0 -4px 20px rgba(0,0,0,0.08);
+            z-index: 100;
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, var(--primary-blue), var(--secondary-blue));
+            color: var(--white);
+            border: none;
+            border-radius: 16px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 8px 20px rgba(37, 99, 235, 0.3);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 24px rgba(37, 99, 235, 0.4);
+        }
+
+        .btn-submit:disabled {
+            background: var(--text-muted);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        /* Success Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .success-modal {
+            background: var(--white);
+            border-radius: 24px;
+            padding: 40px 32px;
+            text-align: center;
+            max-width: 320px;
+            width: 90%;
+            transform: scale(0.8);
+            transition: transform 0.3s ease;
+        }
+
+        .modal-overlay.active .success-modal {
+            transform: scale(1);
+        }
+
+        .success-icon {
+            width: 80px;
+            height: 80px;
+            background: var(--success);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 36px;
+            color: white;
+            animation: scaleIn 0.5s ease 0.1s both;
+        }
+
+        .modal-title {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 8px;
+        }
+
+        .modal-text {
+            font-size: 14px;
+            color: var(--text-muted);
+            margin-bottom: 24px;
+            line-height: 1.6;
+        }
+
+        .btn-done {
+            width: 100%;
+            padding: 16px;
+            background: var(--success);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-done:hover {
+            background: #059669;
+            transform: translateY(-2px);
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes scaleIn {
+            from { transform: scale(0); }
+            to { transform: scale(1); }
+        }
+
+        /* Animations for star rating */
+        .star-btn {
+            position: relative;
+        }
+
+        .star-btn::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: radial-gradient(circle, rgba(251, 191, 36, 0.4) 0%, transparent 70%);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.3s, height 0.3s;
+            pointer-events: none;
+        }
+
+        .star-btn.active::after {
+            width: 60px;
+            height: 60px;
+        }
+    </style>
+<base target="_blank">
+</head>
+<body>
+
+    <div class="app-container">
+        
+        <!-- Header -->
+        <div class="header">
+            <div class="header-top">
+                <button class="back-btn" onclick="goBack()">
+                    <i class="fa-solid fa-arrow-left"></i>
+                </button>
+                <span class="header-title">Rate Your Ride</span>
+                <button class="skip-btn" onclick="skipRating()">Skip</button>
+            </div>
+        </div>
+
+        <!-- Rider Card -->
+        <div class="rider-card">
+            <div class="rider-avatar">
+                <i class="fa-solid fa-user"></i>
+            </div>
+            <div class="rider-name">Mang Juan</div>
+            <div class="rider-details">Honda Beat • 4.8 ★ Rating</div>
+            <div class="rider-plate">ABC 1234</div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            
+            <!-- Rating Section -->
+            <div class="rating-section">
+                <div class="rating-title">How was your ride?</div>
+                <div class="rating-subtitle">Tap a star to rate your experience</div>
+                
+                <div class="stars-container">
+                    <button class="star-btn" data-rating="1" onclick="setRating(1)">
+                        <i class="fa-solid fa-star"></i>
+                    </button>
+                    <button class="star-btn" data-rating="2" onclick="setRating(2)">
+                        <i class="fa-solid fa-star"></i>
+                    </button>
+                    <button class="star-btn" data-rating="3" onclick="setRating(3)">
+                        <i class="fa-solid fa-star"></i>
+                    </button>
+                    <button class="star-btn" data-rating="4" onclick="setRating(4)">
+                        <i class="fa-solid fa-star"></i>
+                    </button>
+                    <button class="star-btn" data-rating="5" onclick="setRating(5)">
+                        <i class="fa-solid fa-star"></i>
+                    </button>
+                </div>
+                
+                <div class="rating-text" id="ratingText">Select a rating</div>
+
+                <!-- Quick Tags -->
+                <div class="quick-tags" id="quickTags">
+                    <button class="tag-btn" onclick="toggleTag(this)">
+                        <i class="fa-solid fa-helmet-safety"></i> Safe Driving
+                    </button>
+                    <button class="tag-btn" onclick="toggleTag(this)">
+                        <i class="fa-solid fa-clock"></i> On Time
+                    </button>
+                    <button class="tag-btn" onclick="toggleTag(this)">
+                        <i class="fa-solid fa-handshake"></i> Polite
+                    </button>
+                    <button class="tag-btn" onclick="toggleTag(this)">
+                        <i class="fa-solid fa-road"></i> Smooth Ride
+                    </button>
+                    <button class="tag-btn" onclick="toggleTag(this)">
+                        <i class="fa-solid fa-location-dot"></i> Good Route
+                    </button>
+                    <button class="tag-btn" onclick="toggleTag(this)">
+                        <i class="fa-solid fa-snowflake"></i> Clean Vehicle
+                    </button>
+                </div>
+            </div>
+
+            <!-- Comment Section -->
+            <div class="comment-section">
+                <div class="section-title">
+                    <i class="fa-solid fa-comment-dots"></i>
+                    Additional Comments
+                </div>
+                <div class="comment-wrapper">
+                    <textarea 
+                        class="comment-textarea" 
+                        id="commentText"
+                        placeholder="Tell us more about your experience (optional)"
+                        maxlength="200"
+                        oninput="updateCharCount(this)"
+                    ></textarea>
+                    <span class="char-count" id="charCount">0/200</span>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Bottom Action -->
+        <div class="bottom-action">
+            <button class="btn-submit" id="submitBtn" onclick="submitRating()" disabled>
+                <span>Submit Rating</span>
+                <i class="fa-solid fa-paper-plane"></i>
+            </button>
+        </div>
+
+    </div>
+
+    <!-- Success Modal -->
+    <div class="modal-overlay" id="successModal">
+        <div class="success-modal">
+            <div class="success-icon">
+                <i class="fa-solid fa-check"></i>
+            </div>
+            <div class="modal-title">Thank You!</div>
+            <div class="modal-text">Your feedback helps us improve our service and ensure better rides for everyone.</div>
+            <button class="btn-done" onclick="finishRating()">Done</button>
+        </div>
+    </div>
+
+    <script>
+        let currentRating = 0;
+        const ratingTexts = [
+            "Terrible 😠",
+            "Bad 😞", 
+            "Okay 😐",
+            "Good 🙂",
+            "Excellent! 🤩"
+        ];
+
+        function setRating(rating) {
+            currentRating = rating;
+            const stars = document.querySelectorAll('.star-btn');
+            const ratingText = document.getElementById('ratingText');
+            const quickTags = document.getElementById('quickTags');
+            const submitBtn = document.getElementById('submitBtn');
+            
+            // Update stars
+            stars.forEach((star, index) => {
+                if (index < rating) {
+                    star.classList.add('active');
+                } else {
+                    star.classList.remove('active');
+                }
+            });
+            
+            // Update text
+            ratingText.textContent = ratingTexts[rating - 1];
+            ratingText.classList.add('active');
+            
+            // Show quick tags
+            quickTags.classList.add('visible');
+            
+            // Enable submit
+            submitBtn.disabled = false;
+        }
+
+        function toggleTag(btn) {
+            btn.classList.toggle('active');
+        }
+
+        function updateCharCount(textarea) {
+            const count = textarea.value.length;
+            document.getElementById('charCount').textContent = `${count}/200`;
+        }
+
+        function submitRating() {
+            if (currentRating === 0) return;
+            
+            const btn = document.getElementById('submitBtn');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Submitting...';
+            
+            setTimeout(() => {
+                document.getElementById('successModal').classList.add('active');
+                btn.innerHTML = '<span>Submit Rating</span><i class="fa-solid fa-paper-plane"></i>';
+                btn.disabled = false;
+            }, 1500);
+        }
+
+        function finishRating() {
+            window.location.href = 'Dashboard.html';
+        }
+
+        function skipRating() {
+            if (confirm('Are you sure you want to skip rating this ride?')) {
+                window.location.href = 'Dashboard.html';
+            }
+        }
+
+        function goBack() {
+            window.history.back();
+        }
+
+        // Star hover effects
+        document.querySelectorAll('.star-btn').forEach((star, index) => {
+            star.addEventListener('mouseenter', () => {
+                if (currentRating === 0) {
+                    document.getElementById('ratingText').textContent = ratingTexts[index];
+                }
+            });
+            
+            star.addEventListener('mouseleave', () => {
+                if (currentRating === 0) {
+                    document.getElementById('ratingText').textContent = 'Select a rating';
+                }
+            });
+        });
+    </script>
+</body>
+</html>

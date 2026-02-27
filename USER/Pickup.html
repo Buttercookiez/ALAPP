@@ -1,0 +1,1087 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ALAPP - Set Location</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+   
+    <style>
+        :root {
+            --primary-blue: #2563EB;
+            --secondary-blue: #1D4ED8;
+            --light-blue: #EFF6FF;
+            --text-dark: #1F2937;
+            --text-muted: #6B7280;
+            --bg-gray: #F3F4F6;
+            --white: #FFFFFF;
+            --border-color: #E5E7EB;
+            --success: #10B981;
+            --error: #EF4444;
+            --accent-orange: #F97316;
+            --shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html, body {
+            height: 100%;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        body {
+            background-color: var(--bg-gray);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        @media (min-width: 415px) {
+            body {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                padding: 20px;
+            }
+        }
+
+        .app-container {
+            width: 100%;
+            height: 100%;
+            max-width: 100%;
+            max-height: 100%;
+            background-color: var(--white);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        @media (min-width: 415px) {
+            .app-container {
+                width: 375px;
+                height: 812px;
+                max-width: 375px;
+                max-height: 812px;
+                border-radius: 40px;
+                box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            }
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, var(--secondary-blue), var(--primary-blue));
+            padding: 20px 24px;
+            padding-top: 50px;
+            position: relative;
+            z-index: 100;
+        }
+
+        .header-content {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .back-btn {
+            width: 40px;
+            height: 40px;
+            background: rgba(255,255,255,0.2);
+            border: none;
+            border-radius: 12px;
+            color: var(--white);
+            font-size: 18px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .back-btn:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateX(-3px);
+        }
+
+        .header-title {
+            color: var(--white);
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        /* Location Input Section */
+        .location-inputs {
+            background: var(--white);
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--border-color);
+            position: relative;
+            z-index: 100;
+            box-shadow: var(--shadow);
+        }
+
+        .input-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+            position: relative;
+        }
+
+        .input-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .location-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+
+        .pickup-icon {
+            background: var(--light-blue);
+            color: var(--primary-blue);
+        }
+
+        .dropoff-icon {
+            background: #FEF3C7;
+            color: var(--accent-orange);
+        }
+
+        .connector-line {
+            position: absolute;
+            left: 19px;
+            top: 48px;
+            width: 2px;
+            height: 24px;
+            background: var(--border-color);
+            border-left: 2px dashed var(--text-muted);
+        }
+
+        .input-wrapper {
+            flex: 1;
+            position: relative;
+        }
+
+        .location-input {
+            width: 100%;
+            padding: 12px 40px 12px 16px;
+            background: var(--bg-gray);
+            border: 2px solid transparent;
+            border-radius: 12px;
+            font-size: 14px;
+            color: var(--text-dark);
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .location-input:focus {
+            background: var(--white);
+            border-color: var(--primary-blue);
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+        }
+
+        .location-input::placeholder {
+            color: var(--text-muted);
+        }
+
+        .input-actions {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            gap: 8px;
+        }
+
+        .clear-btn, .locate-btn {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 14px;
+            padding: 4px;
+            transition: color 0.3s;
+        }
+
+        .clear-btn:hover, .locate-btn:hover {
+            color: var(--primary-blue);
+        }
+
+        .swap-btn {
+            position: absolute;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 36px;
+            height: 36px;
+            background: var(--white);
+            border: 2px solid var(--border-color);
+            border-radius: 50%;
+            color: var(--primary-blue);
+            font-size: 14px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            z-index: 10;
+        }
+
+        .swap-btn:hover {
+            transform: translateY(-50%) rotate(180deg);
+            border-color: var(--primary-blue);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+        }
+
+        /* Map Container */
+        .map-container {
+            flex: 1;
+            position: relative;
+            background: #e5e7eb;
+        }
+
+        #map {
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        /* Center Pin */
+        .center-pin {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -100%);
+            z-index: 50;
+            pointer-events: none;
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.2));
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translate(-50%, -100%) translateY(0); }
+            50% { transform: translate(-50%, -100%) translateY(-10px); }
+        }
+
+        .center-pin i {
+            font-size: 40px;
+            color: var(--primary-blue);
+        }
+
+        .center-pin::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 12px;
+            height: 6px;
+            background: rgba(0,0,0,0.2);
+            border-radius: 50%;
+            filter: blur(2px);
+        }
+
+        /* Map Controls */
+        .map-controls {
+            position: absolute;
+            right: 16px;
+            bottom: 200px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 50;
+        }
+
+        .map-btn {
+            width: 44px;
+            height: 44px;
+            background: var(--white);
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            color: var(--text-dark);
+            font-size: 18px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .map-btn:hover {
+            transform: scale(1.1);
+            color: var(--primary-blue);
+        }
+
+        .map-btn.active {
+            background: var(--primary-blue);
+            color: var(--white);
+        }
+
+        /* Recent Locations */
+        .recent-locations {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--white);
+            border-radius: 24px 24px 0 0;
+            padding: 20px;
+            box-shadow: 0 -4px 20px rgba(0,0,0,0.1);
+            z-index: 100;
+            max-height: 45%;
+            overflow-y: auto;
+            transform: translateY(0);
+            transition: transform 0.3s ease;
+        }
+
+        .recent-locations.collapsed {
+            transform: translateY(calc(100% - 60px));
+        }
+
+        .drag-handle {
+            width: 40px;
+            height: 4px;
+            background: var(--border-color);
+            border-radius: 2px;
+            margin: 0 auto 16px;
+            cursor: pointer;
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .clear-all {
+            font-size: 12px;
+            color: var(--primary-blue);
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .location-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 8px;
+        }
+
+        .location-item:hover {
+            background: var(--bg-gray);
+        }
+
+        .location-icon-small {
+            width: 40px;
+            height: 40px;
+            background: var(--light-blue);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary-blue);
+            font-size: 16px;
+        }
+
+        .location-details {
+            flex: 1;
+        }
+
+        .location-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 2px;
+        }
+
+        .location-address {
+            font-size: 12px;
+            color: var(--text-muted);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 220px;
+        }
+
+        .location-type {
+            font-size: 11px;
+            color: var(--success);
+            font-weight: 500;
+            background: rgba(16, 185, 129, 0.1);
+            padding: 4px 8px;
+            border-radius: 6px;
+        }
+
+        /* Confirm Button */
+        .confirm-section {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--white);
+            padding: 16px 24px 30px;
+            border-top: 1px solid var(--border-color);
+            z-index: 101;
+            box-shadow: 0 -4px 20px rgba(0,0,0,0.08);
+        }
+
+        .route-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .route-detail {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .route-detail i {
+            color: var(--primary-blue);
+        }
+
+        .price-estimate {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-dark);
+        }
+
+        .btn-confirm {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, var(--primary-blue), var(--secondary-blue));
+            color: var(--white);
+            border: none;
+            border-radius: 16px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 8px 20px rgba(37, 99, 235, 0.3);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-confirm:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 24px rgba(37, 99, 235, 0.4);
+        }
+
+        .btn-confirm:disabled {
+            background: var(--text-muted);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        /* Search Results Dropdown */
+        .search-results {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: var(--white);
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+            margin-top: 8px;
+            max-height: 300px;
+            overflow-y: auto;
+            z-index: 200;
+            display: none;
+        }
+
+        .search-results.active {
+            display: block;
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .result-item {
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--border-color);
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .result-item:hover {
+            background: var(--bg-gray);
+        }
+
+        .result-item:last-child {
+            border-bottom: none;
+        }
+
+        .result-main {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-dark);
+            margin-bottom: 2px;
+        }
+
+        .result-sub {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        /* Loading State */
+        .loading-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255,255,255,0.9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 150;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s;
+        }
+
+        .loading-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(37, 99, 235, 0.2);
+            border-top-color: var(--primary-blue);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Pulse Animation for Current Location */
+        .pulse-ring {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--primary-blue);
+            opacity: 0.3;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 0.3; }
+            100% { transform: scale(3); opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-content">
+                <button class="back-btn" onclick="goBack()">
+                    <i class="fa-solid fa-arrow-left"></i>
+                </button>
+                <h1 class="header-title">Set Location</h1>
+            </div>
+        </div>
+
+        <!-- Location Inputs -->
+        <div class="location-inputs">
+            <div class="input-row">
+                <div class="location-icon pickup-icon">
+                    <i class="fa-solid fa-location-dot"></i>
+                </div>
+                <div class="input-wrapper">
+                    <input type="text" class="location-input" id="pickupInput" placeholder="Enter pickup location" autocomplete="off">
+                    <div class="input-actions">
+                        <button class="clear-btn" onclick="clearInput('pickup')" style="display: none;">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
+                        <button class="locate-btn" onclick="getCurrentLocation()">
+                            <i class="fa-solid fa-crosshairs"></i>
+                        </button>
+                    </div>
+                    <div class="search-results" id="pickupResults"></div>
+                </div>
+                <div class="connector-line"></div>
+            </div>
+
+            <div class="input-row">
+                <div class="location-icon dropoff-icon">
+                    <i class="fa-solid fa-flag-checkered"></i>
+                </div>
+                <div class="input-wrapper">
+                    <input type="text" class="location-input" id="dropoffInput" placeholder="Enter drop-off location" autocomplete="off">
+                    <div class="input-actions">
+                        <button class="clear-btn" onclick="clearInput('dropoff')" style="display: none;">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
+                    </div>
+                    <div class="search-results" id="dropoffResults"></div>
+                </div>
+                <button class="swap-btn" onclick="swapLocations()" title="Swap locations">
+                    <i class="fa-solid fa-arrow-right-arrow-left"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Map Container -->
+        <div class="map-container">
+            <div id="map"></div>
+            
+            <!-- Center Pin -->
+            <div class="center-pin" id="centerPin">
+                <i class="fa-solid fa-location-dot"></i>
+            </div>
+
+            <!-- Map Controls -->
+            <div class="map-controls">
+                <button class="map-btn" onclick="zoomIn()" title="Zoom in">
+                    <i class="fa-solid fa-plus"></i>
+                </button>
+                <button class="map-btn" onclick="zoomOut()" title="Zoom out">
+                    <i class="fa-solid fa-minus"></i>
+                </button>
+                <button class="map-btn" id="locateBtn" onclick="centerOnLocation()" title="My location">
+                    <i class="fa-solid fa-crosshairs"></i>
+                </button>
+                <button class="map-btn" onclick="toggleTraffic()" title="Traffic">
+                    <i class="fa-solid fa-traffic-light"></i>
+                </button>
+            </div>
+
+            <!-- Loading Overlay -->
+            <div class="loading-overlay" id="loadingOverlay">
+                <div class="spinner"></div>
+            </div>
+        </div>
+
+        <!-- Recent Locations -->
+        <div class="recent-locations" id="recentLocations">
+            <div class="drag-handle" onclick="toggleRecent()"></div>
+            <div class="section-title">
+                <span>Recent Locations</span>
+                <span class="clear-all" onclick="clearRecent()">Clear All</span>
+            </div>
+            
+            <div class="location-item" onclick="selectRecent('Alaminos City Hall', 'Alaminos, Pangasinan', 'pickup')">
+                <div class="location-icon-small">
+                    <i class="fa-solid fa-building-columns"></i>
+                </div>
+                <div class="location-details">
+                    <div class="location-name">Alaminos City Hall</div>
+                    <div class="location-address">Alaminos, Pangasinan</div>
+                </div>
+                <span class="location-type">Pickup</span>
+            </div>
+
+            <div class="location-item" onclick="selectRecent('SM City Urdaneta', 'Urdaneta City, Pangasinan', 'dropoff')">
+                <div class="location-icon-small">
+                    <i class="fa-solid fa-bag-shopping"></i>
+                </div>
+                <div class="location-details">
+                    <div class="location-name">SM City Urdaneta</div>
+                    <div class="location-address">Urdaneta City, Pangasinan</div>
+                </div>
+                <span class="location-type">Drop-off</span>
+            </div>
+
+            <div class="location-item" onclick="selectRecent('Hundred Islands', 'Lucap, Alaminos', 'pickup')">
+                <div class="location-icon-small">
+                    <i class="fa-solid fa-water"></i>
+                </div>
+                <div class="location-details">
+                    <div class="location-name">Hundred Islands</div>
+                    <div class="location-address">Lucap, Alaminos</div>
+                </div>
+            </div>
+
+            <div class="location-item" onclick="selectRecent('Alaminos Doctors Hospital', 'Alaminos, Pangasinan', 'dropoff')">
+                <div class="location-icon-small">
+                    <i class="fa-solid fa-hospital"></i>
+                </div>
+                <div class="location-details">
+                    <div class="location-name">Alaminos Doctors Hospital</div>
+                    <div class="location-address">Alaminos, Pangasinan</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Confirm Section -->
+        <div class="confirm-section" id="confirmSection">
+            <div class="route-info">
+                <div class="route-detail">
+                    <i class="fa-solid fa-road"></i>
+                    <span id="distanceText">Select locations</span>
+                </div>
+                <div class="route-detail">
+                    <i class="fa-regular fa-clock"></i>
+                    <span id="timeText">--</span>
+                </div>
+                <div class="price-estimate" id="priceText">--</div>
+            </div>
+            <button class="btn-confirm" id="confirmBtn" onclick="confirmLocation()" disabled>
+                <span>Confirm Location</span>
+                <i class="fa-solid fa-arrow-right"></i>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Initialize map
+        let map;
+        let pickupMarker = null;
+        let dropoffMarker = null;
+        let routeLine = null;
+        let currentLocation = [16.1554, 119.9806]; // Alaminos City coordinates
+        
+        // Initialize Leaflet map
+        function initMap() {
+            map = L.map('map', {
+                zoomControl: false,
+                attributionControl: false
+            }).setView(currentLocation, 14);
+
+            // Add OpenStreetMap tiles
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 19,
+            }).addTo(map);
+
+            // Add current location marker
+            const currentIcon = L.divIcon({
+                className: 'custom-div-icon',
+                html: `<div style="background: #2563EB; width: 16px; height: 16px; border-radius: 50%; border: 3px solid white; box-shadow: 0 2px 8px rgba(0,0,0,0.3);"></div>
+                       <div class="pulse-ring" style="position: absolute; top: -2px; left: -2px;"></div>`,
+                iconSize: [20, 20],
+                iconAnchor: [10, 10]
+            });
+
+            L.marker(currentLocation, {icon: currentIcon}).addTo(map);
+        }
+
+        // Initialize on load
+        window.onload = function() {
+            initMap();
+            setupSearchListeners();
+        };
+
+        // Search functionality
+        function setupSearchListeners() {
+            const pickupInput = document.getElementById('pickupInput');
+            const dropoffInput = document.getElementById('dropoffInput');
+
+            pickupInput.addEventListener('input', (e) => debounceSearch(e, 'pickup'));
+            dropoffInput.addEventListener('input', (e) => debounceSearch(e, 'dropoff'));
+
+            // Hide results when clicking outside
+            document.addEventListener('click', (e) => {
+                if (!e.target.closest('.input-wrapper')) {
+                    document.querySelectorAll('.search-results').forEach(el => el.classList.remove('active'));
+                }
+            });
+        }
+
+        let searchTimeout;
+        function debounceSearch(e, type) {
+            clearTimeout(searchTimeout);
+            const value = e.target.value;
+            
+            // Show/hide clear button
+            const clearBtn = e.target.parentElement.querySelector('.clear-btn');
+            clearBtn.style.display = value ? 'block' : 'none';
+
+            if (value.length > 2) {
+                searchTimeout = setTimeout(() => performSearch(value, type), 300);
+            } else {
+                document.getElementById(`${type}Results`).classList.remove('active');
+            }
+        }
+
+        // Mock search results
+        function performSearch(query, type) {
+            const results = [
+                { name: 'Alaminos City Hall', address: 'Alaminos, Pangasinan' },
+                { name: 'Hundred Islands National Park', address: 'Lucap, Alaminos' },
+                { name: 'SM City Urdaneta', address: 'Urdaneta City, Pangasinan' },
+                { name: 'Alaminos Doctors Hospital', address: 'Alaminos, Pangasinan' },
+                { name: 'University of Luzon', address: 'Alaminos, Pangasinan' },
+                { name: 'City Plaza', address: 'Poblacion, Alaminos' }
+            ].filter(item => item.name.toLowerCase().includes(query.toLowerCase()));
+
+            displayResults(results, type);
+        }
+
+        function displayResults(results, type) {
+            const container = document.getElementById(`${type}Results`);
+            container.innerHTML = '';
+            
+            if (results.length === 0) {
+                container.innerHTML = '<div class="result-item"><div class="result-main">No results found</div></div>';
+            } else {
+                results.forEach(result => {
+                    const div = document.createElement('div');
+                    div.className = 'result-item';
+                    div.innerHTML = `
+                        <div class="result-main">${result.name}</div>
+                        <div class="result-sub">${result.address}</div>
+                    `;
+                    div.onclick = () => selectLocation(result, type);
+                    container.appendChild(div);
+                });
+            }
+            
+            container.classList.add('active');
+        }
+
+        function selectLocation(result, type) {
+            const input = document.getElementById(`${type}Input`);
+            input.value = result.name;
+            document.getElementById(`${type}Results`).classList.remove('active');
+            
+            // Mock coordinates for demo
+            const coords = [
+                currentLocation[0] + (Math.random() - 0.5) * 0.02,
+                currentLocation[1] + (Math.random() - 0.5) * 0.02
+            ];
+            
+            addMarker(coords, type, result.name);
+            checkRoute();
+        }
+
+        function addMarker(coords, type, title) {
+            const icon = L.divIcon({
+                className: 'custom-div-icon',
+                html: `<div style="background: ${type === 'pickup' ? '#2563EB' : '#F97316'}; 
+                                width: 24px; height: 24px; border-radius: 50% 50% 50% 0; 
+                                transform: rotate(-45deg); border: 3px solid white; 
+                                box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+                                display: flex; align-items: center; justify-content: center;">
+                        <i class="fa-solid fa-${type === 'pickup' ? 'location-dot' : 'flag'}" 
+                           style="color: white; font-size: 10px; transform: rotate(45deg);"></i>
+                       </div>`,
+                iconSize: [24, 24],
+                iconAnchor: [12, 24]
+            });
+
+            if (type === 'pickup' && pickupMarker) map.removeLayer(pickupMarker);
+            if (type === 'dropoff' && dropoffMarker) map.removeLayer(dropoffMarker);
+
+            const marker = L.marker(coords, {icon}).addTo(map).bindPopup(title);
+            
+            if (type === 'pickup') pickupMarker = marker;
+            else dropoffMarker = marker;
+
+            map.flyTo(coords, 16);
+        }
+
+        function clearInput(type) {
+            document.getElementById(`${type}Input`).value = '';
+            document.querySelector(`#${type}Input`).parentElement.querySelector('.clear-btn').style.display = 'none';
+            
+            if (type === 'pickup' && pickupMarker) {
+                map.removeLayer(pickupMarker);
+                pickupMarker = null;
+            }
+            if (type === 'dropoff' && dropoffMarker) {
+                map.removeLayer(dropoffMarker);
+                dropoffMarker = null;
+            }
+            
+            checkRoute();
+        }
+
+        function swapLocations() {
+            const pickup = document.getElementById('pickupInput').value;
+            const dropoff = document.getElementById('dropoffInput').value;
+            
+            document.getElementById('pickupInput').value = dropoff;
+            document.getElementById('dropoffInput').value = pickup;
+            
+            // Swap markers
+            const temp = pickupMarker;
+            pickupMarker = dropoffMarker;
+            dropoffMarker = temp;
+            
+            // Update marker colors
+            if (pickupMarker) {
+                const newCoords = pickupMarker.getLatLng();
+                map.removeLayer(pickupMarker);
+                addMarker([newCoords.lat, newCoords.lng], 'pickup', pickup);
+            }
+            if (dropoffMarker) {
+                const newCoords = dropoffMarker.getLatLng();
+                map.removeLayer(dropoffMarker);
+                addMarker([newCoords.lat, newCoords.lng], 'dropoff', dropoff);
+            }
+            
+            checkRoute();
+        }
+
+        function checkRoute() {
+            const hasPickup = !!pickupMarker;
+            const hasDropoff = !!dropoffMarker;
+            const confirmBtn = document.getElementById('confirmBtn');
+            
+            if (hasPickup && hasDropoff) {
+                // Draw route line
+                if (routeLine) map.removeLayer(routeLine);
+                
+                const pickupLatLng = pickupMarker.getLatLng();
+                const dropoffLatLng = dropoffMarker.getLatLng();
+                
+                routeLine = L.polyline(
+                    [[pickupLatLng.lat, pickupLatLng.lng], [dropoffLatLng.lat, dropoffLatLng.lng]],
+                    {color: '#2563EB', weight: 4, opacity: 0.8, dashArray: '10, 10'}
+                ).addTo(map);
+                
+                map.fitBounds(routeLine.getBounds(), {padding: [50, 50]});
+                
+                // Calculate mock distance and price
+                const distance = Math.round(map.distance(pickupLatLng, dropoffLatLng) / 100) / 10;
+                const time = Math.ceil(distance * 2);
+                const price = Math.max(50, Math.ceil(distance * 15));
+                
+                document.getElementById('distanceText').textContent = `${distance} km`;
+                document.getElementById('timeText').textContent = `${time} mins`;
+                document.getElementById('priceText').textContent = `₱${price}`;
+                
+                confirmBtn.disabled = false;
+            } else {
+                if (routeLine) {
+                    map.removeLayer(routeLine);
+                    routeLine = null;
+                }
+                document.getElementById('distanceText').textContent = 'Select locations';
+                document.getElementById('timeText').textContent = '--';
+                document.getElementById('priceText').textContent = '--';
+                confirmBtn.disabled = true;
+            }
+        }
+
+        function getCurrentLocation() {
+            const loading = document.getElementById('loadingOverlay');
+            loading.classList.add('active');
+            
+            setTimeout(() => {
+                document.getElementById('pickupInput').value = 'Current Location';
+                addMarker(currentLocation, 'pickup', 'Current Location');
+                loading.classList.remove('active');
+                checkRoute();
+            }, 1000);
+        }
+
+        function centerOnLocation() {
+            map.flyTo(currentLocation, 16);
+            document.getElementById('locateBtn').classList.add('active');
+            setTimeout(() => document.getElementById('locateBtn').classList.remove('active'), 1000);
+        }
+
+        function zoomIn() {
+            map.zoomIn();
+        }
+
+        function zoomOut() {
+            map.zoomOut();
+        }
+
+        let trafficEnabled = false;
+        function toggleTraffic() {
+            trafficEnabled = !trafficEnabled;
+            // Mock traffic toggle
+            alert(trafficEnabled ? 'Traffic layer enabled' : 'Traffic layer disabled');
+        }
+
+        function selectRecent(name, address, type) {
+            document.getElementById(`${type}Input`).value = name;
+            const coords = [
+                currentLocation[0] + (Math.random() - 0.5) * 0.03,
+                currentLocation[1] + (Math.random() - 0.5) * 0.03
+            ];
+            addMarker(coords, type, name);
+            checkRoute();
+        }
+
+        function toggleRecent() {
+            document.getElementById('recentLocations').classList.toggle('collapsed');
+        }
+
+        function clearRecent() {
+            if (confirm('Clear all recent locations?')) {
+                document.querySelector('.recent-locations').innerHTML = `
+                    <div class="drag-handle" onclick="toggleRecent()"></div>
+                    <div class="section-title">
+                        <span>Recent Locations</span>
+                    </div>
+                    <div style="text-align: center; padding: 20px; color: var(--text-muted);">
+                        No recent locations
+                    </div>
+                `;
+            }
+        }
+
+        function confirmLocation() {
+            const btn = document.getElementById('confirmBtn');
+            btn.innerHTML = '<i class="fa-solid fa-circle-check"></i> Confirmed!';
+            btn.style.background = 'var(--success)';
+            
+            setTimeout(() => {
+                window.location.href = 'Bookdetails.html'; // ✅
+            }, 500);
+        }
+
+        function goBack() {
+            window.history.back();
+        }
+
+        // Map click to set location
+        map && map.on('click', function(e) {
+            if (!pickupMarker) {
+                document.getElementById('pickupInput').value = 'Selected on Map';
+                addMarker([e.latlng.lat, e.latlng.lng], 'pickup', 'Pickup Location');
+            } else if (!dropoffMarker) {
+                document.getElementById('dropoffInput').value = 'Selected on Map';
+                addMarker([e.latlng.lat, e.latlng.lng], 'dropoff', 'Drop-off Location');
+            }
+            checkRoute();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ALAAP - Digital Receipt</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --primary-blue: #2563EB;
+            --secondary-blue: #1D4ED8;
+            --light-blue: #EFF6FF;
+            --text-dark: #1F2937;
+            --text-muted: #6B7280;
+            --bg-gray: #F3F4F6;
+            --white: #FFFFFF;
+            --border-color: #E5E7EB;
+            --success: #10B981;
+            --accent-orange: #F97316;
+            --shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            --radius: 16px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html, body {
+            height: 100%;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        body {
+            background-color: var(--bg-gray);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        @media (min-width: 415px) {
+            body {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                padding: 20px;
+            }
+        }
+
+        .app-container {
+            width: 100%;
+            height: 100%;
+            max-width: 100%;
+            max-height: 100%;
+            background-color: var(--bg-gray);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        @media (min-width: 415px) {
+            .app-container {
+                width: 375px;
+                height: 812px;
+                max-width: 375px;
+                max-height: 812px;
+                border-radius: 40px;
+                box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            }
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, var(--secondary-blue), var(--primary-blue));
+            padding: 50px 24px 24px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .header-content {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .back-btn {
+            width: 40px;
+            height: 40px;
+            background: rgba(255,255,255,0.2);
+            border: none;
+            border-radius: 12px;
+            color: var(--white);
+            font-size: 18px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .back-btn:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateX(-3px);
+        }
+
+        .header-title {
+            color: var(--white);
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        /* Main Content */
+        .content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            padding-bottom: 100px;
+        }
+
+        .content::-webkit-scrollbar {
+            width: 0;
+        }
+
+        /* Success Header */
+        .success-header {
+            text-align: center;
+            margin-bottom: 24px;
+            animation: slideUp 0.5s ease;
+        }
+
+        .success-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--success), #059669);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 16px;
+            box-shadow: 0 10px 30px rgba(16, 185, 129, 0.3);
+            animation: scaleIn 0.5s ease 0.2s both;
+        }
+
+        .success-icon i {
+            font-size: 36px;
+            color: white;
+        }
+
+        .success-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 4px;
+        }
+
+        .success-subtitle {
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+
+        /* Receipt Card */
+        .receipt-card {
+            background: var(--white);
+            border-radius: var(--radius);
+            padding: 24px;
+            margin-bottom: 16px;
+            box-shadow: var(--shadow);
+            position: relative;
+            overflow: hidden;
+            animation: slideUp 0.5s ease 0.1s both;
+        }
+
+        /* Blue gradient top border */
+        .receipt-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-blue), var(--secondary-blue));
+        }
+
+        /* Receipt Header */
+        .receipt-header {
+            text-align: center;
+            padding-bottom: 20px;
+            border-bottom: 2px dashed var(--border-color);
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .receipt-header::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: -34px;
+            width: 20px;
+            height: 20px;
+            background: var(--bg-gray);
+            border-radius: 50%;
+        }
+
+        .receipt-header::before {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            right: -34px;
+            width: 20px;
+            height: 20px;
+            background: var(--bg-gray);
+            border-radius: 50%;
+        }
+
+        .brand-logo {
+            font-size: 28px;
+            font-weight: 800;
+            color: var(--primary-blue);
+            margin-bottom: 4px;
+            letter-spacing: 2px;
+        }
+
+        .brand-tagline {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        /* Transaction Details */
+        .transaction-section {
+            margin-bottom: 20px;
+        }
+
+        .section-label {
+            font-size: 11px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .detail-row:last-child {
+            border-bottom: none;
+        }
+
+        .detail-label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+
+        .detail-label i {
+            width: 32px;
+            height: 32px;
+            background: var(--light-blue);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary-blue);
+            font-size: 14px;
+        }
+
+        .detail-value {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-dark);
+            text-align: right;
+        }
+
+        .detail-value.mono {
+            font-family: 'Space Mono', monospace;
+            font-size: 13px;
+            letter-spacing: 0.5px;
+        }
+
+        .detail-value.status {
+            color: var(--success);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .detail-value.status::before {
+            content: '';
+            width: 8px;
+            height: 8px;
+            background: var(--success);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* Payment Method Badge - Blue theme */
+        .payment-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--light-blue);
+            color: var(--primary-blue);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .payment-badge i {
+            font-size: 16px;
+        }
+
+        /* Amount Section - Blue theme */
+        .amount-section {
+            background: linear-gradient(135deg, var(--light-blue), #DBEAFE);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .amount-label {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-bottom: 4px;
+        }
+
+        .amount-value {
+            font-size: 36px;
+            font-weight: 800;
+            color: var(--primary-blue);
+            font-family: 'Space Mono', monospace;
+        }
+
+        .amount-value span {
+            font-size: 20px;
+        }
+
+        /* QR Code Section */
+        .qr-section {
+            text-align: center;
+            padding-top: 20px;
+            border-top: 2px dashed var(--border-color);
+        }
+
+        .qr-code {
+            width: 140px;
+            height: 140px;
+            background: var(--white);
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            margin: 0 auto 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .qr-pattern {
+            width: 100%;
+            height: 100%;
+            background-image: 
+                repeating-linear-gradient(0deg, var(--text-dark) 0px, var(--text-dark) 4px, transparent 4px, transparent 8px),
+                repeating-linear-gradient(90deg, var(--text-dark) 0px, var(--text-dark) 4px, transparent 4px, transparent 8px);
+            background-size: 8px 8px;
+            opacity: 0.8;
+        }
+
+        .qr-logo {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            background: var(--white);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            color: var(--primary-blue);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .qr-label {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        /* Action Buttons */
+        .action-section {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .action-btn {
+            flex: 1;
+            padding: 14px;
+            border: 2px solid var(--border-color);
+            background: var(--white);
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-dark);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .action-btn:hover {
+            border-color: var(--primary-blue);
+            color: var(--primary-blue);
+            transform: translateY(-2px);
+        }
+
+        .action-btn.primary {
+            background: var(--primary-blue);
+            color: var(--white);
+            border-color: var(--primary-blue);
+        }
+
+        .action-btn.primary:hover {
+            background: var(--secondary-blue);
+            box-shadow: 0 8px 20px rgba(37, 99, 235, 0.3);
+        }
+
+        /* Bottom Action */
+        .bottom-action {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--white);
+            padding: 16px 24px 30px;
+            border-top: 1px solid var(--border-color);
+            box-shadow: 0 -4px 20px rgba(0,0,0,0.05);
+            z-index: 100;
+        }
+
+        .btn-done {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, var(--primary-blue), var(--secondary-blue));
+            color: var(--white);
+            border: none;
+            border-radius: 16px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 8px 20px rgba(37, 99, 235, 0.3);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-done:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 24px rgba(37, 99, 235, 0.4);
+        }
+
+        /* Animations */
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes scaleIn {
+            from { transform: scale(0); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        /* Print Styles */
+        @media print {
+            .app-container {
+                width: 100%;
+                height: auto;
+                max-height: none;
+                border-radius: 0;
+                box-shadow: none;
+            }
+            
+            .header, .bottom-action, .action-section {
+                display: none;
+            }
+            
+            .content {
+                padding-bottom: 20px;
+            }
+        }
+    </style>
+<base target="_blank">
+</head>
+<body>
+
+    <div class="app-container">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-content">
+                <button class="back-btn" onclick="goBack()">
+                    <i class="fa-solid fa-arrow-left"></i>
+                </button>
+                <h1 class="header-title">Digital Receipt</h1>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="content">
+            <!-- Success Header -->
+            <div class="success-header">
+                <div class="success-icon">
+                    <i class="fa-solid fa-check"></i>
+                </div>
+                <h2 class="success-title">Payment Successful!</h2>
+                <p class="success-subtitle">Your transaction has been completed</p>
+            </div>
+
+            <!-- Receipt Card -->
+            <div class="receipt-card">
+                <!-- Receipt Header -->
+                <div class="receipt-header">
+                    <div class="brand-logo">ALAAP</div>
+                    <div class="brand-tagline">Your Ride, Your Way</div>
+                </div>
+
+                <!-- Transaction Details -->
+                <div class="transaction-section">
+                    <div class="section-label">Transaction Details</div>
+                    
+                    <div class="detail-row">
+                        <div class="detail-label">
+                            <i class="fa-solid fa-receipt"></i>
+                            <span>Transaction ID</span>
+                        </div>
+                        <div class="detail-value mono" id="transactionId">TXN-2024-000000</div>
+                    </div>
+
+                    <div class="detail-row">
+                        <div class="detail-label">
+                            <i class="fa-solid fa-calendar"></i>
+                            <span>Date & Time</span>
+                        </div>
+                        <div class="detail-value" id="dateTime">--</div>
+                    </div>
+
+                    <div class="detail-row">
+                        <div class="detail-label">
+                            <i class="fa-solid fa-circle-info"></i>
+                            <span>Status</span>
+                        </div>
+                        <div class="detail-value status">Completed</div>
+                    </div>
+                </div>
+
+                <!-- Payment Method -->
+                <div class="transaction-section">
+                    <div class="section-label">Payment Method</div>
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div class="payment-badge" id="paymentMethod">
+                            <i class="fa-solid fa-money-bill-wave"></i>
+                            <span>Cash on Delivery</span>
+                        </div>
+                        <span style="font-size: 12px; color: var(--text-muted);">Ref: #REF-000000</span>
+                    </div>
+                </div>
+
+                <!-- Amount -->
+                <div class="amount-section">
+                    <div class="amount-label">Total Amount Paid</div>
+                    <div class="amount-value"><span>₱</span>198.00</div>
+                </div>
+
+                <!-- QR Code -->
+                <div class="qr-section">
+                    <div class="qr-code">
+                        <div class="qr-pattern"></div>
+                        <div class="qr-logo">
+                            <i class="fa-solid fa-motorcycle"></i>
+                        </div>
+                    </div>
+                    <div class="qr-label">Scan to verify transaction</div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="action-section">
+                    <button class="action-btn" onclick="downloadReceipt()">
+                        <i class="fa-solid fa-download"></i>
+                        Save
+                    </button>
+                    <button class="action-btn primary" onclick="shareReceipt()">
+                        <i class="fa-solid fa-share-nodes"></i>
+                        Share
+                    </button>
+                </div>
+            </div>
+
+            <!-- Additional Info -->
+            <div style="text-align: center; padding: 20px;">
+                <p style="font-size: 12px; color: var(--text-muted); line-height: 1.6;">
+                    Thank you for using ALAAP!<br>
+                    For any concerns, contact support@alaap.com<br>
+                    or call +63 912 345 6789
+                </p>
+            </div>
+        </div>
+
+        <!-- Bottom Action -->
+        <div class="bottom-action">
+            <button class="btn-done" onclick="goHome()">
+                <i class="fa-solid fa-house"></i>
+                <span>Back to Home</span>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Generate Transaction ID
+        function generateTransactionId() {
+            const date = new Date();
+            const year = date.getFullYear();
+            const random = Math.floor(100000 + Math.random() * 900000);
+            return `TXN-${year}-${random}`;
+        }
+
+        // Format Date and Time
+        function formatDateTime() {
+            const date = new Date();
+            const options = { 
+                year: 'numeric', 
+                month: 'short', 
+                day: 'numeric',
+                hour: '2-digit', 
+                minute: '2-digit',
+                hour12: true
+            };
+            return date.toLocaleString('en-PH', options);
+        }
+
+        // Initialize page
+        window.onload = function() {
+            document.getElementById('transactionId').textContent = generateTransactionId();
+            document.getElementById('dateTime').textContent = formatDateTime();
+        };
+
+        // Navigation functions
+        function goBack() {
+            window.history.back();
+        }
+
+        function goHome() {
+            window.location.href = 'Dashboard.html';
+        }
+
+        // Action functions
+        function downloadReceipt() {
+            // Simulate download
+            const btn = event.target.closest('.action-btn');
+            const originalContent = btn.innerHTML;
+            
+            btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Saving...';
+            
+            setTimeout(() => {
+                btn.innerHTML = '<i class="fa-solid fa-check"></i> Saved!';
+                btn.style.borderColor = 'var(--success)';
+                btn.style.color = 'var(--success)';
+                
+                setTimeout(() => {
+                    btn.innerHTML = originalContent;
+                    btn.style.borderColor = '';
+                    btn.style.color = '';
+                }, 2000);
+            }, 1500);
+        }
+
+        function shareReceipt() {
+            // Check if Web Share API is available
+            if (navigator.share) {
+                navigator.share({
+                    title: 'ALAAP Receipt',
+                    text: `Transaction ${document.getElementById('transactionId').textContent} - ₱198.00 paid via Cash on Delivery`,
+                    url: window.location.href
+                }).catch(err => console.log('Share cancelled'));
+            } else {
+                // Fallback - copy to clipboard
+                const receiptText = `ALAAP Receipt\nTransaction ID: ${document.getElementById('transactionId').textContent}\nAmount: ₱198.00\nDate: ${document.getElementById('dateTime').textContent}`;
+                
+                navigator.clipboard.writeText(receiptText).then(() => {
+                    alert('Receipt details copied to clipboard!');
+                });
+            }
+        }
+
+        // Get URL parameters (if coming from previous page)
+        const urlParams = new URLSearchParams(window.location.search);
+        const paymentMethod = urlParams.get('payment') || 'cod';
+        
+        // Update payment method display based on parameter
+        if (paymentMethod === 'gcash') {
+            document.getElementById('paymentMethod').innerHTML = `
+                <i class="fa-solid fa-wallet"></i>
+                <span>GCash</span>
+            `;
+            document.getElementById('paymentMethod').style.background = '#E0F2FE';
+            document.getElementById('paymentMethod').style.color = '#0077B6';
+        }
+    </script>
+</body>
+</html>
