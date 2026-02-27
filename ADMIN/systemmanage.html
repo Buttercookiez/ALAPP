@@ -1,0 +1,1222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ALAAP Admin - System Management</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+   
+    <style>
+        :root {
+            --primary-blue: #2563EB;
+            --secondary-blue: #1D4ED8;
+            --light-blue: #EFF6FF;
+            --text-dark: #1F2937;
+            --text-muted: #6B7280;
+            --bg-gray: #F3F4F6;
+            --white: #FFFFFF;
+            --border-color: #E5E7EB;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --danger: #EF4444;
+            --purple: #8B5CF6;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html, body {
+            height: 100%;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        body {
+            background-color: var(--bg-gray);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .app-container {
+            width: 100%;
+            height: 100%;
+            max-width: 100%;
+            max-height: 100%;
+            background-color: var(--bg-gray);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        @media (min-width: 415px) {
+            body {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                padding: 20px;
+            }
+            
+            .app-container {
+                width: 375px;
+                height: 812px;
+                max-width: 375px;
+                max-height: 812px;
+                border-radius: 40px;
+                box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Header */
+        .admin-header {
+            background: linear-gradient(135deg, var(--secondary-blue), var(--primary-blue));
+            padding: 20px;
+            color: var(--white);
+            position: relative;
+            z-index: 10;
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .back-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: var(--white);
+            font-size: 18px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .back-btn:hover {
+            background: rgba(255,255,255,0.3);
+        }
+
+        .header-title {
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .notification-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: var(--white);
+            font-size: 18px;
+            cursor: pointer;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            width: 8px;
+            height: 8px;
+            background: var(--danger);
+            border-radius: 50%;
+        }
+
+        /* Management Tabs */
+        .management-tabs {
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+            scrollbar-width: none;
+            padding-bottom: 5px;
+        }
+
+        .management-tabs::-webkit-scrollbar {
+            display: none;
+        }
+
+        .mgmt-tab {
+            padding: 10px 16px;
+            background: rgba(255,255,255,0.15);
+            border: none;
+            border-radius: 20px;
+            color: var(--white);
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.3s ease;
+        }
+
+        .mgmt-tab:hover {
+            background: rgba(255,255,255,0.25);
+        }
+
+        .mgmt-tab.active {
+            background: var(--white);
+            color: var(--primary-blue);
+        }
+
+        /* Content Area */
+        .content-area {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            scrollbar-width: none;
+        }
+
+        .content-area::-webkit-scrollbar {
+            display: none;
+        }
+
+        .page-section {
+            display: none;
+            animation: fadeIn 0.4s ease forwards;
+        }
+
+        .page-section.active {
+            display: block;
+        }
+
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: var(--white);
+            padding: 16px;
+            border-radius: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-bottom: 4px;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text-dark);
+        }
+
+        .stat-trend {
+            font-size: 11px;
+            margin-top: 4px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .trend-up { color: var(--success); }
+        .trend-down { color: var(--danger); }
+
+        /* Search & Filter */
+        .search-filter-bar {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+
+        .search-box {
+            flex: 1;
+            position: relative;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 12px 16px 12px 44px;
+            border: none;
+            border-radius: 12px;
+            background: var(--white);
+            font-size: 14px;
+            outline: none;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+        }
+
+        .filter-btn {
+            width: 44px;
+            height: 44px;
+            border: none;
+            border-radius: 12px;
+            background: var(--white);
+            color: var(--text-dark);
+            font-size: 16px;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* List Items */
+        .list-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .list-item {
+            background: var(--white);
+            border-radius: 16px;
+            padding: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .list-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .item-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            background: var(--light-blue);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            color: var(--primary-blue);
+            flex-shrink: 0;
+        }
+
+        .item-avatar.rider {
+            background: #FEF3C7;
+            color: var(--warning);
+        }
+
+        .item-avatar.customer {
+            background: #F3E8FF;
+            color: var(--purple);
+        }
+
+        .item-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 12px;
+        }
+
+        .item-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .item-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 2px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .item-subtitle {
+            font-size: 12px;
+            color: var(--text-muted);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .item-meta {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 4px;
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        .status-badge {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .status-pending {
+            background: #FEF3C7;
+            color: #92400E;
+        }
+
+        .status-confirmed {
+            background: #DBEAFE;
+            color: #1E40AF;
+        }
+
+        .status-delivered {
+            background: #D1FAE5;
+            color: #065F46;
+        }
+
+        .status-cancelled {
+            background: #FEE2E2;
+            color: #991B1B;
+        }
+
+        .status-active {
+            background: #D1FAE5;
+            color: #065F46;
+        }
+
+        .status-inactive {
+            background: #E5E7EB;
+            color: #374151;
+        }
+
+        .status-verified {
+            background: #D1FAE5;
+            color: #065F46;
+        }
+
+        .status-unverified {
+            background: #FEE2E2;
+            color: #991B1B;
+        }
+
+        .item-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .action-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .action-btn.view {
+            background: var(--light-blue);
+            color: var(--primary-blue);
+        }
+
+        .action-btn.approve {
+            background: #D1FAE5;
+            color: var(--success);
+        }
+
+        .action-btn.reject {
+            background: #FEE2E2;
+            color: var(--danger);
+        }
+
+        .action-btn:hover {
+            transform: scale(1.1);
+        }
+
+        /* Verification Specific Styles */
+        .id-preview {
+            width: 60px;
+            height: 40px;
+            border-radius: 6px;
+            background: var(--bg-gray);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            color: var(--text-muted);
+            cursor: pointer;
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+        }
+
+        .id-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-muted);
+        }
+
+        .empty-state i {
+            font-size: 48px;
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+
+        .empty-state h3 {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 8px;
+        }
+
+        /* Bottom Navigation */
+        .bottom-nav {
+            background: var(--white);
+            padding: 12px 24px 24px;
+            display: flex;
+            justify-content: space-around;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            color: var(--text-muted);
+            font-size: 11px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .nav-item i {
+            font-size: 20px;
+        }
+
+        .nav-item.active {
+            color: var(--primary-blue);
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 100;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--white);
+            border-radius: 20px;
+            width: 100%;
+            max-width: 320px;
+            overflow: hidden;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .modal-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .modal-body {
+            padding: 20px;
+        }
+
+        .modal-footer {
+            padding: 16px 20px;
+            display: flex;
+            gap: 10px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .btn {
+            flex: 1;
+            padding: 12px;
+            border-radius: 10px;
+            border: none;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-secondary {
+            background: var(--bg-gray);
+            color: var(--text-dark);
+        }
+
+        .btn-primary-modal {
+            background: var(--primary-blue);
+            color: var(--white);
+        }
+
+        .id-image-large {
+            width: 100%;
+            height: 200px;
+            background: var(--bg-gray);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 16px;
+            overflow: hidden;
+        }
+
+        .id-image-large img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 14px;
+        }
+
+        .detail-row:last-child {
+            border-bottom: none;
+        }
+
+        .detail-label {
+            color: var(--text-muted);
+        }
+
+        .detail-value {
+            font-weight: 500;
+            color: var(--text-dark);
+        }
+
+        @media (max-height: 700px) {
+            .admin-header {
+                padding: 16px;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 10px;
+            }
+            
+            .stat-card {
+                padding: 12px;
+            }
+            
+            .stat-value {
+                font-size: 20px;
+            }
+        }
+    </style>
+<base target="_blank">
+</head>
+<body>
+
+    <div class="app-container">
+        <!-- Header -->
+        <div class="admin-header">
+            <div class="header-top">
+                <button class="back-btn">
+                    <i class="fa-solid fa-arrow-left"></i>
+                </button>
+                <h1 class="header-title">System Management</h1>
+                <button class="notification-btn">
+                    <i class="fa-regular fa-bell"></i>
+                    <span class="notification-badge"></span>
+                </button>
+            </div>
+            
+            <div class="management-tabs">
+                <button class="mgmt-tab active" onclick="switchPage('bookings')">
+                    <i class="fa-solid fa-calendar-check"></i> Bookings
+                </button>
+                <button class="mgmt-tab" onclick="switchPage('riders')">
+                    <i class="fa-solid fa-motorcycle"></i> Riders
+                </button>
+                <button class="mgmt-tab" onclick="switchPage('verification')">
+                    <i class="fa-solid fa-id-card"></i> Verification
+                </button>
+            </div>
+        </div>
+
+        <!-- Content Area -->
+        <div class="content-area">
+            
+            <!-- 36. Booking Management Page -->
+            <div class="page-section active" id="page-bookings">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-label">Total Bookings</div>
+                        <div class="stat-value">1,284</div>
+                        <div class="stat-trend trend-up">
+                            <i class="fa-solid fa-arrow-up"></i> 12.5%
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Pending</div>
+                        <div class="stat-value">24</div>
+                        <div class="stat-trend trend-down">
+                            <i class="fa-solid fa-arrow-down"></i> 3.2%
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Confirmed</div>
+                        <div class="stat-value">156</div>
+                        <div class="stat-trend trend-up">
+                            <i class="fa-solid fa-arrow-up"></i> 8.1%
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Delivered</div>
+                        <div class="stat-value">1,104</div>
+                        <div class="stat-trend trend-up">
+                            <i class="fa-solid fa-arrow-up"></i> 15.3%
+                        </div>
+                    </div>
+                </div>
+
+                <div class="search-filter-bar">
+                    <div class="search-box">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <input type="text" placeholder="Search bookings...">
+                    </div>
+                    <button class="filter-btn">
+                        <i class="fa-solid fa-filter"></i>
+                    </button>
+                </div>
+
+                <div class="list-container">
+                    <div class="list-item">
+                        <div class="item-avatar">
+                            <i class="fa-solid fa-box"></i>
+                        </div>
+                        <div class="item-info">
+                            <div class="item-title">#ORD-2024-001234</div>
+                            <div class="item-subtitle">Juan Dela Cruz • 3 items</div>
+                            <div class="item-meta">
+                                <i class="fa-regular fa-clock"></i> Today, 2:30 PM
+                            </div>
+                        </div>
+                        <span class="status-badge status-pending">Pending</span>
+                        <div class="item-actions">
+                            <button class="action-btn view" onclick="showBookingDetail('001234')">
+                                <i class="fa-solid fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="list-item">
+                        <div class="item-avatar">
+                            <i class="fa-solid fa-box"></i>
+                        </div>
+                        <div class="item-info">
+                            <div class="item-title">#ORD-2024-001233</div>
+                            <div class="item-subtitle">Maria Santos • 5 items</div>
+                            <div class="item-meta">
+                                <i class="fa-regular fa-clock"></i> Today, 1:15 PM
+                            </div>
+                        </div>
+                        <span class="status-badge status-confirmed">Confirmed</span>
+                        <div class="item-actions">
+                            <button class="action-btn view">
+                                <i class="fa-solid fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="list-item">
+                        <div class="item-avatar">
+                            <i class="fa-solid fa-box"></i>
+                        </div>
+                        <div class="item-info">
+                            <div class="item-title">#ORD-2024-001232</div>
+                            <div class="item-subtitle">Pedro Reyes • 2 items</div>
+                            <div class="item-meta">
+                                <i class="fa-regular fa-clock"></i> Yesterday, 5:45 PM
+                            </div>
+                        </div>
+                        <span class="status-badge status-delivered">Delivered</span>
+                        <div class="item-actions">
+                            <button class="action-btn view">
+                                <i class="fa-solid fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="list-item">
+                        <div class="item-avatar">
+                            <i class="fa-solid fa-box"></i>
+                        </div>
+                        <div class="item-info">
+                            <div class="item-title">#ORD-2024-001231</div>
+                            <div class="item-subtitle">Ana Lim • 1 item</div>
+                            <div class="item-meta">
+                                <i class="fa-regular fa-clock"></i> Yesterday, 3:20 PM
+                            </div>
+                        </div>
+                        <span class="status-badge status-cancelled">Cancelled</span>
+                        <div class="item-actions">
+                            <button class="action-btn view">
+                                <i class="fa-solid fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="list-item">
+                        <div class="item-avatar">
+                            <i class="fa-solid fa-box"></i>
+                        </div>
+                        <div class="item-info">
+                            <div class="item-title">#ORD-2024-001230</div>
+                            <div class="item-subtitle">Carlos Tan • 4 items</div>
+                            <div class="item-meta">
+                                <i class="fa-regular fa-clock"></i> Yesterday, 11:00 AM
+                            </div>
+                        </div>
+                        <span class="status-badge status-delivered">Delivered</span>
+                        <div class="item-actions">
+                            <button class="action-btn view">
+                                <i class="fa-solid fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 37. Rider Management Page -->
+            <div class="page-section" id="page-riders">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-label">Total Riders</div>
+                        <div class="stat-value">48</div>
+                        <div class="stat-trend trend-up">
+                            <i class="fa-solid fa-arrow-up"></i> 4 new
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Active Now</div>
+                        <div class="stat-value">32</div>
+                        <div class="stat-trend trend-up">
+                            <i class="fa-solid fa-arrow-up"></i> 66%
+                        </div>
+                    </div>
+                </div>
+
+                <div class="search-filter-bar">
+                    <div class="search-box">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <input type="text" placeholder="Search riders...">
+                    </div>
+                    <button class="filter-btn">
+                        <i class="fa-solid fa-filter"></i>
+                    </button>
+                </div>
+
+                <div class="list-container">
+                    <div class="list-item">
+                        <div class="item-avatar rider">
+                            <i class="fa-solid fa-user"></i>
+                        </div>
+                        <div class="item-info">
+                            <div class="item-title">Miguel Rodriguez</div>
+                            <div class="item-subtitle">ID: RID-001 • 4.9 ★</div>
+                            <div class="item-meta">
+                                <i class="fa-solid fa-motorcycle"></i> 1,240 deliveries
+                            </div>
+                        </div>
+                        <span class="status-badge status-active">Active</span>
+                        <div class="item-actions">
+                            <button class="action-btn view">
+                                <i class="fa-solid fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="list-item">
+                        <div class="item-avatar rider">
+                            <i class="fa-solid fa-user"></i>
+                        </div>
+                        <div class="item-info">
+                            <div class="item-title">John David Cruz</div>
+                            <div class="item-subtitle">ID: RID-002 • 4.8 ★</div>
+                            <div class="item-meta">
+                                <i class="fa-solid fa-motorcycle"></i> 985 deliveries
+                            </div>
+                        </div>
+                        <span class="status-badge status-active">Active</span>
+                        <div class="item-actions">
+                            <button class="action-btn view">
+                                <i class="fa-solid fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="list-item">
+                        <div class="item-avatar rider">
+                            <i class="fa-solid fa-user"></i>
+                        </div>
+                        <div class="item-info">
+                            <div class="item-title">Ramon Santos</div>
+                            <div class="item-subtitle">ID: RID-003 • 4.7 ★</div>
+                            <div class="item-meta">
+                                <i class="fa-solid fa-motorcycle"></i> 756 deliveries
+                            </div>
+                        </div>
+                        <span class="status-badge status-inactive">Inactive</span>
+                        <div class="item-actions">
+                            <button class="action-btn view">
+                                <i class="fa-solid fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="list-item">
+                        <div class="item-avatar rider">
+                            <i class="fa-solid fa-user"></i>
+                        </div>
+                        <div class="item-info">
+                            <div class="item-title">Kevin Bautista</div>
+                            <div class="item-subtitle">ID: RID-004 • 5.0 ★</div>
+                            <div class="item-meta">
+                                <i class="fa-solid fa-motorcycle"></i> 2,100 deliveries
+                            </div>
+                        </div>
+                        <span class="status-badge status-active">Active</span>
+                        <div class="item-actions">
+                            <button class="action-btn view">
+                                <i class="fa-solid fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="list-item">
+                        <div class="item-avatar rider">
+                            <i class="fa-solid fa-user"></i>
+                        </div>
+                        <div class="item-info">
+                            <div class="item-title">Mark Joseph Reyes</div>
+                            <div class="item-subtitle">ID: RID-005 • 4.6 ★</div>
+                            <div class="item-meta">
+                                <i class="fa-solid fa-motorcycle"></i> 432 deliveries
+                            </div>
+                        </div>
+                        <span class="status-badge status-inactive">Inactive</span>
+                        <div class="item-actions">
+                            <button class="action-btn view">
+                                <i class="fa-solid fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 38. Customer Verification Management Page -->
+            <div class="page-section" id="page-verification">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-label">Pending</div>
+                        <div class="stat-value">12</div>
+                        <div class="stat-trend trend-up">
+                            <i class="fa-solid fa-arrow-up"></i> 3 new
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Verified Today</div>
+                        <div class="stat-value">8</div>
+                        <div class="stat-trend trend-up">
+                            <i class="fa-solid fa-check"></i> Done
+                        </div>
+                    </div>
+                </div>
+
+                <div class="search-filter-bar">
+                    <div class="search-box">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <input type="text" placeholder="Search customers...">
+                    </div>
+                    <button class="filter-btn">
+                        <i class="fa-solid fa-filter"></i>
+                    </button>
+                </div>
+
+                <div class="list-container">
+                    <div class="list-item">
+                        <div class="item-avatar customer">
+                            <i class="fa-solid fa-user"></i>
+                        </div>
+                        <div class="item-info">
+                            <div class="item-title">Jennifer Lopez</div>
+                            <div class="item-subtitle">ID: CUST-089 • Driver's License</div>
+                            <div class="item-meta">
+                                <i class="fa-regular fa-clock"></i> Submitted 2 hrs ago
+                            </div>
+                        </div>
+                        <div class="id-preview" onclick="showIDModal('Jennifer Lopez')">
+                            <i class="fa-solid fa-image"></i>
+                        </div>
+                        <div class="item-actions">
+                            <button class="action-btn approve" onclick="approveVerification(this)">
+                                <i class="fa-solid fa-check"></i>
+                            </button>
+                            <button class="action-btn reject" onclick="rejectVerification(this)">
+                                <i class="fa-solid fa-xmark"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="list-item">
+                        <div class="item-avatar customer">
+                            <i class="fa-solid fa-user"></i>
+                        </div>
+                        <div class="item-info">
+                            <div class="item-title">Robert Chen</div>
+                            <div class="item-subtitle">ID: CUST-090 • National ID</div>
+                            <div class="item-meta">
+                                <i class="fa-regular fa-clock"></i> Submitted 3 hrs ago
+                            </div>
+                        </div>
+                        <div class="id-preview" onclick="showIDModal('Robert Chen')">
+                            <i class="fa-solid fa-image"></i>
+                        </div>
+                        <div class="item-actions">
+                            <button class="action-btn approve" onclick="approveVerification(this)">
+                                <i class="fa-solid fa-check"></i>
+                            </button>
+                            <button class="action-btn reject" onclick="rejectVerification(this)">
+                                <i class="fa-solid fa-xmark"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="list-item">
+                        <div class="item-avatar customer">
+                            <i class="fa-solid fa-user"></i>
+                        </div>
+                        <div class="item-info">
+                            <div class="item-title">Sarah Johnson</div>
+                            <div class="item-subtitle">ID: CUST-091 • Passport</div>
+                            <div class="item-meta">
+                                <i class="fa-regular fa-clock"></i> Submitted 5 hrs ago
+                            </div>
+                        </div>
+                        <div class="id-preview" onclick="showIDModal('Sarah Johnson')">
+                            <i class="fa-solid fa-image"></i>
+                        </div>
+                        <div class="item-actions">
+                            <button class="action-btn approve" onclick="approveVerification(this)">
+                                <i class="fa-solid fa-check"></i>
+                            </button>
+                            <button class="action-btn reject" onclick="rejectVerification(this)">
+                                <i class="fa-solid fa-xmark"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="list-item">
+                        <div class="item-avatar customer">
+                            <i class="fa-solid fa-user"></i>
+                        </div>
+                        <div class="item-info">
+                            <div class="item-title">Michael Brown</div>
+                            <div class="item-subtitle">ID: CUST-092 • Driver's License</div>
+                            <div class="item-meta">
+                                <i class="fa-regular fa-clock"></i> Submitted yesterday
+                            </div>
+                        </div>
+                        <div class="id-preview" onclick="showIDModal('Michael Brown')">
+                            <i class="fa-solid fa-image"></i>
+                        </div>
+                        <div class="item-actions">
+                            <button class="action-btn approve" onclick="approveVerification(this)">
+                                <i class="fa-solid fa-check"></i>
+                            </button>
+                            <button class="action-btn reject" onclick="rejectVerification(this)">
+                                <i class="fa-solid fa-xmark"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="list-item">
+                        <div class="item-avatar customer">
+                            <i class="fa-solid fa-user"></i>
+                        </div>
+                        <div class="item-info">
+                            <div class="item-title">Emily Davis</div>
+                            <div class="item-subtitle">ID: CUST-093 • National ID</div>
+                            <div class="item-meta">
+                                <i class="fa-regular fa-clock"></i> Submitted yesterday
+                            </div>
+                        </div>
+                        <div class="id-preview" onclick="showIDModal('Emily Davis')">
+                            <i class="fa-solid fa-image"></i>
+                        </div>
+                        <div class="item-actions">
+                            <button class="action-btn approve" onclick="approveVerification(this)">
+                                <i class="fa-solid fa-check"></i>
+                            </button>
+                            <button class="action-btn reject" onclick="rejectVerification(this)">
+                                <i class="fa-solid fa-xmark"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bottom Navigation -->
+        <div class="bottom-nav">
+            <div class="nav-item">
+                <i class="fa-solid fa-chart-pie"></i>
+                <span>Dashboard</span>
+            </div>
+            <div class="nav-item active">
+                <i class="fa-solid fa-gear"></i>
+                <span>Management</span>
+            </div>
+            <div class="nav-item">
+                <i class="fa-solid fa-user"></i>
+                <span>Profile</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- ID Verification Modal -->
+    <div class="modal" id="idModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">ID Verification</h3>
+            </div>
+            <div class="modal-body">
+                <div class="id-image-large">
+                    <i class="fa-solid fa-id-card" style="font-size: 48px; color: var(--text-muted);"></i>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Customer</span>
+                    <span class="detail-value" id="modalCustomerName">-</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">ID Type</span>
+                    <span class="detail-value">Driver's License</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">ID Number</span>
+                    <span class="detail-value">N01-23-456789</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Submitted</span>
+                    <span class="detail-value">Today, 10:30 AM</span>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal()">Close</button>
+                <button class="btn btn-primary-modal" onclick="verifyFromModal()">Verify</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Page Switching
+        function switchPage(page) {
+            // Update tabs
+            document.querySelectorAll('.mgmt-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            event.target.classList.add('active');
+
+            // Update pages
+            document.querySelectorAll('.page-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            document.getElementById('page-' + page).classList.add('active');
+        }
+
+        // Modal Functions
+        function showIDModal(customerName) {
+            document.getElementById('modalCustomerName').textContent = customerName;
+            document.getElementById('idModal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('idModal').classList.remove('active');
+        }
+
+        function verifyFromModal() {
+            closeModal();
+            // Show success feedback
+            setTimeout(() => {
+                alert('Customer verified successfully!');
+            }, 300);
+        }
+
+        // Approve/Reject Actions
+        function approveVerification(btn) {
+            const item = btn.closest('.list-item');
+            item.style.opacity = '0.5';
+            setTimeout(() => {
+                item.remove();
+            }, 500);
+        }
+
+        function rejectVerification(btn) {
+            const item = btn.closest('.list-item');
+            item.style.opacity = '0.5';
+            setTimeout(() => {
+                item.remove();
+            }, 500);
+        }
+
+        function showBookingDetail(orderId) {
+            alert('Viewing details for Order ' + orderId);
+        }
+
+        // Close modal on outside click
+        document.getElementById('idModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,1192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ALAAP Admin - Management Portal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+   
+    <style>
+        :root {
+            --primary-blue: #2563EB;
+            --secondary-blue: #1D4ED8;
+            --light-blue: #EFF6FF;
+            --text-dark: #1F2937;
+            --text-muted: #6B7280;
+            --bg-gray: #F3F4F6;
+            --white: #FFFFFF;
+            --border-color: #E5E7EB;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --danger: #EF4444;
+            --purple: #8B5CF6;
+            --orange: #F97316;
+            --input-bg: #FAFAFA;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html, body {
+            height: 100%;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        body {
+            background-color: var(--bg-gray);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .app-container {
+            width: 100%;
+            height: 100%;
+            max-width: 100%;
+            max-height: 100%;
+            background-color: var(--white);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        @media (min-width: 415px) {
+            body {
+                background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+                padding: 20px;
+            }
+            
+            .app-container {
+                width: 375px;
+                height: 812px;
+                max-width: 375px;
+                max-height: 812px;
+                border-radius: 40px;
+                box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            }
+        }
+
+        @keyframes slideDown {
+            from { transform: translateY(-100%); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(100%); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes scaleIn {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        @keyframes shimmer {
+            0% { background-position: -1000px 0; }
+            100% { background-position: 1000px 0; }
+        }
+
+        @keyframes countUp {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Page Sections */
+        .page-section {
+            display: none;
+            flex-direction: column;
+            height: 100%;
+            width: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            background: var(--bg-gray);
+        }
+
+        .page-section.active {
+            display: flex;
+            animation: fadeIn 0.4s ease;
+        }
+
+        /* Admin Login Page */
+        .login-header {
+            background: linear-gradient(135deg, #1e3a8a, var(--primary-blue));
+            height: 40%;
+            min-height: 300px;
+            padding: 50px 20px 0;
+            text-align: center;
+            color: var(--white);
+            position: relative;
+            animation: slideDown 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .login-header::after {
+            content: '';
+            position: absolute;
+            bottom: -40px;
+            left: -10%;
+            width: 120%;
+            height: 80px;
+            background: var(--bg-gray);
+            border-radius: 50% 50% 0 0;
+        }
+
+        .admin-badge {
+            background: rgba(255,255,255,0.15);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 15px;
+            backdrop-filter: blur(10px);
+            animation: fadeIn 0.5s ease 0.3s forwards;
+            opacity: 0;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            font-size: 36px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            margin-bottom: 10px;
+            animation: scaleIn 0.6s cubic-bezier(0.4, 0, 0.2, 1) 0.5s forwards;
+            opacity: 0;
+            z-index: 2;
+        }
+
+        .tagline {
+            font-size: 14px;
+            font-weight: 300;
+            opacity: 0.9;
+            letter-spacing: 0.5px;
+            animation: fadeIn 0.6s ease 0.7s forwards;
+            opacity: 0;
+            z-index: 2;
+        }
+
+        .login-content {
+            flex: 1;
+            padding: 50px 24px 30px;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            z-index: 10;
+            animation: slideUp 0.8s cubic-bezier(0.4, 0, 0.2, 1) 0.4s forwards;
+            opacity: 0;
+        }
+
+        .login-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 8px;
+            text-align: center;
+        }
+
+        .login-subtitle {
+            font-size: 14px;
+            color: var(--text-muted);
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .input-group {
+            position: relative;
+            margin-bottom: 20px;
+            animation: fadeIn 0.5s ease forwards;
+            opacity: 0;
+        }
+
+        .input-group:nth-child(1) { animation-delay: 0.9s; }
+        .input-group:nth-child(2) { animation-delay: 1s; }
+
+        .input-group i {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            font-size: 18px;
+            transition: all 0.3s ease;
+            z-index: 2;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 16px 16px 16px 48px;
+            background-color: var(--white);
+            border: 1.5px solid var(--border-color);
+            border-radius: 14px;
+            font-size: 15px;
+            color: var(--text-dark);
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .input-group input:focus {
+            border-color: var(--primary-blue);
+            box-shadow: 0 0 0 3px var(--light-blue);
+        }
+
+        .input-group input:focus + i {
+            color: var(--primary-blue);
+        }
+
+        .security-note {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px;
+            background: rgba(16, 185, 129, 0.1);
+            border-radius: 10px;
+            margin-bottom: 25px;
+            font-size: 12px;
+            color: var(--success);
+            animation: fadeIn 0.5s ease 1.1s forwards;
+            opacity: 0;
+        }
+
+        .btn-primary {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, var(--primary-blue), var(--secondary-blue));
+            color: var(--white);
+            border: none;
+            border-radius: 14px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            animation: fadeIn 0.5s ease 1.2s forwards;
+            opacity: 0;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(37, 99, 235, 0.4);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        /* Admin Dashboard */
+        .dashboard-header {
+            background: linear-gradient(135deg, #1e3a8a, var(--primary-blue));
+            padding: 20px;
+            color: var(--white);
+        }
+
+        .header-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .admin-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .admin-avatar {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            border: 2px solid rgba(255,255,255,0.3);
+        }
+
+        .admin-text h2 {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+
+        .admin-text p {
+            font-size: 12px;
+            opacity: 0.8;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .icon-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.1);
+            border: none;
+            color: var(--white);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .icon-btn:hover {
+            background: rgba(255,255,255,0.2);
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: -2px;
+            right: -2px;
+            width: 18px;
+            height: 18px;
+            background: var(--danger);
+            border-radius: 50%;
+            font-size: 10px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid var(--primary-blue);
+        }
+
+        .date-selector {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(255,255,255,0.1);
+            padding: 10px 15px;
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+        }
+
+        .date-selector i {
+            font-size: 14px;
+        }
+
+        .date-selector span {
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .dashboard-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            scrollbar-width: none;
+        }
+
+        .dashboard-content::-webkit-scrollbar {
+            display: none;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .stat-card {
+            background: var(--white);
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+            position: relative;
+            overflow: hidden;
+            animation: fadeIn 0.5s ease forwards;
+            opacity: 0;
+        }
+
+        .stat-card:nth-child(1) { animation-delay: 0.1s; }
+        .stat-card:nth-child(2) { animation-delay: 0.2s; }
+        .stat-card:nth-child(3) { animation-delay: 0.3s; }
+        .stat-card:nth-child(4) { animation-delay: 0.4s; }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+        }
+
+        .stat-card.blue::before { background: var(--primary-blue); }
+        .stat-card.green::before { background: var(--success); }
+        .stat-card.orange::before { background: var(--orange); }
+        .stat-card.purple::before { background: var(--purple); }
+
+        .stat-icon {
+            width: 45px;
+            height: 45px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            margin-bottom: 12px;
+        }
+
+        .stat-card.blue .stat-icon { background: var(--light-blue); color: var(--primary-blue); }
+        .stat-card.green .stat-icon { background: rgba(16, 185, 129, 0.1); color: var(--success); }
+        .stat-card.orange .stat-icon { background: rgba(249, 115, 22, 0.1); color: var(--orange); }
+        .stat-card.purple .stat-icon { background: rgba(139, 92, 246, 0.1); color: var(--purple); }
+
+        .stat-label {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 8px;
+            animation: countUp 0.6s ease;
+        }
+
+        .stat-change {
+            font-size: 11px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .stat-change.positive { color: var(--success); }
+        .stat-change.negative { color: var(--danger); }
+
+        /* Revenue Card Large */
+        .revenue-section {
+            background: linear-gradient(135deg, var(--primary-blue), var(--secondary-blue));
+            border-radius: 24px;
+            padding: 25px;
+            color: var(--white);
+            margin-bottom: 25px;
+            position: relative;
+            overflow: hidden;
+            animation: fadeIn 0.5s ease 0.5s forwards;
+            opacity: 0;
+        }
+
+        .revenue-section::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 300px;
+            height: 300px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 50%;
+        }
+
+        .revenue-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .revenue-title {
+            font-size: 14px;
+            opacity: 0.9;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .revenue-menu {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            background: rgba(255,255,255,0.1);
+            border: none;
+            color: var(--white);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+        .revenue-amount {
+            font-size: 36px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .revenue-breakdown {
+            display: flex;
+            gap: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .breakdown-item {
+            flex: 1;
+            background: rgba(255,255,255,0.1);
+            padding: 12px;
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+        }
+
+        .breakdown-label {
+            font-size: 11px;
+            opacity: 0.8;
+            margin-bottom: 4px;
+        }
+
+        .breakdown-value {
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        /* Activity Section */
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            animation: fadeIn 0.5s ease 0.6s forwards;
+            opacity: 0;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        .view-all {
+            font-size: 13px;
+            color: var(--primary-blue);
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        /* Live Activity */
+        .activity-card {
+            background: var(--white);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+            animation: fadeIn 0.5s ease 0.7s forwards;
+            opacity: 0;
+        }
+
+        .activity-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .activity-item:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .activity-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+
+        .activity-icon.new { background: var(--light-blue); color: var(--primary-blue); }
+        .activity-icon.completed { background: rgba(16, 185, 129, 0.1); color: var(--success); }
+        .activity-icon.cancelled { background: rgba(239, 68, 68, 0.1); color: var(--danger); }
+
+        .activity-details {
+            flex: 1;
+        }
+
+        .activity-text {
+            font-size: 14px;
+            color: var(--text-dark);
+            font-weight: 500;
+            margin-bottom: 3px;
+        }
+
+        .activity-time {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .activity-status {
+            font-size: 11px;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+
+        .activity-status.pending { background: rgba(245, 158, 11, 0.1); color: var(--warning); }
+        .activity-status.success { background: rgba(16, 185, 129, 0.1); color: var(--success); }
+
+        /* Quick Actions */
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-bottom: 25px;
+            animation: fadeIn 0.5s ease 0.8s forwards;
+            opacity: 0;
+        }
+
+        .quick-action {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+        }
+
+        .quick-icon {
+            width: 55px;
+            height: 55px;
+            border-radius: 16px;
+            background: var(--white);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+            transition: all 0.3s ease;
+        }
+
+        .quick-action:hover .quick-icon {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+        }
+
+        .quick-icon.blue { color: var(--primary-blue); }
+        .quick-icon.green { color: var(--success); }
+        .quick-icon.orange { color: var(--orange); }
+        .quick-icon.purple { color: var(--purple); }
+
+        .quick-label {
+            font-size: 11px;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        /* Bottom Navigation */
+        .bottom-nav {
+            background: var(--white);
+            padding: 12px 20px 20px;
+            display: flex;
+            justify-content: space-around;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: var(--text-muted);
+        }
+
+        .nav-item.active {
+            color: var(--primary-blue);
+        }
+
+        .nav-item i {
+            font-size: 20px;
+        }
+
+        .nav-item span {
+            font-size: 11px;
+            font-weight: 500;
+        }
+
+        /* Loading */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: var(--white);
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Mobile optimizations */
+        @media (max-height: 700px) {
+            .login-header {
+                min-height: 250px;
+            }
+            
+            .stats-grid {
+                gap: 12px;
+            }
+            
+            .stat-card {
+                padding: 15px;
+            }
+            
+            .stat-value {
+                font-size: 20px;
+            }
+        }
+    </style>
+<base target="_blank">
+</head>
+<body>
+
+    <div class="app-container">
+       
+        <!-- PAGE 34: ADMIN LOGIN -->
+        <div class="page-section active" id="page-admin-login">
+            <div class="login-header">
+                <div class="admin-badge">
+                    <i class="fa-solid fa-shield-halved"></i>
+                    SECURE ADMIN PORTAL
+                </div>
+                <div class="logo-container">
+                    <i class="fa-solid fa-motorcycle"></i>
+                    <span>ALAAP</span>
+                </div>
+                <p class="tagline">Management Dashboard Access</p>
+            </div>
+
+            <div class="login-content">
+                <h1 class="login-title">Welcome Back, Admin</h1>
+                <p class="login-subtitle">Sign in to manage your delivery operations</p>
+
+                <div class="input-group">
+                    <i class="fa-regular fa-envelope"></i>
+                    <input type="email" placeholder="Admin Email" value="admin@alaap.ph">
+                </div>
+
+                <div class="input-group">
+                    <i class="fa-solid fa-lock"></i>
+                    <input type="password" placeholder="Password" value="••••••••">
+                </div>
+
+                <div class="security-note">
+                    <i class="fa-solid fa-lock"></i>
+                    <span>Secure encrypted connection established</span>
+                </div>
+
+                <button class="btn-primary" onclick="handleAdminLogin()">
+                    <i class="fa-solid fa-right-to-bracket" style="margin-right: 8px;"></i>
+                    Access Dashboard
+                </button>
+
+                <div style="text-align: center; margin-top: 25px; font-size: 13px; color: var(--text-muted);">
+                    <a href="#" style="color: var(--primary-blue); text-decoration: none; font-weight: 500;">Forgot password?</a> • 
+                    <a href="#" style="color: var(--primary-blue); text-decoration: none; font-weight: 500;">Help Center</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- PAGE 35: ADMIN DASHBOARD -->
+        <div class="page-section" id="page-admin-dashboard">
+            <div class="dashboard-header">
+                <div class="header-top">
+                    <div class="admin-info">
+                        <div class="admin-avatar">
+                            <i class="fa-solid fa-user-tie"></i>
+                        </div>
+                        <div class="admin-text">
+                            <h2>Super Admin</h2>
+                            <p>Alaminos Operations</p>
+                        </div>
+                    </div>
+                    <div class="header-actions">
+                        <button class="icon-btn" onclick="alert('Notifications opened')">
+                            <i class="fa-regular fa-bell"></i>
+                            <span class="notification-badge">3</span>
+                        </button>
+                        <button class="icon-btn" onclick="alert('Settings opened')">
+                            <i class="fa-solid fa-gear"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="date-selector" onclick="alert('Date range selector opened')">
+                    <i class="fa-regular fa-calendar"></i>
+                    <span>Today, Feb 25, 2026</span>
+                    <i class="fa-solid fa-chevron-down" style="margin-left: auto;"></i>
+                </div>
+            </div>
+
+            <div class="dashboard-content">
+                <!-- Stats Grid -->
+                <div class="stats-grid">
+                    <div class="stat-card blue">
+                        <div class="stat-icon">
+                            <i class="fa-solid fa-clipboard-list"></i>
+                        </div>
+                        <div class="stat-label">Total Bookings</div>
+                        <div class="stat-value" id="stat-bookings">1,284</div>
+                        <div class="stat-change positive">
+                            <i class="fa-solid fa-arrow-trend-up"></i>
+                            <span>+12.5% vs yesterday</span>
+                        </div>
+                    </div>
+
+                    <div class="stat-card green">
+                        <div class="stat-icon">
+                            <i class="fa-solid fa-motorcycle"></i>
+                        </div>
+                        <div class="stat-label">Active Riders</div>
+                        <div class="stat-value" id="stat-riders">48</div>
+                        <div class="stat-change positive">
+                            <i class="fa-solid fa-arrow-trend-up"></i>
+                            <span>+5 online now</span>
+                        </div>
+                    </div>
+
+                    <div class="stat-card orange">
+                        <div class="stat-icon">
+                            <i class="fa-solid fa-clock"></i>
+                        </div>
+                        <div class="stat-label">Pending Orders</div>
+                        <div class="stat-value">23</div>
+                        <div class="stat-change negative">
+                            <i class="fa-solid fa-arrow-trend-down"></i>
+                            <span>3 urgent</span>
+                        </div>
+                    </div>
+
+                    <div class="stat-card purple">
+                        <div class="stat-icon">
+                            <i class="fa-solid fa-users"></i>
+                        </div>
+                        <div class="stat-label">New Customers</div>
+                        <div class="stat-value">156</div>
+                        <div class="stat-change positive">
+                            <i class="fa-solid fa-arrow-trend-up"></i>
+                            <span>+8.2% this week</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Revenue Summary -->
+                <div class="revenue-section">
+                    <div class="revenue-header">
+                        <div class="revenue-title">
+                            <i class="fa-solid fa-peso-sign"></i>
+                            Revenue Summary
+                        </div>
+                        <button class="revenue-menu" onclick="alert('Revenue details opened')">
+                            <i class="fa-solid fa-ellipsis-vertical"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="revenue-amount" id="revenue-total">₱48,592.00</div>
+                    
+                    <div class="revenue-breakdown">
+                        <div class="breakdown-item">
+                            <div class="breakdown-label">Food Delivery</div>
+                            <div class="breakdown-value">₱38,240</div>
+                        </div>
+                        <div class="breakdown-item">
+                            <div class="breakdown-label">Courier</div>
+                            <div class="breakdown-value">₱10,352</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="quick-actions">
+                    <div class="quick-action" onclick="alert('Riders management opened')">
+                        <div class="quick-icon blue">
+                            <i class="fa-solid fa-user-gear"></i>
+                        </div>
+                        <span class="quick-label">Riders</span>
+                    </div>
+                    <div class="quick-action" onclick="alert('Orders management opened')">
+                        <div class="quick-icon green">
+                            <i class="fa-solid fa-box-open"></i>
+                        </div>
+                        <span class="quick-label">Orders</span>
+                    </div>
+                    <div class="quick-action" onclick="alert('Analytics opened')">
+                        <div class="quick-icon orange">
+                            <i class="fa-solid fa-chart-pie"></i>
+                        </div>
+                        <span class="quick-label">Analytics</span>
+                    </div>
+                    <div class="quick-action" onclick="alert('Promotions opened')">
+                        <div class="quick-icon purple">
+                            <i class="fa-solid fa-tags"></i>
+                        </div>
+                        <span class="quick-label">Promos</span>
+                    </div>
+                </div>
+
+                <!-- Live Activity -->
+                <div class="section-header">
+                    <h3 class="section-title">Live Activity</h3>
+                    <span class="view-all" onclick="alert('All activity opened')">View All</span>
+                </div>
+
+                <div class="activity-card">
+                    <div class="activity-item">
+                        <div class="activity-icon new">
+                            <i class="fa-solid fa-plus"></i>
+                        </div>
+                        <div class="activity-details">
+                            <div class="activity-text">New order #ORD-2024-156</div>
+                            <div class="activity-time">2 minutes ago • Jollibee Alaminos</div>
+                        </div>
+                        <span class="activity-status pending">Pending</span>
+                    </div>
+                    
+                    <div class="activity-item">
+                        <div class="activity-icon completed">
+                            <i class="fa-solid fa-check"></i>
+                        </div>
+                        <div class="activity-details">
+                            <div class="activity-text">Order #ORD-2024-142 completed</div>
+                            <div class="activity-time">5 minutes ago • Rider: Juan Dela Cruz</div>
+                        </div>
+                        <span class="activity-status success">Done</span>
+                    </div>
+                    
+                    <div class="activity-item">
+                        <div class="activity-icon new">
+                            <i class="fa-solid fa-user-plus"></i>
+                        </div>
+                        <div class="activity-details">
+                            <div class="activity-text">New rider application</div>
+                            <div class="activity-time">12 minutes ago • Pedro Santos</div>
+                        </div>
+                        <span class="activity-status pending">Review</span>
+                    </div>
+                    
+                    <div class="activity-item">
+                        <div class="activity-icon cancelled">
+                            <i class="fa-solid fa-xmark"></i>
+                        </div>
+                        <div class="activity-details">
+                            <div class="activity-text">Order #ORD-2024-138 cancelled</div>
+                            <div class="activity-time">18 minutes ago • Customer no-show</div>
+                        </div>
+                        <span class="activity-status" style="background: rgba(239, 68, 68, 0.1); color: var(--danger);">Cancelled</span>
+                    </div>
+                </div>
+
+                <!-- Recent Bookings Table -->
+                <div class="section-header" style="margin-top: 10px;">
+                    <h3 class="section-title">Recent Bookings</h3>
+                    <span class="view-all" onclick="alert('All bookings opened')">See All</span>
+                </div>
+
+                <div class="activity-card">
+                    <div class="activity-item" style="padding: 15px 0;">
+                        <div style="flex: 1;">
+                            <div style="font-size: 14px; font-weight: 600; color: var(--text-dark); margin-bottom: 4px;">#ORD-2024-155</div>
+                            <div style="font-size: 12px; color: var(--text-muted);">Maria Santos • 3 items</div>
+                        </div>
+                        <div style="text-align: right;">
+                            <div style="font-size: 16px; font-weight: 700; color: var(--primary-blue);">₱294.00</div>
+                            <div style="font-size: 11px; color: var(--success); font-weight: 600;">Completed</div>
+                        </div>
+                    </div>
+                    
+                    <div class="activity-item" style="padding: 15px 0;">
+                        <div style="flex: 1;">
+                            <div style="font-size: 14px; font-weight: 600; color: var(--text-dark); margin-bottom: 4px;">#ORD-2024-154</div>
+                            <div style="font-size: 12px; color: var(--text-muted);">John Doe • Courier</div>
+                        </div>
+                        <div style="text-align: right;">
+                            <div style="font-size: 16px; font-weight: 700; color: var(--primary-blue);">₱120.00</div>
+                            <div style="font-size: 11px; color: var(--warning); font-weight: 600;">In Progress</div>
+                        </div>
+                    </div>
+                    
+                    <div class="activity-item" style="padding: 15px 0; border-bottom: none;">
+                        <div style="flex: 1;">
+                            <div style="font-size: 14px; font-weight: 600; color: var(--text-dark); margin-bottom: 4px;">#ORD-2024-153</div>
+                            <div style="font-size: 12px; color: var(--text-muted);">Ana Cruz • 5 items</div>
+                        </div>
+                        <div style="text-align: right;">
+                            <div style="font-size: 16px; font-weight: 700; color: var(--primary-blue);">₱485.00</div>
+                            <div style="font-size: 11px; color: var(--success); font-weight: 600;">Completed</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bottom Navigation -->
+            <div class="bottom-nav">
+                <div class="nav-item active" onclick="switchTab(this, 'dashboard')">
+                    <i class="fa-solid fa-house"></i>
+                    <span>Home</span>
+                </div>
+                <div class="nav-item" onclick="switchTab(this, 'orders')">
+                    <i class="fa-solid fa-clipboard-list"></i>
+                    <span>Orders</span>
+                </div>
+                <div class="nav-item" onclick="switchTab(this, 'riders')">
+                    <i class="fa-solid fa-motorcycle"></i>
+                    <span>Riders</span>
+                </div>
+                <div class="nav-item" onclick="switchTab(this, 'profile')">
+                    <i class="fa-solid fa-user"></i>
+                    <span>Profile</span>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // Admin Login Handler
+        function handleAdminLogin() {
+            const btn = event.target;
+            const originalContent = btn.innerHTML;
+            
+            btn.innerHTML = '<span class="loading"></span> Verifying...';
+            btn.disabled = true;
+            
+            setTimeout(() => {
+                btn.innerHTML = '<i class="fa-solid fa-check"></i> Access Granted';
+                btn.style.background = 'linear-gradient(135deg, #10B981, #059669)';
+                
+                setTimeout(() => {
+                    showPage('page-admin-dashboard');
+                    animateStats();
+                    btn.innerHTML = originalContent;
+                    btn.disabled = false;
+                    btn.style.background = '';
+                }, 1000);
+            }, 1500);
+        }
+
+        // Page Navigation
+        function showPage(pageId) {
+            document.querySelectorAll('.page-section').forEach(page => {
+                page.classList.remove('active');
+            });
+            document.getElementById(pageId).classList.add('active');
+        }
+
+        // Animate Stats Count Up
+        function animateStats() {
+            const stats = [
+                { id: 'stat-bookings', target: 1284, suffix: '' },
+                { id: 'stat-riders', target: 48, suffix: '' },
+                { id: 'revenue-total', target: 48592, prefix: '₱', suffix: '.00' }
+            ];
+
+            stats.forEach(stat => {
+                const element = document.getElementById(stat.id);
+                if (!element) return;
+                
+                const prefix = stat.prefix || '';
+                const suffix = stat.suffix || '';
+                const duration = 1500;
+                const start = 0;
+                const increment = stat.target / (duration / 16);
+                let current = start;
+
+                const timer = setInterval(() => {
+                    current += increment;
+                    if (current >= stat.target) {
+                        current = stat.target;
+                        clearInterval(timer);
+                    }
+                    
+                    if (stat.id === 'revenue-total') {
+                        element.textContent = prefix + current.toLocaleString() + suffix;
+                    } else {
+                        element.textContent = prefix + Math.floor(current).toLocaleString() + suffix;
+                    }
+                }, 16);
+            });
+        }
+
+        // Bottom Nav Switch
+        function switchTab(element, tab) {
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            element.classList.add('active');
+            
+            // Simulate tab content change
+            const titles = {
+                'dashboard': 'Dashboard',
+                'orders': 'Orders Management',
+                'riders': 'Rider Management',
+                'profile': 'Admin Profile'
+            };
+            
+            if (tab !== 'dashboard') {
+                alert(`Navigating to ${titles[tab]}...`);
+            }
+        }
+
+        // Simulate real-time updates
+        setInterval(() => {
+            const bookings = document.getElementById('stat-bookings');
+            if (bookings && document.getElementById('page-admin-dashboard').classList.contains('active')) {
+                const current = parseInt(bookings.textContent.replace(/,/g, ''));
+                bookings.textContent = (current + Math.floor(Math.random() * 3)).toLocaleString();
+            }
+        }, 10000);
+    </script>
+</body>
+</html>

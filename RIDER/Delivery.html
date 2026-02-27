@@ -1,0 +1,1713 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ALAAP Rider - Delivery Execution</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+   
+    <style>
+        :root {
+            --primary-blue: #2563EB;
+            --secondary-blue: #1D4ED8;
+            --light-blue: #EFF6FF;
+            --text-dark: #1F2937;
+            --text-muted: #6B7280;
+            --bg-gray: #F3F4F6;
+            --white: #FFFFFF;
+            --border-color: #E5E7EB;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --danger: #EF4444;
+            --input-bg: #FAFAFA;
+            --food-orange: #F97316;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html, body {
+            height: 100%;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        body {
+            background-color: var(--bg-gray);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .app-container {
+            width: 100%;
+            height: 100%;
+            max-width: 100%;
+            max-height: 100%;
+            background-color: var(--white);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        @media (min-width: 415px) {
+            body {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                padding: 20px;
+            }
+            
+            .app-container {
+                width: 375px;
+                height: 812px;
+                max-width: 375px;
+                max-height: 812px;
+                border-radius: 40px;
+                box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            }
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(100%); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        @keyframes slideDown {
+            from { transform: translateY(-100%); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.05); opacity: 0.8; }
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+
+        @keyframes shimmer {
+            0% { background-position: -1000px 0; }
+            100% { background-position: 1000px 0; }
+        }
+
+        /* Page Sections */
+        .page-section {
+            display: none;
+            flex-direction: column;
+            height: 100%;
+            width: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            background: var(--white);
+        }
+
+        .page-section.active {
+            display: flex;
+            animation: fadeIn 0.3s ease;
+        }
+
+        /* Header */
+        .page-header {
+            background: var(--white);
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--border-color);
+            z-index: 100;
+        }
+
+        .back-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--bg-gray);
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .back-btn:hover {
+            background: var(--border-color);
+        }
+
+        .page-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        .header-action {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--light-blue);
+            border: none;
+            color: var(--primary-blue);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .header-action:hover {
+            background: var(--primary-blue);
+            color: var(--white);
+        }
+
+        /* Status Bar */
+        .status-bar {
+            background: linear-gradient(135deg, var(--primary-blue), var(--secondary-blue));
+            color: var(--white);
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .status-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .status-badge {
+            background: rgba(255,255,255,0.2);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .status-badge i {
+            font-size: 10px;
+        }
+
+        .status-time {
+            font-size: 13px;
+            opacity: 0.9;
+        }
+
+        /* Earnings Badge */
+        .earnings-badge {
+            background: rgba(255,255,255,0.15);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        /* Content Area */
+        .content-area {
+            flex: 1;
+            overflow-y: auto;
+            scrollbar-width: none;
+            position: relative;
+        }
+
+        .content-area::-webkit-scrollbar {
+            display: none;
+        }
+
+        /* Booking Card */
+        .booking-card {
+            background: var(--white);
+            margin: 15px;
+            border-radius: 20px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+            overflow: hidden;
+            animation: slideUp 0.5s ease;
+        }
+
+        .booking-header {
+            background: linear-gradient(135deg, var(--food-orange), #EA580C);
+            color: var(--white);
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .booking-type {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .booking-id {
+            font-size: 12px;
+            opacity: 0.9;
+        }
+
+        .booking-body {
+            padding: 20px;
+        }
+
+        /* Customer Info */
+        .customer-section {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .customer-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-blue), var(--secondary-blue));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--white);
+            font-size: 24px;
+            font-weight: 600;
+            position: relative;
+        }
+
+        .customer-avatar img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .online-indicator {
+            position: absolute;
+            bottom: 3px;
+            right: 3px;
+            width: 14px;
+            height: 14px;
+            background: var(--success);
+            border: 2px solid var(--white);
+            border-radius: 50%;
+        }
+
+        .customer-info {
+            flex: 1;
+        }
+
+        .customer-name {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 4px;
+        }
+
+        .customer-rating {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .customer-rating i {
+            color: #FBBF24;
+        }
+
+        .customer-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .action-btn {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 18px;
+        }
+
+        .action-btn.call {
+            background: var(--light-blue);
+            color: var(--primary-blue);
+        }
+
+        .action-btn.chat {
+            background: var(--success);
+            color: var(--white);
+        }
+
+        .action-btn:hover {
+            transform: scale(1.1);
+        }
+
+        /* Address Section */
+        .address-section {
+            margin-bottom: 20px;
+        }
+
+        .address-item {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .address-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .address-item:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            left: 20px;
+            top: 40px;
+            width: 2px;
+            height: calc(100% - 20px);
+            background: var(--border-color);
+        }
+
+        .address-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            flex-shrink: 0;
+            z-index: 2;
+        }
+
+        .address-icon.pickup {
+            background: rgba(249, 115, 22, 0.1);
+            color: var(--food-orange);
+        }
+
+        .address-icon.dropoff {
+            background: var(--light-blue);
+            color: var(--primary-blue);
+        }
+
+        .address-details {
+            flex: 1;
+        }
+
+        .address-label {
+            font-size: 12px;
+            color: var(--text-muted);
+            font-weight: 500;
+            margin-bottom: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .address-text {
+            font-size: 15px;
+            color: var(--text-dark);
+            font-weight: 500;
+            line-height: 1.4;
+            margin-bottom: 6px;
+        }
+
+        .address-note {
+            font-size: 13px;
+            color: var(--text-muted);
+            font-style: italic;
+        }
+
+        /* Order Items */
+        .order-section {
+            background: var(--bg-gray);
+            border-radius: 16px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .order-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+
+        .order-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-dark);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .order-count {
+            background: var(--primary-blue);
+            color: var(--white);
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .order-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .order-item:last-child {
+            border-bottom: none;
+        }
+
+        .item-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .item-qty {
+            background: var(--white);
+            width: 28px;
+            height: 28px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--primary-blue);
+        }
+
+        .item-name {
+            font-size: 14px;
+            color: var(--text-dark);
+        }
+
+        .item-price {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        .order-total {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 2px solid var(--border-color);
+        }
+
+        .total-label {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        .total-amount {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--primary-blue);
+        }
+
+        /* Payment Method */
+        .payment-section {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 15px;
+            background: var(--light-blue);
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+
+        .payment-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--white);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            color: var(--primary-blue);
+        }
+
+        .payment-info {
+            flex: 1;
+        }
+
+        .payment-label {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-bottom: 2px;
+        }
+
+        .payment-method {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        /* Action Buttons */
+        .action-section {
+            padding: 20px;
+            background: var(--white);
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn-primary {
+            flex: 1;
+            padding: 16px;
+            background: linear-gradient(135deg, var(--primary-blue), var(--secondary-blue));
+            color: var(--white);
+            border: none;
+            border-radius: 14px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(37, 99, 235, 0.4);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        .btn-secondary {
+            flex: 1;
+            padding: 16px;
+            background: var(--white);
+            color: var(--text-dark);
+            border: 2px solid var(--border-color);
+            border-radius: 14px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-secondary:hover {
+            background: var(--bg-gray);
+            border-color: var(--primary-blue);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, var(--danger), #DC2626);
+            box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
+        }
+
+        .btn-danger:hover {
+            box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, var(--success), #059669);
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+        }
+
+        /* Map Container */
+        .map-container {
+            flex: 1;
+            position: relative;
+            background: #E5E7EB;
+            overflow: hidden;
+        }
+
+        .map-placeholder {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .map-grid {
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            background-image: 
+                linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px);
+            background-size: 50px 50px;
+            animation: shimmer 20s linear infinite;
+        }
+
+        .route-line {
+            position: absolute;
+            top: 30%;
+            left: 20%;
+            right: 20%;
+            height: 4px;
+            background: var(--white);
+            border-radius: 2px;
+            box-shadow: 0 0 10px rgba(255,255,255,0.5);
+            transform: rotate(-5deg);
+        }
+
+        .route-dot {
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            background: var(--white);
+            border-radius: 50%;
+            box-shadow: 0 0 20px rgba(255,255,255,0.8);
+            animation: pulse 2s infinite;
+        }
+
+        .route-dot.start {
+            top: 28%;
+            left: 20%;
+        }
+
+        .route-dot.end {
+            top: 32%;
+            right: 20%;
+            background: var(--food-orange);
+        }
+
+        .rider-marker {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 60px;
+            height: 60px;
+            background: var(--primary-blue);
+            border-radius: 50% 50% 50% 0;
+            transform: translate(-50%, -50%) rotate(-45deg);
+            box-shadow: 0 4px 20px rgba(37, 99, 235, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: bounce 2s infinite;
+            z-index: 10;
+        }
+
+        .rider-marker i {
+            transform: rotate(45deg);
+            color: var(--white);
+            font-size: 24px;
+        }
+
+        .map-info-card {
+            position: absolute;
+            bottom: 20px;
+            left: 15px;
+            right: 15px;
+            background: var(--white);
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            animation: slideUp 0.5s ease;
+        }
+
+        .distance-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .distance-box {
+            flex: 1;
+            text-align: center;
+            padding: 15px;
+            background: var(--bg-gray);
+            border-radius: 12px;
+        }
+
+        .distance-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary-blue);
+            display: block;
+        }
+
+        .distance-label {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        .nav-instruction {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            background: var(--light-blue);
+            border-radius: 12px;
+            margin-bottom: 15px;
+        }
+
+        .nav-icon {
+            width: 50px;
+            height: 50px;
+            background: var(--primary-blue);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--white);
+            font-size: 24px;
+        }
+
+        .nav-text {
+            flex: 1;
+        }
+
+        .nav-primary {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 4px;
+        }
+
+        .nav-secondary {
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        /* Chat Page */
+        .chat-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: var(--bg-gray);
+        }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .message {
+            max-width: 75%;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .message.sent {
+            align-self: flex-end;
+        }
+
+        .message.received {
+            align-self: flex-start;
+        }
+
+        .message-bubble {
+            padding: 12px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            line-height: 1.4;
+            position: relative;
+        }
+
+        .message.sent .message-bubble {
+            background: var(--primary-blue);
+            color: var(--white);
+            border-bottom-right-radius: 4px;
+        }
+
+        .message.received .message-bubble {
+            background: var(--white);
+            color: var(--text-dark);
+            border-bottom-left-radius: 4px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .message-time {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-top: 5px;
+            text-align: right;
+        }
+
+        .message.sent .message-time {
+            color: rgba(255,255,255,0.7);
+        }
+
+        .message-image {
+            max-width: 200px;
+            border-radius: 16px;
+            overflow: hidden;
+            margin-bottom: 5px;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .message-image:hover {
+            transform: scale(1.02);
+        }
+
+        .message-image img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .chat-input-area {
+            background: var(--white);
+            padding: 15px 20px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .chat-toolbar {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .toolbar-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: none;
+            background: var(--bg-gray);
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .toolbar-btn:hover {
+            background: var(--light-blue);
+            color: var(--primary-blue);
+        }
+
+        .input-wrapper {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .chat-input {
+            flex: 1;
+            padding: 14px 18px;
+            border: 1.5px solid var(--border-color);
+            border-radius: 25px;
+            font-size: 14px;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .chat-input:focus {
+            border-color: var(--primary-blue);
+            box-shadow: 0 0 0 3px var(--light-blue);
+        }
+
+        .send-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-blue), var(--secondary-blue));
+            border: none;
+            color: var(--white);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
+        }
+
+        .send-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(37, 99, 235, 0.4);
+        }
+
+        /* Proof of Delivery */
+        .upload-area-large {
+            margin: 20px;
+            border: 3px dashed var(--border-color);
+            border-radius: 24px;
+            padding: 40px 30px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: var(--input-bg);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .upload-area-large:hover {
+            border-color: var(--primary-blue);
+            background: var(--light-blue);
+        }
+
+        .upload-area-large.has-file {
+            border-color: var(--success);
+            background: rgba(16, 185, 129, 0.05);
+        }
+
+        .upload-icon-large {
+            width: 80px;
+            height: 80px;
+            background: var(--white);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 32px;
+            color: var(--primary-blue);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+
+        .upload-area-large:hover .upload-icon-large {
+            transform: scale(1.1);
+            background: var(--primary-blue);
+            color: var(--white);
+        }
+
+        .upload-area-large.has-file .upload-icon-large {
+            background: var(--success);
+            color: var(--white);
+        }
+
+        .upload-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 8px;
+        }
+
+        .upload-subtitle {
+            font-size: 14px;
+            color: var(--text-muted);
+            margin-bottom: 20px;
+        }
+
+        .upload-guidelines {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .guideline-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .guideline-item i {
+            color: var(--success);
+        }
+
+        .photo-preview {
+            display: none;
+            margin: 20px;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            position: relative;
+        }
+
+        .photo-preview.show {
+            display: block;
+            animation: scaleIn 0.3s ease;
+        }
+
+        .photo-preview img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .photo-overlay {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .photo-action {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(0,0,0,0.6);
+            border: none;
+            color: var(--white);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .photo-action:hover {
+            background: var(--danger);
+            transform: scale(1.1);
+        }
+
+        .confirmation-section {
+            padding: 20px;
+            background: var(--white);
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 15px;
+            background: var(--bg-gray);
+            border-radius: 12px;
+            margin-bottom: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .checkbox-item:hover {
+            background: var(--light-blue);
+        }
+
+        .checkbox-item input[type="checkbox"] {
+            width: 24px;
+            height: 24px;
+            accent-color: var(--primary-blue);
+            cursor: pointer;
+        }
+
+        .checkbox-label {
+            font-size: 14px;
+            color: var(--text-dark);
+            font-weight: 500;
+        }
+
+        /* Loading Animation */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: var(--white);
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Quick Actions */
+        .quick-actions {
+            display: flex;
+            gap: 10px;
+            padding: 0 20px 20px;
+        }
+
+        .quick-btn {
+            flex: 1;
+            padding: 12px;
+            background: var(--bg-gray);
+            border: none;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-dark);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .quick-btn i {
+            font-size: 20px;
+            color: var(--primary-blue);
+        }
+
+        .quick-btn:hover {
+            background: var(--light-blue);
+            transform: translateY(-2px);
+        }
+
+        /* Mobile optimizations */
+        @media (max-height: 700px) {
+            .booking-header {
+                padding: 12px 15px;
+            }
+            
+            .booking-body {
+                padding: 15px;
+            }
+            
+            .customer-section {
+                margin-bottom: 15px;
+                padding-bottom: 15px;
+            }
+            
+            .customer-avatar {
+                width: 50px;
+                height: 50px;
+                font-size: 20px;
+            }
+        }
+    </style>
+<base target="_blank">
+</head>
+<body>
+
+    <div class="app-container">
+       
+        <!-- PAGE 27: BOOKING DETAILS (RIDER VIEW) -->
+        <div class="page-section active" id="page-booking-details">
+            <!-- Status Bar -->
+            <div class="status-bar">
+                <div class="status-info">
+                    <span class="status-badge">
+                        <i class="fa-solid fa-circle"></i>
+                        Active Delivery
+                    </span>
+                    <span class="status-time">12:45 PM</span>
+                </div>
+                <div class="earnings-badge">
+                    <i class="fa-solid fa-peso-sign"></i> 85.00
+                </div>
+            </div>
+
+            <!-- Header -->
+            <div class="page-header">
+                <button class="back-btn" onclick="showPage('page-login')">
+                    <i class="fa-solid fa-arrow-left"></i>
+                </button>
+                <h1 class="page-title">Booking Details</h1>
+                <button class="header-action" onclick="showPage('page-navigation')">
+                    <i class="fa-solid fa-location-arrow"></i>
+                </button>
+            </div>
+
+            <!-- Content -->
+            <div class="content-area">
+                <div class="booking-card">
+                    <div class="booking-header">
+                        <div class="booking-type">
+                            <i class="fa-solid fa-utensils"></i>
+                            Food Delivery
+                        </div>
+                        <span class="booking-id">#ORD-2024-001</span>
+                    </div>
+                    
+                    <div class="booking-body">
+                        <!-- Customer Info -->
+                        <div class="customer-section">
+                            <div class="customer-avatar">
+                                <img src="https://i.pravatar.cc/150?img=32" alt="Customer">
+                                <span class="online-indicator"></span>
+                            </div>
+                            <div class="customer-info">
+                                <div class="customer-name">Maria Santos</div>
+                                <div class="customer-rating">
+                                    <i class="fa-solid fa-star"></i>
+                                    <span>4.9 (128 deliveries)</span>
+                                </div>
+                            </div>
+                            <div class="customer-actions">
+                                <button class="action-btn call" onclick="alert('Calling customer...')">
+                                    <i class="fa-solid fa-phone"></i>
+                                </button>
+                                <button class="action-btn chat" onclick="showPage('page-chat')">
+                                    <i class="fa-solid fa-message"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Addresses -->
+                        <div class="address-section">
+                            <div class="address-item">
+                                <div class="address-icon pickup">
+                                    <i class="fa-solid fa-store"></i>
+                                </div>
+                                <div class="address-details">
+                                    <div class="address-label">Pickup Location</div>
+                                    <div class="address-text">Jollibee Alaminos Branch</div>
+                                    <div class="address-note">Landmark: Near Municipal Hall</div>
+                                </div>
+                            </div>
+                            
+                            <div class="address-item">
+                                <div class="address-icon dropoff">
+                                    <i class="fa-solid fa-location-dot"></i>
+                                </div>
+                                <div class="address-details">
+                                    <div class="address-label">Drop-off Location</div>
+                                    <div class="address-text">123 Rizal Street, Brgy. 4, Alaminos City</div>
+                                    <div class="address-note">Note: Please call upon arrival</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Order Items -->
+                        <div class="order-section">
+                            <div class="order-header">
+                                <div class="order-title">
+                                    <i class="fa-solid fa-basket-shopping"></i>
+                                    Order Items
+                                </div>
+                                <span class="order-count">3</span>
+                            </div>
+                            
+                            <div class="order-item">
+                                <div class="item-info">
+                                    <span class="item-qty">2</span>
+                                    <span class="item-name">Chickenjoy (Original)</span>
+                                </div>
+                                <span class="item-price">₱163.00</span>
+                            </div>
+                            
+                            <div class="order-item">
+                                <div class="item-info">
+                                    <span class="item-qty">1</span>
+                                    <span class="item-name">Jolly Spaghetti</span>
+                                </div>
+                                <span class="item-price">₱59.00</span>
+                            </div>
+                            
+                            <div class="order-item">
+                                <div class="item-info">
+                                    <span class="item-qty">1</span>
+                                    <span class="item-name">Large Fries</span>
+                                </div>
+                                <span class="item-price">₱72.00</span>
+                            </div>
+                            
+                            <div class="order-total">
+                                <span class="total-label">Total Amount</span>
+                                <span class="total-amount">₱294.00</span>
+                            </div>
+                        </div>
+
+                        <!-- Payment -->
+                        <div class="payment-section">
+                            <div class="payment-icon">
+                                <i class="fa-solid fa-money-bill-wave"></i>
+                            </div>
+                            <div class="payment-info">
+                                <div class="payment-label">Payment Method</div>
+                                <div class="payment-method">Cash on Delivery (COD)</div>
+                            </div>
+                            <div style="font-size: 20px; font-weight: 700; color: var(--success);">
+                                <i class="fa-solid fa-peso-sign"></i> 294
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="quick-actions">
+                <button class="quick-btn" onclick="showPage('page-navigation')">
+                    <i class="fa-solid fa-map-location-dot"></i>
+                    Navigate
+                </button>
+                <button class="quick-btn" onclick="showPage('page-chat')">
+                    <i class="fa-solid fa-comments"></i>
+                    Chat
+                </button>
+                <button class="quick-btn" onclick="showPage('page-proof')">
+                    <i class="fa-solid fa-camera"></i>
+                    Complete
+                </button>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="action-section">
+                <button class="btn-secondary" onclick="alert('Cancel request sent')">
+                    <i class="fa-solid fa-xmark"></i>
+                    Cancel
+                </button>
+                <button class="btn-primary" onclick="showPage('page-navigation')">
+                    <i class="fa-solid fa-location-arrow"></i>
+                    Start Navigation
+                </button>
+            </div>
+        </div>
+
+        <!-- PAGE 28: NAVIGATION -->
+        <div class="page-section" id="page-navigation">
+            <div class="page-header" style="position: absolute; top: 0; left: 0; right: 0; z-index: 100; background: rgba(255,255,255,0.95); backdrop-filter: blur(10px);">
+                <button class="back-btn" onclick="showPage('page-booking-details')">
+                    <i class="fa-solid fa-arrow-left"></i>
+                </button>
+                <h1 class="page-title">Navigation</h1>
+                <button class="header-action" onclick="alert('Voice navigation enabled')">
+                    <i class="fa-solid fa-volume-high"></i>
+                </button>
+            </div>
+
+            <div class="map-container">
+                <div class="map-placeholder">
+                    <div class="map-grid"></div>
+                    <div class="route-line"></div>
+                    <div class="route-dot start"></div>
+                    <div class="route-dot end"></div>
+                    <div class="rider-marker">
+                        <i class="fa-solid fa-motorcycle"></i>
+                    </div>
+                </div>
+
+                <div class="map-info-card">
+                    <div class="nav-instruction">
+                        <div class="nav-icon">
+                            <i class="fa-solid fa-turn-up"></i>
+                        </div>
+                        <div class="nav-text">
+                            <div class="nav-primary">Turn left onto Rizal Street</div>
+                            <div class="nav-secondary">In 200 meters • 3 min to destination</div>
+                        </div>
+                    </div>
+                    
+                    <div class="distance-info">
+                        <div class="distance-box">
+                            <span class="distance-value">1.2</span>
+                            <div class="distance-label">km remaining</div>
+                        </div>
+                        <div class="distance-box">
+                            <span class="distance-value">8</span>
+                            <div class="distance-label">min arrival</div>
+                        </div>
+                    </div>
+
+                    <button class="btn-primary" onclick="showPage('page-chat')" style="margin-top: 10px;">
+                        <i class="fa-solid fa-message"></i>
+                        Message Customer
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- PAGE 29: RIDER-CUSTOMER CHAT -->
+        <div class="page-section" id="page-chat">
+            <div class="page-header">
+                <button class="back-btn" onclick="showPage('page-booking-details')">
+                    <i class="fa-solid fa-arrow-left"></i>
+                </button>
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <div style="position: relative;">
+                        <img src="https://i.pravatar.cc/150?img=32" alt="Customer" style="width: 40px; height: 40px; border-radius: 50%;">
+                        <span style="position: absolute; bottom: 0; right: 0; width: 12px; height: 12px; background: var(--success); border: 2px solid var(--white); border-radius: 50%;"></span>
+                    </div>
+                    <div>
+                        <div style="font-size: 16px; font-weight: 600; color: var(--text-dark);">Maria Santos</div>
+                        <div style="font-size: 12px; color: var(--success);">Online</div>
+                    </div>
+                </div>
+                <button class="header-action" onclick="alert('Calling customer...')">
+                    <i class="fa-solid fa-phone"></i>
+                </button>
+            </div>
+
+            <div class="chat-container">
+                <div class="chat-messages" id="chat-messages">
+                    <div class="message received">
+                        <div class="message-bubble">
+                            Hi! I'm the rider assigned to your order. I'm on my way to pick up your food at Jollibee. 🛵
+                        </div>
+                        <div class="message-time">12:30 PM</div>
+                    </div>
+
+                    <div class="message sent">
+                        <div class="message-bubble">
+                            Great! Thank you. Please be careful on the road. 😊
+                        </div>
+                        <div class="message-time">12:31 PM</div>
+                    </div>
+
+                    <div class="message received">
+                        <div class="message-bubble">
+                            I've picked up your order. Heading to your location now. Estimated arrival: 12:45 PM
+                        </div>
+                        <div class="message-time">12:35 PM</div>
+                    </div>
+
+                    <div class="message received">
+                        <div class="message-image" onclick="alert('Opening image...')">
+                            <img src="https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=400&h=300&fit=crop" alt="Food photo">
+                        </div>
+                        <div class="message-bubble" style="margin-top: 5px;">
+                            Your order is secure in my thermal bag! 🍗
+                        </div>
+                        <div class="message-time">12:36 PM</div>
+                    </div>
+
+                    <div class="message sent">
+                        <div class="message-bubble">
+                            Perfect! I'm waiting at the gate. Please call me when you arrive.
+                        </div>
+                        <div class="message-time">12:38 PM</div>
+                    </div>
+                </div>
+
+                <div class="chat-input-area">
+                    <div class="chat-toolbar">
+                        <button class="toolbar-btn" onclick="alert('Camera opened')">
+                            <i class="fa-solid fa-camera"></i>
+                        </button>
+                        <button class="toolbar-btn" onclick="alert('Gallery opened')">
+                            <i class="fa-solid fa-image"></i>
+                        </button>
+                        <button class="toolbar-btn" onclick="alert('Location shared')">
+                            <i class="fa-solid fa-location-dot"></i>
+                        </button>
+                        <button class="toolbar-btn" onclick="alert('Voice message recording')">
+                            <i class="fa-solid fa-microphone"></i>
+                        </button>
+                    </div>
+                    <div class="input-wrapper">
+                        <input type="text" class="chat-input" placeholder="Type a message..." id="chat-input">
+                        <button class="send-btn" onclick="sendMessage()">
+                            <i class="fa-solid fa-paper-plane"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PAGE 30: PROOF OF DELIVERY -->
+        <div class="page-section" id="page-proof">
+            <div class="page-header">
+                <button class="back-btn" onclick="showPage('page-booking-details')">
+                    <i class="fa-solid fa-arrow-left"></i>
+                </button>
+                <h1 class="page-title">Proof of Delivery</h1>
+                <button class="header-action" onclick="alert('Help center opened')">
+                    <i class="fa-solid fa-circle-question"></i>
+                </button>
+            </div>
+
+            <div class="content-area">
+                <div style="padding: 20px 20px 0;">
+                    <h2 style="font-size: 20px; font-weight: 600; color: var(--text-dark); margin-bottom: 8px;">Complete Delivery</h2>
+                    <p style="font-size: 14px; color: var(--text-muted); margin-bottom: 20px;">
+                        Take a clear photo of the delivered order or recipient to complete this booking.
+                    </p>
+                </div>
+
+                <!-- Upload Area -->
+                <div class="upload-area-large" onclick="triggerDeliveryUpload()" id="delivery-upload">
+                    <div class="upload-icon-large">
+                        <i class="fa-solid fa-camera"></i>
+                    </div>
+                    <div class="upload-title">Tap to Take Photo</div>
+                    <div class="upload-subtitle">Capture the delivered items or recipient</div>
+                    <div class="upload-guidelines">
+                        <div class="guideline-item">
+                            <i class="fa-solid fa-check-circle"></i>
+                            <span>Clear photo</span>
+                        </div>
+                        <div class="guideline-item">
+                            <i class="fa-solid fa-check-circle"></i>
+                            <span>Good lighting</span>
+                        </div>
+                        <div class="guideline-item">
+                            <i class="fa-solid fa-check-circle"></i>
+                            <span>Show items</span>
+                        </div>
+                    </div>
+                    <input type="file" id="delivery-input" style="display: none;" accept="image/*" capture="environment" onchange="handleDeliveryPhoto(this)">
+                </div>
+
+                <!-- Photo Preview -->
+                <div class="photo-preview" id="photo-preview">
+                    <img src="" alt="Delivery proof" id="preview-img">
+                    <div class="photo-overlay">
+                        <button class="photo-action" onclick="retakePhoto()">
+                            <i class="fa-solid fa-camera-rotate"></i>
+                        </button>
+                        <button class="photo-action" onclick="removePhoto()">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Confirmation -->
+                <div class="confirmation-section">
+                    <div class="checkbox-item" onclick="toggleCheckbox(this)">
+                        <input type="checkbox" id="confirm-handover">
+                        <label class="checkbox-label" for="confirm-handover">
+                            I confirm that the order has been successfully handed over to the customer
+                        </label>
+                    </div>
+                    
+                    <div class="checkbox-item" onclick="toggleCheckbox(this)">
+                        <input type="checkbox" id="confirm-payment">
+                        <label class="checkbox-label" for="confirm-payment">
+                            Payment collected (₱294.00 COD)
+                        </label>
+                    </div>
+
+                    <button class="btn-primary btn-success" onclick="completeDelivery()" id="complete-btn" style="margin-top: 10px;">
+                        <i class="fa-solid fa-check-circle"></i>
+                        Mark as Completed
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // Page Navigation
+        function showPage(pageId) {
+            document.querySelectorAll('.page-section').forEach(page => {
+                page.classList.remove('active');
+            });
+            document.getElementById(pageId).classList.add('active');
+        }
+
+        // Chat Functions
+        function sendMessage() {
+            const input = document.getElementById('chat-input');
+            const message = input.value.trim();
+            
+            if (message) {
+                const chatMessages = document.getElementById('chat-messages');
+                const time = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                
+                const messageHTML = `
+                    <div class="message sent">
+                        <div class="message-bubble">${message}</div>
+                        <div class="message-time">${time}</div>
+                    </div>
+                `;
+                
+                chatMessages.insertAdjacentHTML('beforeend', messageHTML);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+                input.value = '';
+                
+                // Simulate reply
+                setTimeout(() => {
+                    const replyHTML = `
+                        <div class="message received">
+                            <div class="message-bubble">Thank you! See you soon. 👋</div>
+                            <div class="message-time">${time}</div>
+                        </div>
+                    `;
+                    chatMessages.insertAdjacentHTML('beforeend', replyHTML);
+                    chatMessages.scrollTop = chatMessages.scrollHeight;
+                }, 2000);
+            }
+        }
+
+        // Enter key to send
+        document.getElementById('chat-input')?.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') sendMessage();
+        });
+
+        // Photo Upload Functions
+        function triggerDeliveryUpload() {
+            document.getElementById('delivery-input').click();
+        }
+
+        function handleDeliveryPhoto(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('preview-img').src = e.target.result;
+                    document.getElementById('photo-preview').classList.add('show');
+                    document.getElementById('delivery-upload').classList.add('has-file');
+                    document.getElementById('delivery-upload').style.display = 'none';
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        function retakePhoto() {
+            document.getElementById('delivery-input').click();
+        }
+
+        function removePhoto() {
+            document.getElementById('photo-preview').classList.remove('show');
+            document.getElementById('delivery-upload').classList.remove('has-file');
+            document.getElementById('delivery-upload').style.display = 'block';
+            document.getElementById('delivery-input').value = '';
+        }
+
+        function toggleCheckbox(element) {
+            const checkbox = element.querySelector('input[type="checkbox"]');
+            checkbox.checked = !checkbox.checked;
+        }
+
+        function completeDelivery() {
+            const btn = document.getElementById('complete-btn');
+            const originalContent = btn.innerHTML;
+            
+            btn.innerHTML = '<span class="loading"></span> Processing...';
+            btn.disabled = true;
+            
+            setTimeout(() => {
+                btn.innerHTML = '<i class="fa-solid fa-check"></i> Completed!';
+                btn.style.background = 'linear-gradient(135deg, #10B981, #059669)';
+                
+                setTimeout(() => {
+                    alert('Delivery completed successfully! Earnings added to your wallet.');
+                    showPage('page-booking-details');
+                    btn.innerHTML = originalContent;
+                    btn.disabled = false;
+                    btn.style.background = '';
+                    removePhoto();
+                    document.getElementById('confirm-handover').checked = false;
+                    document.getElementById('confirm-payment').checked = false;
+                }, 1500);
+            }, 2000);
+        }
+    </script>
+</body>
+</html>

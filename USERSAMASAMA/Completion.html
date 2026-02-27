@@ -1,0 +1,1326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ALAAP - Completion & Feedback</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+   
+    <style>
+        :root {
+            --primary-blue: #2563EB;
+            --secondary-blue: #1D4ED8;
+            --light-blue: #EFF6FF;
+            --text-dark: #1F2937;
+            --text-muted: #6B7280;
+            --bg-gray: #F3F4F6;
+            --white: #FFFFFF;
+            --border-color: #E5E7EB;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --danger: #EF4444;
+            --star-empty: #D1D5DB;
+            --star-filled: #F59E0B;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html, body {
+            height: 100%;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        body {
+            background-color: var(--bg-gray);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .app-container {
+            width: 100%;
+            height: 100%;
+            max-width: 100%;
+            max-height: 100%;
+            background-color: var(--bg-gray);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        @media (min-width: 415px) {
+            body {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                padding: 20px;
+            }
+            
+            .app-container {
+                width: 375px;
+                height: 812px;
+                max-width: 375px;
+                max-height: 812px;
+                border-radius: 40px;
+                box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(100%); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        @keyframes scaleIn {
+            from { transform: scale(0); }
+            to { transform: scale(1); }
+        }
+
+        @keyframes checkmark {
+            0% { transform: scale(0) rotate(-45deg); }
+            50% { transform: scale(1.2) rotate(-45deg); }
+            100% { transform: scale(1) rotate(-45deg); }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        /* Page Management */
+        .page {
+            display: none;
+            flex-direction: column;
+            height: 100%;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .page.active {
+            display: flex;
+        }
+
+        /* Header */
+        .page-header {
+            background: var(--white);
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            border-bottom: 1px solid var(--border-color);
+            z-index: 100;
+        }
+
+        .back-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            border: none;
+            background: var(--bg-gray);
+            color: var(--text-dark);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .back-btn:hover {
+            background: var(--light-blue);
+            color: var(--primary-blue);
+        }
+
+        .page-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        .header-action {
+            margin-left: auto;
+            padding: 8px 16px;
+            background: var(--light-blue);
+            color: var(--primary-blue);
+            border: none;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        /* Content Area */
+        .content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            scrollbar-width: none;
+        }
+
+        .content::-webkit-scrollbar {
+            display: none;
+        }
+
+        /* Success Header */
+        .success-header {
+            text-align: center;
+            padding: 30px 20px;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .success-icon-large {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--success), #059669);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            box-shadow: 0 10px 30px rgba(16, 185, 129, 0.3);
+            animation: scaleIn 0.5s ease;
+        }
+
+        .success-icon-large i {
+            font-size: 50px;
+            color: var(--white);
+        }
+
+        .success-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 8px;
+        }
+
+        .success-subtitle {
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+
+        /* Delivery Photo Card */
+        .photo-card {
+            background: var(--white);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            animation: slideUp 0.5s ease 0.1s forwards;
+            opacity: 0;
+        }
+
+        .photo-label {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .delivery-photo {
+            width: 100%;
+            height: 200px;
+            background: var(--bg-gray);
+            border-radius: 16px;
+            overflow: hidden;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .delivery-photo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .photo-placeholder {
+            text-align: center;
+            color: var(--text-muted);
+        }
+
+        .photo-placeholder i {
+            font-size: 48px;
+            margin-bottom: 10px;
+        }
+
+        .photo-timestamp {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            background: rgba(0,0,0,0.7);
+            color: var(--white);
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        /* Order Summary Card */
+        .summary-card {
+            background: var(--white);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            animation: slideUp 0.5s ease 0.2s forwards;
+            opacity: 0;
+        }
+
+        .card-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .summary-row:last-child {
+            border-bottom: none;
+        }
+
+        .summary-label {
+            font-size: 14px;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .summary-value {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        .summary-row.total {
+            margin-top: 10px;
+            padding-top: 15px;
+            border-top: 2px solid var(--border-color);
+        }
+
+        .summary-row.total .summary-label,
+        .summary-row.total .summary-value {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--primary-blue);
+        }
+
+        /* Rider Info Mini */
+        .rider-mini {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 15px;
+            background: var(--bg-gray);
+            border-radius: 12px;
+            margin-top: 15px;
+        }
+
+        .rider-mini-photo {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: var(--white);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-muted);
+            font-size: 20px;
+        }
+
+        .rider-mini-info h4 {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        .rider-mini-info p {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        /* Receipt Card */
+        .receipt-card {
+            background: var(--white);
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            position: relative;
+            animation: slideUp 0.5s ease 0.1s forwards;
+            opacity: 0;
+        }
+
+        .receipt-card::before {
+            content: '';
+            position: absolute;
+            top: -10px;
+            left: 20px;
+            right: 20px;
+            height: 20px;
+            background: linear-gradient(135deg, var(--success), #059669);
+            border-radius: 10px;
+            opacity: 0.2;
+        }
+
+        .receipt-header {
+            text-align: center;
+            padding-bottom: 20px;
+            border-bottom: 2px dashed var(--border-color);
+            margin-bottom: 20px;
+        }
+
+        .receipt-logo {
+            width: 60px;
+            height: 60px;
+            background: var(--light-blue);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px;
+            color: var(--primary-blue);
+            font-size: 28px;
+        }
+
+        .receipt-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 5px;
+        }
+
+        .receipt-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            background: #D1FAE5;
+            color: var(--success);
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .receipt-details {
+            margin-bottom: 20px;
+        }
+
+        .receipt-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            font-size: 14px;
+        }
+
+        .receipt-row.label {
+            color: var(--text-muted);
+        }
+
+        .receipt-row.value {
+            color: var(--text-dark);
+            font-weight: 500;
+        }
+
+        .receipt-divider {
+            border-top: 2px dashed var(--border-color);
+            margin: 20px 0;
+            position: relative;
+        }
+
+        .receipt-divider::before,
+        .receipt-divider::after {
+            content: '';
+            position: absolute;
+            top: -10px;
+            width: 20px;
+            height: 20px;
+            background: var(--bg-gray);
+            border-radius: 50%;
+        }
+
+        .receipt-divider::before {
+            left: -35px;
+        }
+
+        .receipt-divider::after {
+            right: -35px;
+        }
+
+        .receipt-total {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+        }
+
+        .receipt-total-label {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        .receipt-total-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary-blue);
+        }
+
+        .receipt-footer {
+            text-align: center;
+            padding-top: 20px;
+            border-top: 2px dashed var(--border-color);
+        }
+
+        .receipt-barcode {
+            font-family: 'Courier New', monospace;
+            font-size: 24px;
+            letter-spacing: 4px;
+            color: var(--text-dark);
+            margin-bottom: 10px;
+            opacity: 0.8;
+        }
+
+        .receipt-thankyou {
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+
+        /* Rating Card */
+        .rating-card {
+            background: var(--white);
+            border-radius: 24px;
+            padding: 30px 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            text-align: center;
+            animation: slideUp 0.5s ease 0.1s forwards;
+            opacity: 0;
+        }
+
+        .rider-profile-large {
+            margin-bottom: 20px;
+        }
+
+        .rider-photo-large {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: var(--bg-gray);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px;
+            color: var(--text-muted);
+            font-size: 50px;
+            border: 4px solid var(--light-blue);
+        }
+
+        .rider-name-large {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 5px;
+        }
+
+        .rider-trip-info {
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+
+        .rating-prompt {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 20px;
+        }
+
+        .star-rating {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 25px;
+        }
+
+        .star {
+            font-size: 40px;
+            color: var(--star-empty);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .star:hover,
+        .star.active {
+            color: var(--star-filled);
+            transform: scale(1.1);
+        }
+
+        .star.active {
+            animation: pulse 0.3s ease;
+        }
+
+        .rating-labels {
+            display: flex;
+            justify-content: space-between;
+            padding: 0 20px;
+            margin-bottom: 25px;
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .feedback-form {
+            text-align: left;
+        }
+
+        .feedback-label {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .feedback-textarea {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid var(--border-color);
+            border-radius: 16px;
+            font-size: 14px;
+            resize: none;
+            font-family: 'Poppins', sans-serif;
+            transition: all 0.3s ease;
+            margin-bottom: 15px;
+        }
+
+        .feedback-textarea:focus {
+            outline: none;
+            border-color: var(--primary-blue);
+            box-shadow: 0 0 0 4px var(--light-blue);
+        }
+
+        .quick-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        .tag {
+            padding: 8px 16px;
+            background: var(--bg-gray);
+            border: none;
+            border-radius: 20px;
+            font-size: 13px;
+            color: var(--text-dark);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .tag:hover,
+        .tag.selected {
+            background: var(--primary-blue);
+            color: var(--white);
+        }
+
+        /* Tip Section */
+        .tip-section {
+            background: var(--bg-gray);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .tip-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .tip-options {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .tip-btn {
+            padding: 12px 20px;
+            background: var(--white);
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-dark);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .tip-btn:hover,
+        .tip-btn.selected {
+            border-color: var(--primary-blue);
+            background: var(--light-blue);
+            color: var(--primary-blue);
+        }
+
+        /* Bottom Actions */
+        .bottom-actions {
+            padding: 20px;
+            background: var(--white);
+            border-top: 1px solid var(--border-color);
+        }
+
+        .btn-primary {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, var(--primary-blue), var(--secondary-blue));
+            color: var(--white);
+            border: none;
+            border-radius: 14px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(37, 99, 235, 0.4);
+        }
+
+        .btn-secondary {
+            width: 100%;
+            padding: 16px;
+            background: var(--white);
+            color: var(--text-dark);
+            border: 2px solid var(--border-color);
+            border-radius: 14px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--primary-blue);
+            color: var(--primary-blue);
+        }
+
+        .btn-success {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, var(--success), #059669);
+            color: var(--white);
+            border: none;
+            border-radius: 14px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+        }
+
+        /* Share Receipt Modal */
+        .share-options {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .share-btn {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: var(--white);
+            transition: all 0.3s ease;
+        }
+
+        .share-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .share-btn.screenshot {
+            background: #10B981;
+        }
+
+        .share-btn.email {
+            background: #EA4335;
+        }
+
+        .share-btn.download {
+            background: #2563EB;
+        }
+
+        /* Success Check Animation */
+        .checkmark-circle {
+            width: 100px;
+            height: 100px;
+            position: relative;
+            display: inline-block;
+            vertical-align: top;
+            margin-bottom: 20px;
+        }
+
+        .checkmark-circle .background {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: var(--success);
+            position: absolute;
+        }
+
+        .checkmark-circle .checkmark {
+            border-radius: 5px;
+        }
+
+        .checkmark-circle .checkmark.draw:after {
+            animation-delay: 100ms;
+            animation-duration: 1s;
+            animation-timing-function: ease;
+            animation-name: checkmark;
+            transform: scaleX(-1) rotate(135deg);
+            animation-fill-mode: forwards;
+        }
+
+        .checkmark-circle .checkmark:after {
+            opacity: 1;
+            height: 50px;
+            width: 25px;
+            transform-origin: left top;
+            border-right: 5px solid white;
+            border-top: 5px solid white;
+            content: '';
+            left: 25px;
+            top: 45px;
+            position: absolute;
+        }
+
+        @keyframes checkmark {
+            0% { height: 0; width: 0; opacity: 1; }
+            20% { height: 0; width: 25px; opacity: 1; }
+            40% { height: 50px; width: 25px; opacity: 1; }
+            100% { height: 50px; width: 25px; opacity: 1; }
+        }
+
+        /* Mobile optimizations */
+        @media (max-height: 700px) {
+            .success-header {
+                padding: 20px;
+            }
+            
+            .success-icon-large {
+                width: 80px;
+                height: 80px;
+            }
+            
+            .success-icon-large i {
+                font-size: 40px;
+            }
+            
+            .star {
+                font-size: 32px;
+            }
+        }
+    </style>
+<base target="_blank">
+</head>
+<body>
+
+    <div class="app-container">
+       
+        <!-- PAGE 1: DELIVERY COMPLETION -->
+        <div class="page active" id="page-completion">
+            <div class="page-header">
+                <button class="back-btn" onclick="goBack()">
+                    <i class="fa-solid fa-arrow-left"></i>
+                </button>
+                <h1 class="page-title">Delivery Complete</h1>
+                <button class="header-action" onclick="goToPage('page-receipt')">Receipt</button>
+            </div>
+            
+            <div class="content">
+                <div class="success-header">
+                    <div class="success-icon-large">
+                        <i class="fa-solid fa-check"></i>
+                    </div>
+                    <h2 class="success-title">Successfully Delivered!</h2>
+                    <p class="success-subtitle">Your order has been delivered at 2:45 PM</p>
+                </div>
+
+                <!-- Delivery Photo Proof -->
+                <div class="photo-card">
+                    <div class="photo-label">
+                        <i class="fa-solid fa-camera"></i>
+                        Proof of Delivery
+                    </div>
+                    <div class="delivery-photo">
+                        <div class="photo-placeholder">
+                            <i class="fa-solid fa-image"></i>
+                            <p>Delivery Photo</p>
+                        </div>
+                        <!-- In real app, this would show actual photo -->
+                        <!-- <img src="delivery-photo.jpg" alt="Delivery"> -->
+                        <div class="photo-timestamp">
+                            <i class="fa-solid fa-clock"></i>
+                            2:45 PM
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Order Summary -->
+                <div class="summary-card">
+                    <h3 class="card-title">
+                        <i class="fa-solid fa-clipboard-list"></i>
+                        Order Summary
+                    </h3>
+                    
+                    <div class="summary-row">
+                        <span class="summary-label">
+                            <i class="fa-solid fa-box"></i>
+                            Service Type
+                        </span>
+                        <span class="summary-value">Padala (Parcel)</span>
+                    </div>
+                    
+                    <div class="summary-row">
+                        <span class="summary-label">
+                            <i class="fa-solid fa-location-dot"></i>
+                            From
+                        </span>
+                        <span class="summary-value">Brgy. 4, Alaminos</span>
+                    </div>
+                    
+                    <div class="summary-row">
+                        <span class="summary-label">
+                            <i class="fa-solid fa-flag-checkered"></i>
+                            To
+                        </span>
+                        <span class="summary-value">Alaminos City Hall</span>
+                    </div>
+                    
+                    <div class="summary-row">
+                        <span class="summary-label">
+                            <i class="fa-solid fa-calendar"></i>
+                            Date & Time
+                        </span>
+                        <span class="summary-value">Feb 25, 2:30 PM</span>
+                    </div>
+                    
+                    <div class="summary-row total">
+                        <span class="summary-label">Total Paid</span>
+                        <span class="summary-value">₱105.00</span>
+                    </div>
+
+                    <!-- Rider Info -->
+                    <div class="rider-mini">
+                        <div class="rider-mini-photo">
+                            <i class="fa-solid fa-user"></i>
+                        </div>
+                        <div class="rider-mini-info">
+                            <h4>Delivered by Mang Kanor</h4>
+                            <p>Honda Beat • 4.9 ★</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bottom-actions">
+                <button class="btn-primary" onclick="goToPage('page-rating')">
+                    Rate Your Experience
+                    <i class="fa-solid fa-star"></i>
+                </button>
+                <button class="btn-secondary" onclick="goToPage('page-receipt')">
+                    <i class="fa-solid fa-file-invoice"></i>
+                    View Digital Receipt
+                </button>
+            </div>
+        </div>
+
+        <!-- PAGE 2: DIGITAL RECEIPT -->
+        <div class="page" id="page-receipt">
+            <div class="page-header">
+                <button class="back-btn" onclick="goToPage('page-completion')">
+                    <i class="fa-solid fa-arrow-left"></i>
+                </button>
+                <h1 class="page-title">Digital Receipt</h1>
+                <button class="header-action" onclick="shareReceipt()">
+                    <i class="fa-solid fa-share-nodes"></i>
+                </button>
+            </div>
+            
+            <div class="content">
+                <div class="receipt-card">
+                    <div class="receipt-header">
+                        <div class="receipt-logo">
+                            <i class="fa-solid fa-motorcycle"></i>
+                        </div>
+                        <h2 class="receipt-title">ALAAP</h2>
+                        <span class="receipt-status">
+                            <i class="fa-solid fa-check-circle"></i>
+                            Paid
+                        </span>
+                    </div>
+
+                    <div class="receipt-details">
+                        <div class="receipt-row">
+                            <span class="receipt-row label">Transaction ID</span>
+                            <span class="receipt-row value">TXN-20240225-78433</span>
+                        </div>
+                        <div class="receipt-row">
+                            <span class="receipt-row label">Date & Time</span>
+                            <span class="receipt-row value">Feb 25, 2024 - 2:30 PM</span>
+                        </div>
+                        <div class="receipt-row">
+                            <span class="receipt-row label">Payment Method</span>
+                            <span class="receipt-row value">Cash on Delivery</span>
+                        </div>
+                        <div class="receipt-row">
+                            <span class="receipt-row label">Service Type</span>
+                            <span class="receipt-row value">Padala (Parcel)</span>
+                        </div>
+                    </div>
+
+                    <div class="receipt-divider"></div>
+
+                    <div class="receipt-details">
+                        <div class="receipt-row">
+                            <span class="receipt-row label">Base Fare</span>
+                            <span class="receipt-row value">₱60.00</span>
+                        </div>
+                        <div class="receipt-row">
+                            <span class="receipt-row label">Distance (2.5km)</span>
+                            <span class="receipt-row value">₱25.00</span>
+                        </div>
+                        <div class="receipt-row">
+                            <span class="receipt-row label">Service Fee</span>
+                            <span class="receipt-row value">₱20.00</span>
+                        </div>
+                    </div>
+
+                    <div class="receipt-total">
+                        <span class="receipt-total-label">TOTAL</span>
+                        <span class="receipt-total-value">₱105.00</span>
+                    </div>
+
+                    <div class="receipt-footer">
+                        <div class="receipt-barcode">||| ||| ||| |||</div>
+                        <p class="receipt-thankyou">Thank you for using ALAAP!</p>
+                        <p style="font-size: 12px; color: var(--text-muted); margin-top: 5px;">
+                            www.alaap.com • support@alaap.com
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Download Options -->
+                <div style="display: flex; gap: 10px; margin-top: 10px;">
+                    <button class="btn-secondary" style="flex: 1;" onclick="downloadReceipt()">
+                        <i class="fa-solid fa-download"></i>
+                        Download
+                    </button>
+                    <button class="btn-secondary" style="flex: 1;" onclick="emailReceipt()">
+                        <i class="fa-solid fa-envelope"></i>
+                        Email
+                    </button>
+                </div>
+            </div>
+
+            <div class="bottom-actions">
+                <button class="btn-primary" onclick="goToPage('page-rating')">
+                    Continue to Rating
+                    <i class="fa-solid fa-arrow-right"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- PAGE 3: RIDER RATING & FEEDBACK -->
+        <div class="page" id="page-rating">
+            <div class="page-header">
+                <button class="back-btn" onclick="goToPage('page-completion')">
+                    <i class="fa-solid fa-arrow-left"></i>
+                </button>
+                <h1 class="page-title">Rate & Review</h1>
+                <button class="header-action" onclick="skipRating()">Skip</button>
+            </div>
+            
+            <div class="content">
+                <div class="rating-card">
+                    <div class="rider-profile-large">
+                        <div class="rider-photo-large">
+                            <i class="fa-solid fa-user"></i>
+                        </div>
+                        <h3 class="rider-name-large">Mang Kanor</h3>
+                        <p class="rider-trip-info">Honda Beat • Trip #ALA-78433</p>
+                    </div>
+
+                    <p class="rating-prompt">How was your delivery experience?</p>
+
+                    <div class="star-rating" id="star-rating">
+                        <i class="fa-solid fa-star star" data-rating="1" onclick="setRating(1)"></i>
+                        <i class="fa-solid fa-star star" data-rating="2" onclick="setRating(2)"></i>
+                        <i class="fa-solid fa-star star" data-rating="3" onclick="setRating(3)"></i>
+                        <i class="fa-solid fa-star star" data-rating="4" onclick="setRating(4)"></i>
+                        <i class="fa-solid fa-star star" data-rating="5" onclick="setRating(5)"></i>
+                    </div>
+
+                    <div class="rating-labels">
+                        <span>Terrible</span>
+                        <span>Excellent</span>
+                    </div>
+
+                    <!-- Quick Tags -->
+                    <div class="quick-tags" id="quick-tags">
+                        <button class="tag" onclick="toggleTag(this)">Fast Delivery</button>
+                        <button class="tag" onclick="toggleTag(this)">Friendly Rider</button>
+                        <button class="tag" onclick="toggleTag(this)">Careful Handling</button>
+                        <button class="tag" onclick="toggleTag(this)">Good Communication</button>
+                        <button class="tag" onclick="toggleTag(this)">On Time</button>
+                    </div>
+
+                    <!-- Feedback Form -->
+                    <div class="feedback-form">
+                        <label class="feedback-label">Additional Comments (Optional)</label>
+                        <textarea class="feedback-textarea" rows="4" placeholder="Tell us more about your experience..."></textarea>
+                    </div>
+                </div>
+
+                <!-- Tip Section -->
+                <div class="tip-section">
+                    <div class="tip-title">Add a tip for Mang Kanor?</div>
+                    <div class="tip-options">
+                        <button class="tip-btn" onclick="selectTip(this, 20)">₱20</button>
+                        <button class="tip-btn" onclick="selectTip(this, 50)">₱50</button>
+                        <button class="tip-btn" onclick="selectTip(this, 100)">₱100</button>
+                        <button class="tip-btn" onclick="selectTip(this, 'custom')">Custom</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bottom-actions">
+                <button class="btn-success" onclick="submitRating()">
+                    Submit Rating
+                    <i class="fa-solid fa-paper-plane"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- PAGE 4: RATING SUCCESS -->
+        <div class="page" id="page-rating-success">
+            <div class="content" style="display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 40px;">
+                <div class="checkmark-circle">
+                    <div class="background"></div>
+                    <div class="checkmark draw"></div>
+                </div>
+                
+                <h2 style="font-size: 24px; font-weight: 700; color: var(--text-dark); margin-bottom: 10px;">Thank You!</h2>
+                <p style="font-size: 14px; color: var(--text-muted); margin-bottom: 30px; max-width: 280px;">
+                    Your feedback helps us improve our service and recognize great riders like Mang Kanor.
+                </p>
+
+                <div style="background: var(--white); border-radius: 16px; padding: 20px; width: 100%; max-width: 300px; margin-bottom: 30px;">
+                    <div style="font-size: 50px; color: var(--star-filled); margin-bottom: 10px;">
+                        <i class="fa-solid fa-star"></i>
+                    </div>
+                    <div style="font-size: 18px; font-weight: 700; color: var(--text-dark); margin-bottom: 5px;">
+                        You rated <span id="final-rating">5</span> stars
+                    </div>
+                    <div style="font-size: 14px; color: var(--text-muted);">
+                        Mang Kanor appreciates your feedback!
+                    </div>
+                </div>
+
+                <button class="btn-primary" onclick="goToDashboard()" style="max-width: 300px;">
+                    Back to Home
+                    <i class="fa-solid fa-house"></i>
+                </button>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        let currentRating = 0;
+        let selectedTip = 0;
+        let selectedTags = [];
+
+        function goToPage(pageId) {
+            document.querySelectorAll('.page').forEach(page => {
+                page.classList.remove('active');
+            });
+            document.getElementById(pageId).classList.add('active');
+            
+            // Trigger checkmark animation on success page
+            if (pageId === 'page-rating-success') {
+                document.querySelector('.checkmark').classList.add('draw');
+            }
+        }
+
+        function goBack() {
+            alert('Going back to dashboard...');
+        }
+
+        function goToDashboard() {
+            alert('Returning to home dashboard...');
+            // Reset all states
+            currentRating = 0;
+            selectedTip = 0;
+            selectedTags = [];
+            updateStarDisplay();
+            document.querySelectorAll('.tag').forEach(tag => tag.classList.remove('selected'));
+            document.querySelectorAll('.tip-btn').forEach(btn => btn.classList.remove('selected'));
+            document.querySelector('.feedback-textarea').value = '';
+            
+            goToPage('page-completion');
+        }
+
+        // Star Rating
+        function setRating(rating) {
+            currentRating = rating;
+            updateStarDisplay();
+        }
+
+        function updateStarDisplay() {
+            document.querySelectorAll('.star').forEach((star, index) => {
+                if (index < currentRating) {
+                    star.classList.add('active');
+                } else {
+                    star.classList.remove('active');
+                }
+            });
+        }
+
+        // Hover effect for stars
+        document.querySelectorAll('.star').forEach((star, index) => {
+            star.addEventListener('mouseenter', () => {
+                document.querySelectorAll('.star').forEach((s, i) => {
+                    if (i <= index) {
+                        s.style.color = 'var(--star-filled)';
+                    } else {
+                        s.style.color = 'var(--star-empty)';
+                    }
+                });
+            });
+            
+            star.addEventListener('mouseleave', () => {
+                updateStarDisplay();
+                document.querySelectorAll('.star').forEach((s, i) => {
+                    if (i >= currentRating) {
+                        s.style.color = 'var(--star-empty)';
+                    }
+                });
+            });
+        });
+
+        // Quick Tags
+        function toggleTag(tag) {
+            tag.classList.toggle('selected');
+            const tagText = tag.textContent;
+            
+            if (selectedTags.includes(tagText)) {
+                selectedTags = selectedTags.filter(t => t !== tagText);
+            } else {
+                selectedTags.push(tagText);
+            }
+        }
+
+        // Tip Selection
+        function selectTip(btn, amount) {
+            document.querySelectorAll('.tip-btn').forEach(b => b.classList.remove('selected'));
+            btn.classList.add('selected');
+            selectedTip = amount;
+            
+            if (amount === 'custom') {
+                const custom = prompt('Enter custom tip amount:');
+                if (custom) {
+                    btn.textContent = '₱' + custom;
+                    selectedTip = parseInt(custom) || 0;
+                }
+            }
+        }
+
+        // Submit Rating
+        function submitRating() {
+            if (currentRating === 0) {
+                alert('Please select a star rating');
+                return;
+            }
+            
+            document.getElementById('final-rating').textContent = currentRating;
+            goToPage('page-rating-success');
+        }
+
+        function skipRating() {
+            if (confirm('Are you sure you want to skip rating? Your feedback helps improve our service.')) {
+                goToDashboard();
+            }
+        }
+
+        // Receipt Actions
+        function shareReceipt() {
+            const options = ['Screenshot', 'Email', 'Download PDF'];
+            alert('Share options:\n• Screenshot\n• Email\n• Download PDF');
+        }
+
+        function downloadReceipt() {
+            alert('Downloading receipt...');
+            setTimeout(() => {
+                alert('Receipt saved to Downloads!');
+            }, 1000);
+        }
+
+        function emailReceipt() {
+            const email = prompt('Enter email address:');
+            if (email) {
+                alert('Receipt sent to ' + email);
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,1157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ALAAP - Rider Earnings & Profile</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+   
+    <style>
+        :root {
+            --primary-blue: #2563EB;
+            --secondary-blue: #1D4ED8;
+            --light-blue: #EFF6FF;
+            --text-dark: #1F2937;
+            --text-muted: #6B7280;
+            --bg-gray: #F3F4F6;
+            --white: #FFFFFF;
+            --border-color: #E5E7EB;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --danger: #EF4444;
+            --purple: #8B5CF6;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html, body {
+            height: 100%;
+            width: 100%;
+            overflow: hidden;
+            background-color: var(--bg-gray);
+        }
+
+        /* Mobile Container Simulation */
+        .app-container {
+            width: 100%;
+            height: 100%;
+            max-width: 100%;
+            max-height: 100%;
+            background-color: var(--bg-gray);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            margin: 0 auto;
+        }
+
+        @media (min-width: 415px) {
+            body {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                padding: 20px;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
+            .app-container {
+                width: 375px;
+                height: 812px;
+                border-radius: 40px;
+                box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            }
+        }
+
+        /* Header Section */
+        .rider-header {
+            background: linear-gradient(135deg, var(--secondary-blue), var(--primary-blue));
+            padding: 50px 20px 30px;
+            color: var(--white);
+            position: relative;
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .greeting h2 {
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        .greeting p {
+            font-size: 13px;
+            opacity: 0.9;
+        }
+
+        .profile-pic {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            border: 2px solid rgba(255,255,255,0.5);
+            background: var(--white);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary-blue);
+            font-size: 20px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .profile-pic:active { transform: scale(0.95); }
+
+        /* Earnings Summary Card */
+        .earnings-card {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 20px;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .earnings-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .earnings-label {
+            font-size: 13px;
+            opacity: 0.9;
+        }
+
+        /* Custom Period Selector */
+        .period-selector {
+            display: flex;
+            background: rgba(0,0,0,0.2);
+            border-radius: 20px;
+            padding: 3px;
+            gap: 3px;
+        }
+
+        .period-btn {
+            padding: 6px 14px;
+            border-radius: 17px;
+            border: none;
+            background: transparent;
+            color: rgba(255,255,255,0.7);
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .period-btn.active {
+            background: var(--white);
+            color: var(--primary-blue);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+
+        .earnings-amount {
+            font-size: 36px;
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+
+        .earnings-stats {
+            display: flex;
+            gap: 20px;
+        }
+
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+        }
+
+        .stat-icon {
+            width: 28px;
+            height: 28px;
+            border-radius: 8px;
+            background: rgba(255,255,255,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+        }
+
+        /* Tab Navigation */
+        .tab-nav {
+            display: flex;
+            background: var(--white);
+            padding: 4px;
+            margin: -20px 20px 0;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            position: relative;
+            z-index: 10;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 12px 0;
+            text-align: center;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-muted);
+            background: transparent;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .tab-btn.active {
+            background: var(--primary-blue);
+            color: var(--white);
+        }
+
+        /* Content Area */
+        .content-section {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .content-section::-webkit-scrollbar { display: none; }
+
+        .tab-content { display: none; }
+        .tab-content.active { display: block; animation: fadeIn 0.3s ease; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Earnings Tab */
+        .chart-container {
+            background: var(--white);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .chart-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        .chart-legend {
+            display: flex;
+            gap: 15px;
+            font-size: 12px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--text-muted);
+        }
+
+        .legend-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        /* Fixed Chart Styles */
+        .chart-wrapper {
+            position: relative;
+            height: 180px;
+            margin-top: 10px;
+        }
+
+        .chart-bars {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            height: 100%;
+            padding-bottom: 25px;
+            gap: 8px;
+        }
+
+        .bar-wrapper {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-end;
+            height: 100%;
+            position: relative;
+        }
+
+        .bar {
+            width: 100%;
+            max-width: 30px;
+            border-radius: 6px 6px 0 0;
+            position: relative;
+            transition: all 0.3s ease;
+            min-height: 4px;
+        }
+
+        .bar:hover { opacity: 0.8; }
+
+        .bar-value {
+            position: absolute;
+            top: -18px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 10px;
+            font-weight: 600;
+            color: var(--text-dark);
+            opacity: 0;
+            transition: opacity 0.3s;
+            white-space: nowrap;
+        }
+
+        .bar-wrapper:hover .bar-value { opacity: 1; }
+
+        .bar-label {
+            position: absolute;
+            bottom: -25px;
+            font-size: 11px;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        /* Quick Stats Grid */
+        .quick-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .quick-stat-card {
+            background: var(--white);
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .quick-stat-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 12px;
+            font-size: 18px;
+        }
+
+        .quick-stat-icon.blue { background: var(--light-blue); color: var(--primary-blue); }
+        .quick-stat-icon.green { background: #D1FAE5; color: var(--success); }
+        .quick-stat-icon.orange { background: #FEF3C7; color: var(--warning); }
+        .quick-stat-icon.purple { background: #EDE9FE; color: var(--purple); }
+
+        .quick-stat-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 4px;
+        }
+
+        .quick-stat-label {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        /* Withdraw Button - Now in content */
+        .withdraw-section {
+            margin-top: 5px;
+            margin-bottom: 30px;
+        }
+
+        .withdraw-btn {
+            width: 100%;
+            background: linear-gradient(135deg, var(--primary-blue), var(--secondary-blue));
+            color: white;
+            border: none;
+            padding: 18px;
+            border-radius: 16px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .withdraw-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(37, 99, 235, 0.4);
+        }
+
+        .withdraw-btn:active {
+            transform: translateY(0);
+        }
+
+        /* History Tab */
+        .filter-bar {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            overflow-x: auto;
+            padding-bottom: 5px;
+        }
+
+        .filter-btn {
+            padding: 8px 16px;
+            border-radius: 20px;
+            border: 1px solid var(--border-color);
+            background: var(--white);
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--text-muted);
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.2s;
+        }
+
+        .filter-btn.active {
+            background: var(--primary-blue);
+            color: var(--white);
+            border-color: var(--primary-blue);
+        }
+
+        .transaction-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            padding-bottom: 20px;
+        }
+
+        .transaction-card {
+            background: var(--white);
+            border-radius: 16px;
+            padding: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: transform 0.2s;
+        }
+
+        .transaction-card:active { transform: scale(0.98); }
+
+        .transaction-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .transaction-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        .transaction-icon.food { background: #FEF3C7; color: var(--warning); }
+        .transaction-icon.package { background: #DBEAFE; color: var(--primary-blue); }
+        .transaction-icon.grocery { background: #D1FAE5; color: var(--success); }
+
+        .transaction-details h4 {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 4px;
+        }
+
+        .transaction-details p {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .transaction-amount {
+            text-align: right;
+        }
+
+        .amount-value {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-dark);
+        }
+
+        .amount-status {
+            font-size: 11px;
+            padding: 4px 8px;
+            border-radius: 12px;
+            margin-top: 4px;
+            display: inline-block;
+        }
+
+        .amount-status.completed {
+            background: #D1FAE5;
+            color: var(--success);
+        }
+
+        .amount-status.pending {
+            background: #FEF3C7;
+            color: var(--warning);
+        }
+
+        /* Profile Tab */
+        .profile-header {
+            background: var(--white);
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .profile-avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-blue), var(--secondary-blue));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px;
+            color: white;
+            font-size: 40px;
+            position: relative;
+        }
+
+        .profile-badge {
+            position: absolute;
+            bottom: 5px;
+            right: 5px;
+            width: 28px;
+            height: 28px;
+            background: var(--success);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            border: 3px solid white;
+        }
+
+        .profile-name {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 5px;
+        }
+
+        .profile-id {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-bottom: 15px;
+        }
+
+        .rating-display {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .rating-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--warning);
+        }
+
+        .rating-stars {
+            color: var(--warning);
+            font-size: 14px;
+        }
+
+        .rating-count {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        /* Performance Metrics */
+        .performance-section {
+            background: var(--white);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        .performance-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .performance-item {
+            text-align: center;
+            padding: 15px;
+            background: var(--bg-gray);
+            border-radius: 12px;
+        }
+
+        .performance-value {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 4px;
+        }
+
+        .performance-label {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        /* Tier Progress */
+        .tier-card {
+            background: linear-gradient(135deg, #1F2937, #374151);
+            border-radius: 20px;
+            padding: 20px;
+            color: white;
+            margin-bottom: 15px;
+        }
+
+        .tier-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .tier-name {
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .tier-badge {
+            background: var(--warning);
+            color: #1F2937;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .tier-progress {
+            margin-bottom: 10px;
+        }
+
+        .progress-bar {
+            height: 8px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--warning), #FBBF24);
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+
+        .tier-stats {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            opacity: 0.8;
+        }
+
+        /* Menu Items */
+        .menu-list {
+            background: var(--white);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--bg-gray);
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .menu-item:last-child { border-bottom: none; }
+        .menu-item:active { background: var(--bg-gray); }
+
+        .menu-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .menu-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+        }
+
+        .menu-icon.blue { background: var(--light-blue); color: var(--primary-blue); }
+        .menu-icon.green { background: #D1FAE5; color: var(--success); }
+        .menu-icon.red { background: #FEE2E2; color: var(--danger); }
+        .menu-icon.purple { background: #EDE9FE; color: var(--purple); }
+
+        .menu-text {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-dark);
+        }
+
+        .menu-arrow {
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            top: 100px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-100px);
+            background: var(--text-dark);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 30px;
+            font-size: 14px;
+            font-weight: 500;
+            z-index: 200;
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+       
+        <!-- Header with Earnings -->
+        <div class="rider-header">
+            <div class="header-top">
+                <div class="greeting">
+                    <p>Welcome back,</p>
+                    <h2>Rider #882</h2>
+                </div>
+                <div class="profile-pic" onclick="switchTab('profile')">
+                    <i class="fa-solid fa-user"></i>
+                </div>
+            </div>
+
+            <div class="earnings-card">
+                <div class="earnings-header">
+                    <span class="earnings-label">Total Earnings</span>
+                    <!-- Fixed: Custom Period Selector -->
+                    <div class="period-selector">
+                        <button class="period-btn active" onclick="changePeriod('today', this)">Today</button>
+                        <button class="period-btn" onclick="changePeriod('week', this)">Week</button>
+                        <button class="period-btn" onclick="changePeriod('month', this)">Month</button>
+                    </div>
+                </div>
+                <div class="earnings-amount" id="earningsAmount">₱1,240.00</div>
+                <div class="earnings-stats">
+                    <div class="stat-item">
+                        <div class="stat-icon"><i class="fa-solid fa-motorcycle"></i></div>
+                        <span id="deliveryCount">12 Deliveries</span>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-icon"><i class="fa-solid fa-clock"></i></div>
+                        <span id="hoursCount">6.5 Hours</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab Navigation -->
+        <div class="tab-nav">
+            <button class="tab-btn active" onclick="switchTab('earnings')" data-tab="earnings">Earnings</button>
+            <button class="tab-btn" onclick="switchTab('history')" data-tab="history">History</button>
+            <button class="tab-btn" onclick="switchTab('profile')" data-tab="profile">Profile</button>
+        </div>
+
+        <!-- Content Area -->
+        <div class="content-section">
+            
+            <!-- Earnings Tab -->
+            <div class="tab-content active" id="earnings-tab">
+                <div class="chart-container">
+                    <div class="chart-header">
+                        <span class="chart-title">Performance Overview</span>
+                        <div class="chart-legend">
+                            <div class="legend-item">
+                                <div class="legend-dot" style="background: var(--primary-blue)"></div>
+                                <span>Earnings</span>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Fixed: Better Chart Structure -->
+                    <div class="chart-wrapper">
+                        <div class="chart-bars" id="chartBars">
+                            <!-- Bars injected by JS -->
+                        </div>
+                    </div>
+                </div>
+
+                <div class="quick-stats">
+                    <div class="quick-stat-card">
+                        <div class="quick-stat-icon blue"><i class="fa-solid fa-wallet"></i></div>
+                        <div class="quick-stat-value" id="weekEarnings">₱8,450</div>
+                        <div class="quick-stat-label">This Week</div>
+                    </div>
+                    <div class="quick-stat-card">
+                        <div class="quick-stat-icon green"><i class="fa-solid fa-check-circle"></i></div>
+                        <div class="quick-stat-value" id="completedCount">89</div>
+                        <div class="quick-stat-label">Completed</div>
+                    </div>
+                    <div class="quick-stat-card">
+                        <div class="quick-stat-icon orange"><i class="fa-solid fa-gift"></i></div>
+                        <div class="quick-stat-value" id="bonusAmount">₱450</div>
+                        <div class="quick-stat-label">Bonuses</div>
+                    </div>
+                    <div class="quick-stat-card">
+                        <div class="quick-stat-icon purple"><i class="fa-solid fa-chart-line"></i></div>
+                        <div class="quick-stat-value">+12%</div>
+                        <div class="quick-stat-label">vs Last Week</div>
+                    </div>
+                </div>
+
+                <!-- Fixed: Withdraw Button moved up into content -->
+                <div class="withdraw-section">
+                    <button class="withdraw-btn" onclick="showToast('Withdrawal request submitted!')">
+                        <i class="fa-solid fa-wallet"></i> Withdraw Earnings
+                    </button>
+                </div>
+            </div>
+
+            <!-- History Tab -->
+            <div class="tab-content" id="history-tab">
+                <div class="filter-bar">
+                    <button class="filter-btn active" onclick="filterHistory('all', this)">All</button>
+                    <button class="filter-btn" onclick="filterHistory('food', this)">Food</button>
+                    <button class="filter-btn" onclick="filterHistory('package', this)">Package</button>
+                    <button class="filter-btn" onclick="filterHistory('grocery', this)">Grocery</button>
+                </div>
+
+                <div class="transaction-list" id="transactionList">
+                    <!-- Transactions injected by JS -->
+                </div>
+            </div>
+
+            <!-- Profile Tab -->
+            <div class="tab-content" id="profile-tab">
+                <div class="profile-header">
+                    <div class="profile-avatar">
+                        <i class="fa-solid fa-user"></i>
+                        <div class="profile-badge"><i class="fa-solid fa-check"></i></div>
+                    </div>
+                    <div class="profile-name">Juan Dela Cruz</div>
+                    <div class="profile-id">ID: ALA-R-882 • Joined March 2023</div>
+                    <div class="rating-display">
+                        <span class="rating-value">4.9</span>
+                        <div>
+                            <div class="rating-stars">
+                                <i class="fa-solid fa-star"></i>
+                                <i class="fa-solid fa-star"></i>
+                                <i class="fa-solid fa-star"></i>
+                                <i class="fa-solid fa-star"></i>
+                                <i class="fa-solid fa-star-half-stroke"></i>
+                            </div>
+                            <div class="rating-count">Based on 234 reviews</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tier-card">
+                    <div class="tier-header">
+                        <span class="tier-name">Gold Tier</span>
+                        <span class="tier-badge">TOP 5%</span>
+                    </div>
+                    <div class="tier-progress">
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 75%"></div>
+                        </div>
+                    </div>
+                    <div class="tier-stats">
+                        <span>750 pts to Platinum</span>
+                        <span>2,250 / 3,000 pts</span>
+                    </div>
+                </div>
+
+                <div class="performance-section">
+                    <div class="section-header">
+                        <span class="section-title">Performance Summary</span>
+                        <i class="fa-solid fa-ellipsis" style="color: var(--text-muted)"></i>
+                    </div>
+                    <div class="performance-grid">
+                        <div class="performance-item">
+                            <div class="performance-value">98%</div>
+                            <div class="performance-label">Acceptance</div>
+                        </div>
+                        <div class="performance-item">
+                            <div class="performance-value">12 min</div>
+                            <div class="performance-label">Avg Delivery</div>
+                        </div>
+                        <div class="performance-item">
+                            <div class="performance-value">100%</div>
+                            <div class="performance-label">Completion</div>
+                        </div>
+                        <div class="performance-item">
+                            <div class="performance-value">4.9</div>
+                            <div class="performance-label">Customer Rating</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="menu-list">
+                    <div class="menu-item">
+                        <div class="menu-left">
+                            <div class="menu-icon blue"><i class="fa-solid fa-file-invoice"></i></div>
+                            <span class="menu-text">Documents & IDs</span>
+                        </div>
+                        <i class="fa-solid fa-chevron-right menu-arrow"></i>
+                    </div>
+                    <div class="menu-item">
+                        <div class="menu-left">
+                            <div class="menu-icon green"><i class="fa-solid fa-gear"></i></div>
+                            <span class="menu-text">Account Settings</span>
+                        </div>
+                        <i class="fa-solid fa-chevron-right menu-arrow"></i>
+                    </div>
+                    <div class="menu-item">
+                        <div class="menu-left">
+                            <div class="menu-icon purple"><i class="fa-solid fa-headset"></i></div>
+                            <span class="menu-text">Support Center</span>
+                        </div>
+                        <i class="fa-solid fa-chevron-right menu-arrow"></i>
+                    </div>
+                    <div class="menu-item">
+                        <div class="menu-left">
+                            <div class="menu-icon red"><i class="fa-solid fa-right-from-bracket"></i></div>
+                            <span class="menu-text">Log Out</span>
+                        </div>
+                        <i class="fa-solid fa-chevron-right menu-arrow"></i>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Toast Notification -->
+        <div class="toast" id="toast">Action completed successfully!</div>
+
+    </div>
+
+    <script>
+        // Data for different periods
+        const periodData = {
+            today: {
+                amount: '₱1,240.00',
+                deliveries: '12 Deliveries',
+                hours: '6.5 Hours',
+                chart: [60, 0, 0, 0, 0, 0, 0],
+                labels: ['Now', '-2h', '-4h', '-6h', '-8h', '-10h', '-12h'],
+                weekEarnings: '₱8,450',
+                completed: '89',
+                bonus: '₱450'
+            },
+            week: {
+                amount: '₱8,450.00',
+                deliveries: '89 Deliveries',
+                hours: '42 Hours',
+                chart: [60, 80, 45, 90, 70, 100, 75],
+                labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                weekEarnings: '₱8,450',
+                completed: '89',
+                bonus: '₱1,200'
+            },
+            month: {
+                amount: '₱32,180.00',
+                deliveries: '342 Deliveries',
+                hours: '168 Hours',
+                chart: [85, 70, 90, 65, 80, 75, 95],
+                labels: ['W1', 'W2', 'W3', 'W4', 'W5', 'W6', 'W7'],
+                weekEarnings: '₱32,180',
+                completed: '342',
+                bonus: '₱3,500'
+            }
+        };
+
+        // Transaction data
+        const transactions = [
+            { type: 'food', icon: 'fa-utensils', color: 'food', title: 'Jollibee Alaminos', time: 'Today, 2:30 PM', id: '#ORD-7782', amount: '₱85.00', status: 'completed' },
+            { type: 'package', icon: 'fa-box', color: 'package', title: 'Document Delivery', time: 'Today, 1:15 PM', id: '#PKG-9921', amount: '₱120.00', status: 'completed' },
+            { type: 'grocery', icon: 'fa-basket-shopping', color: 'grocery', title: 'SM Supermarket', time: 'Today, 11:45 AM', id: '#GRY-4451', amount: '₱95.00', status: 'completed' },
+            { type: 'food', icon: 'fa-utensils', color: 'food', title: 'Mang Inasal', time: 'Yesterday, 6:20 PM', id: '#ORD-7721', amount: '₱75.00', status: 'completed' },
+            { type: 'package', icon: 'fa-box', color: 'package', title: 'Medical Supplies', time: 'Yesterday, 4:00 PM', id: '#PKG-9902', amount: '₱150.00', status: 'pending' },
+            { type: 'food', icon: 'fa-utensils', color: 'food', title: 'Chowking', time: 'Yesterday, 12:30 PM', id: '#ORD-7710', amount: '₱90.00', status: 'completed' },
+            { type: 'grocery', icon: 'fa-basket-shopping', color: 'grocery', title: 'Puregold', time: 'Jan 15, 5:00 PM', id: '#GRY-4420', amount: '₱110.00', status: 'completed' }
+        ];
+
+        // Initialize
+        let currentPeriod = 'today';
+        
+        function init() {
+            renderChart(periodData[currentPeriod]);
+            renderTransactions('all');
+        }
+
+        // Tab Switching Logic
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.dataset.tab === tabName) btn.classList.add('active');
+            });
+
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+
+            const targetTab = document.getElementById(tabName + '-tab');
+            if (targetTab) targetTab.classList.add('active');
+        }
+
+        // Change Period
+        function changePeriod(period, btn) {
+            currentPeriod = period;
+            
+            // Update buttons
+            document.querySelectorAll('.period-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            
+            // Update data
+            const data = periodData[period];
+            document.getElementById('earningsAmount').textContent = data.amount;
+            document.getElementById('deliveryCount').textContent = data.deliveries;
+            document.getElementById('hoursCount').textContent = data.hours;
+            document.getElementById('weekEarnings').textContent = data.weekEarnings;
+            document.getElementById('completedCount').textContent = data.completed;
+            document.getElementById('bonusAmount').textContent = data.bonus;
+            
+            // Update chart
+            renderChart(data);
+        }
+
+        // Render Chart
+        function renderChart(data) {
+            const container = document.getElementById('chartBars');
+            container.innerHTML = '';
+            
+            const maxVal = Math.max(...data.chart);
+            
+            data.chart.forEach((val, idx) => {
+                const height = maxVal > 0 ? (val / maxVal) * 100 : 0;
+                const barWrapper = document.createElement('div');
+                barWrapper.className = 'bar-wrapper';
+                barWrapper.innerHTML = `
+                    <div class="bar" style="height: ${Math.max(height, 4)}%; background: ${val === Math.max(...data.chart) ? 'var(--success)' : 'var(--primary-blue)'};">
+                        <span class="bar-value">${val > 0 ? '₱' + Math.floor(val * 16) : ''}</span>
+                    </div>
+                    <span class="bar-label">${data.labels[idx]}</span>
+                `;
+                container.appendChild(barWrapper);
+            });
+        }
+
+        // Filter History
+        function filterHistory(type, btn) {
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            renderTransactions(type);
+        }
+
+        // Render Transactions
+        function renderTransactions(filter) {
+            const container = document.getElementById('transactionList');
+            container.innerHTML = '';
+            
+            const filtered = filter === 'all' ? transactions : transactions.filter(t => t.type === filter);
+            
+            filtered.forEach(t => {
+                const card = document.createElement('div');
+                card.className = 'transaction-card';
+                card.innerHTML = `
+                    <div class="transaction-info">
+                        <div class="transaction-icon ${t.color}"><i class="fa-solid ${t.icon}"></i></div>
+                        <div class="transaction-details">
+                            <h4>${t.title}</h4>
+                            <p>${t.time} • ${t.id}</p>
+                        </div>
+                    </div>
+                    <div class="transaction-amount">
+                        <div class="amount-value">${t.amount}</div>
+                        <span class="amount-status ${t.status}">${t.status === 'completed' ? 'Completed' : 'Processing'}</span>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        // Toast Notification
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.innerText = message;
+            toast.classList.add('show');
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // Initialize app
+        init();
+    </script>
+</body>
+</html>
